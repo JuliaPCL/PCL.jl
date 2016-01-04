@@ -13,6 +13,10 @@ milk_cartoon_path = joinpath(dirname(@__FILE__), "data",
 
     milk_cloud = pcl.PointCloud{pcl.PointXYZ}(milk_cartoon_path)
     @test (@cxx (milk_cloud.handle)->get()) != C_NULL
+
+    @test pcl.width(milk_cloud) == 640
+    @test pcl.height(milk_cloud) == 480
+    @test !pcl.is_dense(milk_cloud)
 end
 
 @testset "pcl::io" begin

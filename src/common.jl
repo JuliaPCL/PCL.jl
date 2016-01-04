@@ -36,3 +36,8 @@ function call{T}(::Type{PointCloud{T}}, pcd_file::AbstractString)
     pcl.loadPCDFile(pcd_file, cloud)
     return cloud
 end
+
+width(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->width;")
+height(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->height;")
+is_dense(cloud::PointCloud) = icxx"$(cloud.handle)->is_dense;"
+points(cloud::PointCloud) = icxx"$(cloud.handle)->points;"
