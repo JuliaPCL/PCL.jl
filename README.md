@@ -2,6 +2,8 @@
 
 A Julia interface for Point Cloud Library (PCL)
 
+![examples/milk_cartoon_all_small_clorox.png](examples/milk_cartoon_all_small_clorox.png)
+
 Note that PCL.jl was started as an experimental project and not full-featured.
 
 
@@ -26,7 +28,7 @@ By default, `Pkg.build("PCL")` will try to find system-installed PCL libraries. 
 ```jl
 julia> ENV["PCLJL_LIBRARY_IGNORE_PATH"] = "/usr/lib:/usr/local/lib" # depends on your environment
 julia> Pkg.build("PCL")
-``` 
+```
 
 The PCL library paths will be stored in `PCL.pcl.libpcl_xxx` after loading PCL.jl. The library path should look like for example:
 
