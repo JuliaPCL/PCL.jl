@@ -1,5 +1,10 @@
 using PCL
+using Cxx
 using Base.Test
 
-# write your own tests here
-@test 1 == 1
+@testset "PointCloud{T}" begin
+    cloudxyz = pcl.PointCloud{pcl.PointXYZ}()
+    @test (@cxx (cloudxyz.handle)->get()) != C_NULL
+    cloudxyzi = pcl.PointCloud{pcl.PointXYZI}()
+    @test (@cxx (cloudxyzi.handle)->get()) != C_NULL
+end

@@ -7,8 +7,6 @@ module pcl
 
 const VERBOSE = true
 
-const has_vtk_backend = true
-
 searchdir(path, key) = filter(x->contains(x, key), readdir(path))
 
 # Search GUI backend
@@ -16,7 +14,7 @@ vtk_dirs = searchdir("/usr/local/include", "vtk-")
 if !isempty(vtk_dirs)
     global const has_vtk_backend = true
     global const vtk_version = vtk_dirs[1][5:end]
-    VERBOSE && info("vtk backend enabled. version: vtk_version")
+    VERBOSE && info("vtk backend enabled. version: $vtk_version")
 end
 
 using BinDeps
@@ -101,8 +99,13 @@ else
     error("Cannot find PCL headers")
 end
 
-info("pcl_version: $pcl_version")
+VERBOSE && info("pcl_version: $pcl_version")
 include_headers(joinpath(topdir_to_be_included, "pcl-$pcl_version"))
+
+for name in ["common", "io", "visualization"]
+    include(string(name, ".jl"))
+end
+
 
 end # module pcl
 
