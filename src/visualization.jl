@@ -20,8 +20,11 @@ function setBackgroundColor(viewer::PCLVisualizer, x, y, z)
     icxx"$(viewer.handle).get()->setBackgroundColor($x, $y, $z);"
 end
 
-function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T})
-    icxx"$(viewer.handle).get()->addPointCloud<$T>($(cloud.handle));"
+function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
+    id::AbstractString="cloud", viewport::Int=0)
+    icxx"""
+        $(viewer.handle).get()->addPointCloud<$T>(
+            $(cloud.handle), $(pointer(id)), $viewport);"""
 end
 
 function addCoordinateSystem(viewer::PCLVisualizer, n)
