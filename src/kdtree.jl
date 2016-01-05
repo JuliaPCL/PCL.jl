@@ -15,3 +15,12 @@ end
 
 setInputCloud(us::KdTreeFLANN, cloud::PointCloud) =
     icxx"$(us.handle).get()->setInputCloud($(cloud.handle));"
+
+function nearestKSearch(flann::KdTreeFLANN, point, k::Int,
+    k_indices::StdVector, k_sqr_distances::StdVector)
+    found_neighs = icxx"""
+        $(flann.handle).get()->nearestKSearch($point, $k, $k_indices,
+            $k_sqr_distances);
+    """
+    Int(found_neighs)
+end
