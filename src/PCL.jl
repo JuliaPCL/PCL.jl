@@ -59,20 +59,39 @@ function include_headers(top)
     # FLANN (required)
     addHeaderDir("/usr/local/include/flann", kind=C_System)
 
+    # PCL top directory
     addHeaderDir(top, kind=C_System)
     addHeaderDir(joinpath(top, "pcl"), kind=C_System)
-    for m in ["common", "io", "features", "filters", "visualization"]
-        addHeaderDir(joinpath(top, "pcl", m), kind=C_System)
-    end
 
     cxxinclude(joinpath(top, "pcl/pcl_base.h"))
     cxxinclude(joinpath(top, "pcl/common/common_headers.h"))
+    cxxinclude(joinpath(top, "pcl/common/transforms.h"))
     cxxinclude(joinpath(top, "pcl/io/pcd_io.h"))
 
     if has_vtk_backend
         VERBOSE && info("adding vtk and visualization module headers")
         addHeaderDir("/usr/local/include/vtk-$vtk_version/", kind=C_System)
         cxxinclude(joinpath(top, "pcl/visualization/pcl_visualizer.h"))
+    end
+
+    # recognition
+    for name in ["hough_3d.h", "geometric_consistency.h"]
+        cxxinclude(joinpath(top, "pcl", "recognition", "cg", name))
+    end
+
+    # features
+    for name in ["normal_3d.h", "normal_3d_omp.h", "shot_omp.h", "board.h"]
+        cxxinclude(joinpath(top, "pcl", "features", name))
+    end
+
+    # filters
+    for name in ["uniform_sampling.h"]
+        cxxinclude(joinpath(top, "pcl", "filters", name))
+    end
+
+    # kdtree
+    for name in ["kdtree_flann.h", "impl/kdtree_flann.hpp"]
+        cxxinclude(joinpath(top, "pcl", "kdtree", name))
     end
 end
 
@@ -102,7 +121,15 @@ end
 VERBOSE && info("pcl_version: $pcl_version")
 include_headers(joinpath(topdir_to_be_included, "pcl-$pcl_version"))
 
-for name in ["common", "io", "visualization"]
+for name in [
+    "std",
+    "common",
+    "io",
+    "filters",
+    "features",
+    "kdtree",
+    "visualization"
+    ]
     include(string(name, ".jl"))
 end
 
