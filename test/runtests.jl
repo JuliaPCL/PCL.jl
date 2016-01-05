@@ -47,3 +47,10 @@ end
     cloud_xyzrgb = pcl.PointCloud{pcl.PointXYZRGB}()
     @test pcl.loadPCDFile(milk_cartoon_path, cloud_xyzrgb) == 0
 end
+
+@testset "std::vector" begin
+    @test length(pcl.StdVector{Float64}()) == 0
+    for n in 0:10
+        @test length(pcl.StdVector{Float64}(n)) == n
+    end
+end
