@@ -1,6 +1,6 @@
 ### common ###
 
-import Base: call, eltype, length, size
+import Base: call, eltype, length, size, getindex
 
 ### PointType definitions ###
 
@@ -45,6 +45,8 @@ call(::Type{PointXYZ}, x, y, z) = icxx"pcl::PointXYZ($x, $y, $z);"
 type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
 end
+
+getindex(cloud::PointCloud, i::Integer) = icxx"$(cloud.handle).get()->at($i-1);"
 
 """Create empty PointCloud instance"""
 function call{T}(::Type{PointCloud{T}})
