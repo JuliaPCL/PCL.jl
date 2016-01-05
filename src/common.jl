@@ -1,23 +1,46 @@
 ### common ###
 
-import Base: call, eltype
+import Base: call, eltype, length, size
 
 ### PointType definitions ###
 
-# TODO: wrap it into jl type
-const PointXYZ = cxxt"pcl::PointXYZ"
-const PointXYZI = cxxt"pcl::PointXYZI"
-const PointXYZRGBA = cxxt"pcl::PointXYZRGBA"
-const PointXYZRGB = cxxt"pcl::PointXYZRGB"
-const PointXY = cxxt"pcl::PointXY"
-const PointUV = cxxt"pcl::PointUV"
-const InterestPoint = cxxt"pcl::InterestPoint"
-const Normal = cxxt"pcl::Normal"
-const Axis = cxxt"pcl::Axis"
-const PointNormal = cxxt"pcl::PointNormal"
-const PointXYZRGBNormal = cxxt"pcl::PointXYZRGBNormal"
-const PointXYZINormal = cxxt"pcl::PointXYZINormal"
-const PointXYZLNormal = cxxt"pcl::PointXYZLNormal"
+for name in [
+    :PointXYZ,
+    :PointXYZI,
+    :PointXYZRGBA,
+    :PointXYZRGB,
+    :PointXY,
+    :PointUV,
+    :InterestPoint,
+    :Normal,
+    :Axis,
+    :PointNormal,
+    :PointXYZRGBNormal,
+    :PointXYZRGBNormal,
+    :PointXYZINormal,
+    :PointXYZLNormal,
+    :ReferenceFrame,
+    :SHOT352,
+    ]
+    refname = symbol(name, :Ref)
+    valorref = symbol(name, :ValOrRef)
+    cppname = string("pcl::", name)
+    cxxtdef = Expr(:macrocall, symbol("@cxxt_str"), cppname);
+    rcppdef = Expr(:macrocall, symbol("@rcpp_str"), cppname);
+
+    @eval begin
+        global const $name = $cxxtdef
+        global const $refname = $rcppdef
+        global const $valorref = Union{$name, $refname}
+    end
+
+    # no args constructor
+    body = Expr(:macrocall, symbol("@icxx_str"), string(cppname, "();"))
+    @eval call(::Type{$name}) = $body
+end
+
+call(::Type{PointXYZ}, x, y, z) = icxx"pcl::PointXYZ($x, $y, $z);"
+
 
 type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
@@ -37,6 +60,7 @@ function call{T}(::Type{PointCloud{T}}, pcd_file::AbstractString)
     return cloud
 end
 
+length(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->size();")
 width(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->width;")
 height(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->height;")
 is_dense(cloud::PointCloud) = icxx"$(cloud.handle)->is_dense;"
