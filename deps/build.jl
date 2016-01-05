@@ -25,8 +25,10 @@ pcl_common = pcl_library_dependency("libpcl_common")
 pcl_io = pcl_library_dependency("libpcl_io")
 pcl_features = pcl_library_dependency("libpcl_features")
 pcl_filters = pcl_library_dependency("libpcl_filters")
+pcl_kdtree = pcl_library_dependency("libpcl_kdtree")
 pcl_segmentation = pcl_library_dependency("libpcl_segmentation")
 pcl_visualization = pcl_library_dependency("libpcl_visualization")
+pcl_recognition = pcl_library_dependency("libpcl_recognition")
 pcl_registration = pcl_library_dependency("libpcl_registration")
 
 pcl_libs = [
@@ -34,8 +36,10 @@ pcl_libs = [
     pcl_io,
     pcl_features,
     pcl_filters,
+    pcl_kdtree,
     pcl_segmentation,
     pcl_visualization,
+    pcl_recognition,
     pcl_registration,
     ]
 
@@ -75,7 +79,9 @@ provides(SimpleBuild,
     :libpcl_io => :libpcl_io,
     :libpcl_features => :libpcl_features,
     :libpcl_filters => :libpcl_filters,
+    :libpcl_kdtree => :libpcl_kdtree,
     :libpcl_segmentation => :libpcl_segmentation,
     :libpcl_visualization => :libpcl_visualization,
+    :libpcl_recognition => :libpcl_recognition,
     :libpcl_registration => :libpcl_registration,
     )
