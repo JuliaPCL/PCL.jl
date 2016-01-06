@@ -1,5 +1,25 @@
 ### visualization ###
 
+typealias CxxPointCloudColorHandlerRGBField{T} cxxt"boost::shared_ptr<pcl::visualization::PointCloudColorHandlerRGBField<$T>>"
+
+abstract PointCloudColorHandler
+
+type PointCloudColorHandlerRGBField{T} <: PointCloudColorHandler
+    handle::CxxPointCloudColorHandlerRGBField
+end
+
+function call{T}(::Type{PointCloudColorHandlerRGBField{T}}, cloud::PointCloud)
+    handle = icxx"""
+        boost::shared_ptr<pcl::visualization::PointCloudColorHandlerRGBField<$T>>(
+            new pcl::visualization::PointCloudColorHandlerRGBField<$T>(
+                $(cloud.handle)));"""
+    PointCloudColorHandlerRGBField{T}(handle)
+end
+
+call{T}(::Type{PointCloudColorHandlerRGBField}, cloud::PointCloud{T}) =
+    PointCloudColorHandlerRGBField{T}(cloud)
+
+
 const CxxPCLVisualizerPtr = cxxt"boost::shared_ptr<pcl::visualization::PCLVisualizer>"
 
 type PCLVisualizer
@@ -25,6 +45,15 @@ function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     icxx"""
         $(viewer.handle).get()->addPointCloud<$T>(
             $(cloud.handle), $(pointer(id)), $viewport);"""
+end
+
+function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
+    color_handler::PointCloudColorHandler;
+    id::AbstractString="cloud", viewport::Int=0)
+    icxx"""
+        $(viewer.handle).get()->addPointCloud<$T>(
+            $(cloud.handle), *$(color_handler.handle), $(pointer(id)),
+            $viewport);"""
 end
 
 function addCoordinateSystem(viewer::PCLVisualizer, n)
