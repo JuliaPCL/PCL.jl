@@ -2,7 +2,7 @@
 
 A Julia interface for Point Cloud Library (PCL)
 
-![examples/[gif/milk_cartoon_all_small_clorox.gif](examples/gif/milk_cartoon_all_small_clorox.gif)
+![examples/gif/milk_cartoon_all_small_clorox.gif](examples/gif/milk_cartoon_all_small_clorox.gif)
 
 Note that PCL.jl was started as an experimental project and not full-featured.
 
