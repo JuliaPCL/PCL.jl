@@ -63,33 +63,51 @@ function include_headers(top)
     addHeaderDir(top, kind=C_System)
     addHeaderDir(joinpath(top, "pcl"), kind=C_System)
 
-    cxxinclude(joinpath(top, "pcl/pcl_base.h"))
-    cxxinclude(joinpath(top, "pcl/common/common_headers.h"))
-    cxxinclude(joinpath(top, "pcl/common/transforms.h"))
-    cxxinclude(joinpath(top, "pcl/io/pcd_io.h"))
+    # top level
+    VERBOSE && info("Include top-level headers")
+    for name in ["pcl_base.h", "correspondence.h"]
+        cxxinclude(joinpath(top, "pcl", name))
+    end
 
+    # common
+    VERBOSE && info("Include pcl::common headers")
+    for name in ["common_headers.h", "transforms.h"]
+        cxxinclude(joinpath(top, "pcl", "common", name))
+    end
+
+    # visualization
     if has_vtk_backend
         VERBOSE && info("adding vtk and visualization module headers")
         addHeaderDir("/usr/local/include/vtk-$vtk_version/", kind=C_System)
-        cxxinclude(joinpath(top, "pcl/visualization/pcl_visualizer.h"))
+        cxxinclude(joinpath(top, "pcl", "visualization", "pcl_visualizer.h"))
+    end
+
+    # io
+    VERBOSE && info("Include pcl::io headers")
+    for name in ["pcd_io.h"]
+        cxxinclude(joinpath(top, "pcl", "io", name))
     end
 
     # recognition
+    VERBOSE && info("Include pcl::recognition headers")
     for name in ["hough_3d.h", "geometric_consistency.h"]
         cxxinclude(joinpath(top, "pcl", "recognition", "cg", name))
     end
 
     # features
+    VERBOSE && info("Include pcl::features headers")
     for name in ["normal_3d.h", "normal_3d_omp.h", "shot_omp.h", "board.h"]
         cxxinclude(joinpath(top, "pcl", "features", name))
     end
 
     # filters
+    VERBOSE && info("Include pcl::filters headers")
     for name in ["uniform_sampling.h"]
         cxxinclude(joinpath(top, "pcl", "filters", name))
     end
 
     # kdtree
+    VERBOSE && info("Include pcl::kdtree headers")
     for name in ["kdtree_flann.h", "impl/kdtree_flann.hpp"]
         cxxinclude(joinpath(top, "pcl", "kdtree", name))
     end
@@ -128,6 +146,7 @@ for name in [
     "filters",
     "features",
     "kdtree",
+    "recognition",
     "visualization"
     ]
     include(string(name, ".jl"))
