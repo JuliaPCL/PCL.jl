@@ -6,7 +6,7 @@ typealias StdVector{T,A} cxxt"std::vector<$T,$A>"
 Base.start(it::StdVector) = 0
 Base.next(it::StdVector,i) = (it[i], i+1)
 Base.done(it::StdVector,i) = i >= length(it)
-Base.getindex(it::StdVector,i) = icxx"($(it))[$i-1];" # 1-origin
+Base.getindex(it::StdVector,i) = icxx"($(it))[$i];"
 Base.length(it::StdVector) = convert(Int, icxx"$(it).size();")
 Base.deleteat!(v::StdVector,idxs::UnitRange) =
     icxx"$(v).erase($(v).begin()+$(first(idxs)),$(v).begin()+$(last(idxs)));"
