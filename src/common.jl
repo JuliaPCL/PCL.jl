@@ -48,7 +48,7 @@ type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
 end
 
-getindex(cloud::PointCloud, i::Integer) = icxx"$(cloud.handle).get()->at($i-1);"
+getindex(cloud::PointCloud, i::Integer) = icxx"$(cloud.handle).get()->at($i);"
 
 """Create empty PointCloud instance"""
 function call{T}(::Type{PointCloud{T}})
