@@ -5,7 +5,7 @@ module PCL
 export pcl
 module pcl
 
-const VERBOSE = true
+const VERBOSE = Bool(parse(Int, get(ENV, "PCLJL_VERBOSE", "1")))
 
 searchdir(path, key) = filter(x->contains(x, key), readdir(path))
 
@@ -29,6 +29,14 @@ end
 
 VERBOSE && info("Loading Cxx.jl...")
 using Cxx
+
+macro timevb(expr)
+    if VERBOSE
+        return quote @time $expr end
+    else
+        return quote $expr end
+    end
+end
 
 VERBOSE && info("dlopen...")
 for lib in [
@@ -65,13 +73,13 @@ function include_headers(top)
 
     # top level
     VERBOSE && info("Include pcl top-level headers")
-    for name in ["pcl_base.h", "correspondence.h"]
+    @timevb for name in ["pcl_base.h", "correspondence.h"]
         cxxinclude(joinpath(top, "pcl", name))
     end
 
     # common
     VERBOSE && info("Include pcl::common headers")
-    for name in ["common_headers.h", "transforms.h"]
+    @timevb for name in ["common_headers.h", "transforms.h"]
         cxxinclude(joinpath(top, "pcl", "common", name))
     end
 
@@ -84,31 +92,31 @@ function include_headers(top)
 
     # io
     VERBOSE && info("Include pcl::io headers")
-    for name in ["pcd_io.h"]
+    @timevb for name in ["pcd_io.h"]
         cxxinclude(joinpath(top, "pcl", "io", name))
     end
 
     # recognition
     VERBOSE && info("Include pcl::recognition headers")
-    for name in ["hough_3d.h", "geometric_consistency.h"]
+    @timevb for name in ["hough_3d.h", "geometric_consistency.h"]
         cxxinclude(joinpath(top, "pcl", "recognition", "cg", name))
     end
 
     # features
     VERBOSE && info("Include pcl::features headers")
-    for name in ["normal_3d.h", "normal_3d_omp.h", "shot_omp.h", "board.h"]
+    @timevb for name in ["normal_3d.h", "normal_3d_omp.h", "shot_omp.h", "board.h"]
         cxxinclude(joinpath(top, "pcl", "features", name))
     end
 
     # filters
     VERBOSE && info("Include pcl::filters headers")
-    for name in ["uniform_sampling.h"]
+    @timevb for name in ["uniform_sampling.h"]
         cxxinclude(joinpath(top, "pcl", "filters", name))
     end
 
     # kdtree
     VERBOSE && info("Include pcl::kdtree headers")
-    for name in ["kdtree_flann.h", "impl/kdtree_flann.hpp"]
+    @timevb for name in ["kdtree_flann.h", "impl/kdtree_flann.hpp"]
         cxxinclude(joinpath(top, "pcl", "kdtree", name))
     end
 end
