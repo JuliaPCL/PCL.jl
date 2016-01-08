@@ -6,6 +6,7 @@ typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
 
 cxxpointer(p) = p
 cxxpointer(p::SharedPtr) = @cxx p->get()
+cxxderef(x) = icxx"*$x;"
 
 ### PointType definitions ###
 

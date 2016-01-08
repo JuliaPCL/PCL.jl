@@ -62,12 +62,26 @@ setBackgroundColor(viewer::PCLVisualizer, x, y, z) =
     @cxx cxxpointer(handle(viewer))->setBackgroundColor(x, y, z)
 addCoordinateSystem(viewer::PCLVisualizer, n) =
     @cxx cxxpointer(handle(viewer))->addCoordinateSystem($n)
-initCameraParameters(viewer::PCLVisualizer) =
-    @cxx cxxpointer(handle(viewer))->initCameraParameters()
-wasStopped(viewer::PCLVisualizer) =
-    @cxx cxxpointer(handle(viewer))->wasStopped()
 spinOnce(viewer::PCLVisualizer, spin=100) =
     @cxx cxxpointer(handle(viewer))->spinOnce(spin)
+
+import Base: close
+
+for f in [
+        :initCameraParameters,
+        :wasStopped,
+        :removeAllPointClouds,
+        :removeAllShapes,
+        :removeAllCoordinateSystems,
+        :resetStoppedFlag,
+        :close,
+        :updateCamera,
+        :resetCamera,
+        ]
+    @eval begin
+        $f(viewer::PCLVisualizer) = @cxx cxxpointer(handle(viewer))->$f()
+    end
+end
 
 function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     id::AbstractString="cloud", viewport::Int=0)

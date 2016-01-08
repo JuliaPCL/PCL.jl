@@ -26,8 +26,7 @@ setSearchSurface(n::AbstractFeatureEstimator, surface::PointCloud) =
     @cxx cxxpointer(handle(n))->setSearchSurface(handle(surface))
 
 compute(n::AbstractFeatureEstimator, descriptors::PointCloud) =
-    icxx"$(cxxpointer(handle(n)))->compute(*$(handle(descriptors)));"
-
+    @cxx cxxpointer(handle(n))->compute(cxxderef(handle(descriptors)))
 
 type NormalEstimationOMP{PT,NT} <: AbstractFeatureEstimator
     handle::SharedPtr # TODO: typed

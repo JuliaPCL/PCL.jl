@@ -19,9 +19,7 @@ end
 
 setInputCloud(us::UniformSampling, cloud::PointCloud) =
     @cxx cxxpointer(handle(us))->setInputCloud(handle(cloud))
-
 setRadiusSearch(us::UniformSampling, ss) =
     @cxx cxxpointer(handle(us))->setRadiusSearch(ss)
-
 filter(us::UniformSampling, cloud::PointCloud) =
-    icxx"$(cxxpointer(handle(us)))->filter(*$(handle(cloud)));"
+    @cxx cxxpointer(handle(us))->filter(cxxderef(handle(cloud)))
