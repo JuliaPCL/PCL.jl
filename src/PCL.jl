@@ -29,6 +29,7 @@ end
 
 VERBOSE && info("Loading Cxx.jl...")
 using Cxx
+using CxxStd
 
 macro timevb(expr)
     if VERBOSE
@@ -104,8 +105,11 @@ function include_headers(top)
 
     # recognition
     VERBOSE && info("Include pcl::recognition headers")
-    @timevb for name in ["hough_3d.h", "geometric_consistency.h"]
-        cxxinclude(joinpath(top, "pcl", "recognition", "cg", name))
+    @timevb for name in [
+        "cg/hough_3d.h",
+        "cg/geometric_consistency.h",
+        "hv/hv_go.h"]
+        cxxinclude(joinpath(top, "pcl", "recognition", name))
     end
 
     # features

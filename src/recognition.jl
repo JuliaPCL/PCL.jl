@@ -67,3 +67,49 @@ for f in [:setUseInterpolation, :setUseDistanceWeight]
         $f(h::Hough3DGrouping, v::Bool) = @cxx cxxpointer(handle(h))->$f(v)
     end
 end
+
+abstract AbstractVerifier
+
+@inline handle(v::AbstractVerifier) = v.handle
+
+type GlobalHypothesesVerification{MT,ST} <: AbstractVerifier
+    handle::SharedPtr # TODO: typed
+end
+
+function call{MT,ST}(::Type{GlobalHypothesesVerification{MT,ST}})
+    handle = icxx"""
+        boost::shared_ptr<pcl::GlobalHypothesesVerification<$MT,$ST>>(
+        new pcl::GlobalHypothesesVerification<$MT,$ST>);"""
+    GlobalHypothesesVerification{MT,ST}(handle)
+end
+
+for f in [:setSceneCloud, :setOcclusionCloud]
+    @eval begin
+        $f(ver::GlobalHypothesesVerification, cloud::PointCloud) =
+            @cxx cxxpointer(handle(ver))->$f(handle(cloud))
+    end
+end
+
+function addModels(ver::GlobalHypothesesVerification, models::CxxStd.StdVector,
+    occlusion_reasoning=false)
+    @cxx cxxpointer(handle(ver))->addModels(models, occlusion_reasoning)
+end
+
+for f in [:setInlierThreshold, :setOcclusionThreshold, :setRegularizer,
+    :setRadiusClutter, :setClutterRegularizer, :setRadiusNormals]
+    @eval begin
+        $f(ver::GlobalHypothesesVerification, v::AbstractFloat) =
+            @cxx cxxpointer(handle(ver))->$f(v)
+    end
+end
+
+for f in [:setDetectClutter]
+    @eval begin
+        $f(ver::GlobalHypothesesVerification, v::Bool) =
+            @cxx cxxpointer(handle(ver))->$f(v)
+    end
+end
+
+verify(ver::GlobalHypothesesVerification) = @cxx cxxpointer(handle(ver))->verify()
+getMask(ver::GlobalHypothesesVerification, mask::CxxStd.StdVector) =
+    @cxx cxxpointer(handle(ver))->getMask(mask)
