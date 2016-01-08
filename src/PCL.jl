@@ -96,6 +96,12 @@ function include_headers(top)
         cxxinclude(joinpath(top, "pcl", "io", name))
     end
 
+    # registration
+    VERBOSE && info("Include pcl::registration headers")
+    @timevb for name in ["icp.h"]
+        cxxinclude(joinpath(top, "pcl", "registration", name))
+    end
+
     # recognition
     VERBOSE && info("Include pcl::recognition headers")
     @timevb for name in ["hough_3d.h", "geometric_consistency.h"]
@@ -155,6 +161,7 @@ for name in [
     "features",
     "kdtree",
     "recognition",
+    "registration",
     "visualization"
     ]
     include(string(name, ".jl"))
