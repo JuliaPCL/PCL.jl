@@ -1,7 +1,38 @@
-typealias CxxGeometricConsistencyGrouping{MT,ST} cxxt"boost::shared_ptr<pcl::GeometricConsistencyGrouping<$MT,$ST>>"
+"""
+Abstract recognizers that implemnts the following methods:
 
-type GeometricConsistencyGrouping{MT,ST}
-    handle::CxxGeometricConsistencyGrouping # TODO typed
+- setInputCloud
+- setInputRf
+- setSceneCloud
+- setSceneRf
+- setModelSceneCorrespondences
+- recognize
+"""
+abstract AbstractRecognizer
+
+handle(r::AbstractRecognizer) = r.handle
+
+setInputCloud(recognizer::AbstractRecognizer, cloud::PointCloud) =
+    icxx"$(handle(recognizer)).get()->setInputCloud($(handle(cloud)));"
+
+setInputRf(recognizer::AbstractRecognizer, cloud::PointCloud) =
+    icxx"$(handle(recognizer)).get()->setInputRf($(handle(cloud)));"
+
+setSceneCloud(recognizer::AbstractRecognizer, cloud::PointCloud) =
+    icxx"$(handle(recognizer)).get()->setSceneCloud($(handle(cloud)));"
+
+setSceneRf(recognizer::AbstractRecognizer, cloud::PointCloud) =
+    icxx"$(handle(recognizer)).get()->setSceneRf($(handle(cloud)));"
+
+setModelSceneCorrespondences(recognizer::AbstractRecognizer, corr::Correspondences) =
+    icxx"$(handle(recognizer)).get()->setModelSceneCorrespondences($(corr.handle));"
+
+recognize(recognizer::AbstractRecognizer, rototranslations, clustered_corrs) =
+    icxx"$(handle(recognizer)).get()->recognize($rototranslations, $clustered_corrs);"
+
+
+type GeometricConsistencyGrouping{MT,ST} <: AbstractRecognizer
+    handle::SharedPtr # TODO: typed
 end
 
 function call{MT,ST}(::Type{GeometricConsistencyGrouping{MT,ST}})
@@ -12,19 +43,27 @@ function call{MT,ST}(::Type{GeometricConsistencyGrouping{MT,ST}})
 end
 
 setGCSize(g::GeometricConsistencyGrouping, s) =
-    icxx"$(g.handle).get()->setGCSize($s);"
-
+    icxx"$(handle(g)).get()->setGCSize($s);"
 setGCThreshold(g::GeometricConsistencyGrouping, t) =
-    icxx"$(g.handle).get()->setGCThreshold($t);"
+    icxx"$(handle(g)).get()->setGCThreshold($t);"
 
-setInputCloud(g::GeometricConsistencyGrouping, cloud::PointCloud) =
-    icxx"$(g.handle).get()->setInputCloud($(cloud.handle));"
 
-setSceneCloud(g::GeometricConsistencyGrouping, cloud::PointCloud) =
-    icxx"$(g.handle).get()->setSceneCloud($(cloud.handle));"
+type Hough3DGrouping{T1,T2,R1,R2} <: AbstractRecognizer
+    handle::SharedPtr # TODO: typed
+end
 
-setModelSceneCorrespondences(g::GeometricConsistencyGrouping, corr::Correspondences) =
-    icxx"$(g.handle).get()->setModelSceneCorrespondences($(corr.handle));"
+function call{T1,T2,R1,R2}(::Type{Hough3DGrouping{T1,T2,R1,R2}})
+    handle = icxx"""
+        boost::shared_ptr<pcl::Hough3DGrouping<$T1,$T2,$R1,$R2>>(
+        new pcl::Hough3DGrouping<$T1,$T2,$R1,$R2>);"""
+    Hough3DGrouping{T1,T2,R1,R2}(handle)
+end
 
-recognize(g::GeometricConsistencyGrouping, rototranslations, clustered_corrs) =
-    icxx"$(g.handle).get()->recognize($rototranslations, $clustered_corrs);"
+setHoughBinSize(h::Hough3DGrouping, s) =
+    icxx"$(handle(h)).get()->setHoughBinSize($s);"
+setHoughThreshold(h::Hough3DGrouping, s) =
+    icxx"$(handle(h)).get()->setHoughThreshold($s);"
+setUseInterpolation(h::Hough3DGrouping, s::Bool) =
+    icxx"$(handle(h)).get()->setUseInterpolation($s);"
+setUseDistanceWeight(h::Hough3DGrouping, s::Bool) =
+    icxx"$(handle(h)).get()->setUseDistanceWeight($s);"

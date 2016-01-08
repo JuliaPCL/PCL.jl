@@ -48,7 +48,9 @@ type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
 end
 
-getindex(cloud::PointCloud, i::Integer) = icxx"$(cloud.handle).get()->at($i);"
+handle(cloud::PointCloud) = cloud.handle
+
+getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud)).get()->at($i);"
 
 """Create empty PointCloud instance"""
 function call{T}(::Type{PointCloud{T}})
@@ -64,11 +66,11 @@ function call{T}(::Type{PointCloud{T}}, pcd_file::AbstractString)
     return cloud
 end
 
-length(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->size();")
-width(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->width;")
-height(cloud::PointCloud) = convert(Int, icxx"$(cloud.handle)->height;")
-is_dense(cloud::PointCloud) = icxx"$(cloud.handle)->is_dense;"
-points(cloud::PointCloud) = icxx"$(cloud.handle)->points;"
+length(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->size();")
+width(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->width;")
+height(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->height;")
+is_dense(cloud::PointCloud) = icxx"$(handle(cloud))->is_dense;"
+points(cloud::PointCloud) = icxx"$(handle(cloud))->points;"
 
 function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
     transform)

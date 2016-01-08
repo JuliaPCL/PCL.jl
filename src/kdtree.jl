@@ -1,9 +1,11 @@
 import Base: call
 
-typealias CxxKdTreeFLANN{T} cxxt"boost::shared_ptr<pcl::KdTreeFLANN<$T>>"
+abstract AbstractKdTree
 
-type KdTreeFLANN{T}
-    handle::CxxKdTreeFLANN
+handle(kd::AbstractKdTree) = kd.handle
+
+type KdTreeFLANN{T} <: AbstractKdTree
+    handle::SharedPtr
 end
 
 function call{T}(::Type{KdTreeFLANN{T}})
@@ -13,8 +15,8 @@ function call{T}(::Type{KdTreeFLANN{T}})
     KdTreeFLANN{T}(handle)
 end
 
-setInputCloud(us::KdTreeFLANN, cloud::PointCloud) =
-    icxx"$(us.handle).get()->setInputCloud($(cloud.handle));"
+setInputCloud(kd::AbstractKdTree, cloud::PointCloud) =
+    icxx"$(handle(kd)).get()->setInputCloud($(handle(cloud)));"
 
 function nearestKSearch(flann::KdTreeFLANN, point, k::Integer,
     k_indices::StdVector, k_sqr_distances::StdVector)

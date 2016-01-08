@@ -1,9 +1,36 @@
 import Base: call
 
-typealias CxxNormalEstimationOMP{PT,NT} cxxt"boost::shared_ptr<pcl::NormalEstimationOMP<$PT,$NT>>"
+"""
+Feature estimators that implemtents the following methods:
 
-type NormalEstimationOMP{PT,NT}
-    handle::CxxNormalEstimationOMP # TODO: typed
+- setRadiusSearch
+- setInputCloud
+- setInputNormals
+- setSearchSurface
+- compute
+"""
+abstract AbstractFeatureEstimator
+
+handle(fe::AbstractFeatureEstimator) = fe.handle
+
+setRadiusSearch(n::AbstractFeatureEstimator, rad) =
+    icxx"$(handle(n)).get()->setRadiusSearch($rad);"
+
+setInputCloud(n::AbstractFeatureEstimator, cloud::PointCloud) =
+    icxx"$(handle(n)).get()->setInputCloud($(handle(cloud)));"
+
+setInputNormals(n::AbstractFeatureEstimator, normals::PointCloud) =
+    icxx"$(handle(n)).get()->setInputNormals($(handle(normals)));"
+
+setSearchSurface(n::AbstractFeatureEstimator, surface::PointCloud) =
+    icxx"$(handle(n)).get()->setSearchSurface($(handle(surface)));"
+
+compute(n::AbstractFeatureEstimator, descriptors::PointCloud) =
+    icxx"$(handle(n)).get()->compute(*$(handle(descriptors)));"
+
+
+type NormalEstimationOMP{PT,NT} <: AbstractFeatureEstimator
+    handle::SharedPtr # TODO: typed
 end
 
 function call{PT,NT}(::Type{NormalEstimationOMP{PT,NT}})
@@ -13,19 +40,10 @@ function call{PT,NT}(::Type{NormalEstimationOMP{PT,NT}})
     NormalEstimationOMP{PT,NT}(handle)
 end
 
-setKSearch(n::NormalEstimationOMP, k) = icxx"$(n.handle).get()->setKSearch($k);"
+setKSearch(n::NormalEstimationOMP, k) = icxx"$(handle(n)).get()->setKSearch($k);"
 
-setInputCloud(n::NormalEstimationOMP, cloud::PointCloud) =
-    icxx"$(n.handle).get()->setInputCloud($(cloud.handle));"
-
-compute(n::NormalEstimationOMP, normals::PointCloud) =
-    icxx"$(n.handle).get()->compute(*$(normals.handle));"
-
-
-typealias CxxSHOTEstimationOMP{PT,NT,OT} cxxt"boost::shared_ptr<pcl::SHOTEstimationOMP<$PT,$NT,$OT>>"
-
-type SHOTEstimationOMP{PT,NT,OT}
-    handle::CxxSHOTEstimationOMP # TODO: typed
+type SHOTEstimationOMP{PT,NT,OT} <: AbstractFeatureEstimator
+    handle::SharedPtr # TODO: typed
 end
 
 function call{PT,NT,OT}(::Type{SHOTEstimationOMP{PT,NT,OT}})
@@ -35,17 +53,16 @@ function call{PT,NT,OT}(::Type{SHOTEstimationOMP{PT,NT,OT}})
     SHOTEstimationOMP{PT,NT,OT}(handle)
 end
 
-setRadiusSearch(n::SHOTEstimationOMP, rad) =
-    icxx"$(n.handle).get()->setRadiusSearch($rad);"
+type BOARDLocalReferenceFrameEstimation{T,N,F} <: AbstractFeatureEstimator
+    handle::SharedPtr # typed
+end
 
-setInputCloud(n::SHOTEstimationOMP, cloud::PointCloud) =
-    icxx"$(n.handle).get()->setInputCloud($(cloud.handle));"
+function call{T,N,F}(::Type{BOARDLocalReferenceFrameEstimation{T,N,F}})
+    handle = icxx"""
+        boost::shared_ptr<pcl::BOARDLocalReferenceFrameEstimation<$T,$N,$F>>(
+        new pcl::BOARDLocalReferenceFrameEstimation<$T,$N,$F>);"""
+    BOARDLocalReferenceFrameEstimation{T,N,F}(handle)
+end
 
-setInputNormals(n::SHOTEstimationOMP, normals::PointCloud) =
-    icxx"$(n.handle).get()->setInputNormals($(normals.handle));"
-
-setSearchSurface(n::SHOTEstimationOMP, surface::PointCloud) =
-    icxx"$(n.handle).get()->setSearchSurface($(surface.handle));"
-
-compute(n::SHOTEstimationOMP, descriptors::PointCloud) =
-    icxx"$(n.handle).get()->compute(*$(descriptors.handle));"
+setFindHoles(rfe::BOARDLocalReferenceFrameEstimation, v::Bool) =
+    icxx"$(handle(rfe)).get()->setFindHoles($v);"
