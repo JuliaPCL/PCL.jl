@@ -11,9 +11,12 @@ Options:
   --point_type=T    Point type [default: PointXYZRGBA]
   --normal_type=NT  Normal point type [default: Normal]
   --descr_type=DT   Description point type [default: SHOT352]
+  --rf_type=RT      Reference frame type [default: ReferenceFrame]
+  --algorithm=A     Clustering algorithm used [default: Hough]
   --model_ss=ms     Model uniform sampling radius [default: 0.01]
   --scene_ss=ss     Scene uniform sampling radius [default: 0.03]
   --descr_rad=rad   Descriptor radius [default: 0.02]
+  --rf_rad=rfrad    Reference frame radius [default: 0.015]
   --cg_size=cg      Cluster size [default: 0.01]
   --cg_thresh=th    Clustering threshold [default: 5.0]
 """
@@ -28,12 +31,18 @@ let
 
     model_pcd = args["<model_pcd>"]
     scene_pcd = args["<scene_pcd>"]
+    algorithm = lowercase(args["--algorithm"])
+    algorithm ∉ ["hough", "cg"] && error("Not supported algorithm: $algorithm")
+    use_hough = (algorithm == "hough")
+
     T = eval(Expr(:., :pcl, QuoteNode(symbol(args["--point_type"]))))
     NT = eval(Expr(:., :pcl, QuoteNode(symbol(args["--normal_type"]))))
     DT = eval(Expr(:., :pcl, QuoteNode(symbol(args["--descr_type"]))))
+    RT = eval(Expr(:., :pcl, QuoteNode(symbol(args["--rf_type"]))))
     model_ss = parse(Float64, args["--model_ss"])
     scene_ss = parse(Float64, args["--scene_ss"])
     descr_rad = parse(Float64, args["--descr_rad"])
+    rf_rad = parse(Float64, args["--rf_rad"])
     cg_size = parse(Float64, args["--cg_size"])
     cg_thresh = parse(Float64, args["--cg_thresh"])
 
@@ -102,20 +111,47 @@ let
     end
     @show length(model_scene_corrs)
 
-    info("Clustering...")
+    info("Perform clustering based on $algorithm")
     rototranslations = icxx"""
         std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>();
     """
     clustered_corrs = icxx"std::vector<pcl::Correspondences>();"
 
-    gc_clusterer = pcl.GeometricConsistencyGrouping{T,T}()
+    clusterer = use_hough ? pcl.Hough3DGrouping{T,T,RT,RT}() :
+        pcl.GeometricConsistencyGrouping{T,T}()
 
-    pcl.setGCSize(gc_clusterer, Cfloat(cg_size))
-    pcl.setGCThreshold(gc_clusterer, Cfloat(cg_thresh))
-    pcl.setInputCloud(gc_clusterer, model_keypoints)
-    pcl.setSceneCloud(gc_clusterer, scene_keypoints)
-    pcl.setModelSceneCorrespondences(gc_clusterer, model_scene_corrs)
-    pcl.recognize(gc_clusterer, rototranslations, clustered_corrs)
+    if use_hough
+        model_rf = pcl.PointCloud{RT}()
+        scene_rf = pcl.PointCloud{RT}()
+        rf_est = pcl.BOARDLocalReferenceFrameEstimation{T,NT,RT}()
+        pcl.setFindHoles(rf_est, true)
+        pcl.setRadiusSearch(rf_est, rf_rad)
+
+        pcl.setInputCloud(rf_est, model_keypoints)
+        pcl.setInputNormals(rf_est, model_normals)
+        pcl.setSearchSurface(rf_est, model)
+        pcl.compute(rf_est, model_rf)
+
+        pcl.setInputCloud(rf_est, scene_keypoints)
+        pcl.setInputNormals(rf_est, scene_normals)
+        pcl.setSearchSurface(rf_est, scene)
+        pcl.compute(rf_est, scene_rf)
+
+        pcl.setHoughBinSize(clusterer, cg_size)
+        pcl.setHoughThreshold(clusterer, cg_thresh)
+        pcl.setUseInterpolation(clusterer, true)
+        pcl.setUseDistanceWeight(clusterer, false)
+    else
+        pcl.setGCSize(clusterer, cg_size)
+        pcl.setGCThreshold(clusterer, cg_thresh)
+    end
+
+    pcl.setInputCloud(clusterer, model_keypoints)
+    use_hough && pcl.setInputRf(clusterer, model_rf)
+    pcl.setSceneCloud(clusterer, scene_keypoints)
+    use_hough && pcl.setSceneRf(clusterer, scene_rf)
+    pcl.setModelSceneCorrespondences(clusterer, model_scene_corrs)
+    pcl.recognize(clusterer, rototranslations, clustered_corrs)
 
     @show length(rototranslations)
 
