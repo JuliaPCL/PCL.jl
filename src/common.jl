@@ -4,6 +4,9 @@ import Base: call, eltype, length, size, getindex, push!
 
 typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
 
+cxxpointer(p) = p
+cxxpointer(p::SharedPtr) = @cxx p->get()
+
 ### PointType definitions ###
 
 for name in [
@@ -48,7 +51,7 @@ type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
 end
 
-handle(cloud::PointCloud) = cloud.handle
+@inline handle(cloud::PointCloud) = cloud.handle
 
 getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud)).get()->at($i);"
 
@@ -96,6 +99,8 @@ type Correspondences
         Eigen::aligned_allocator<pcl::Correspondence>>>"
 end
 
+@inline handle(c::Union{Correspondences,Correspondence}) = c.handle
+
 function call(::Type{Correspondences})
     handle = icxx"""
         boost::shared_ptr<pcl::Correspondences>(
@@ -103,5 +108,6 @@ function call(::Type{Correspondences})
     Correspondences(handle)
 end
 
-length(cs::Correspondences) = convert(Int, icxx"$(cs.handle)->size();")
-push!(cs::Correspondences, c::Correspondence) = icxx"$(cs.handle)->push_back($(c.handle));"
+length(cs::Correspondences) = convert(Int, @cxx cxxpointer(handle(cs))->size())
+push!(cs::Correspondences, c::Correspondence) =
+    @cxx cxxpointer(handle(cs))->push_back(handle(c))

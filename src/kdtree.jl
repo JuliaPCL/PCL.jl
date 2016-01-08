@@ -2,7 +2,7 @@ import Base: call
 
 abstract AbstractKdTree
 
-handle(kd::AbstractKdTree) = kd.handle
+@inline handle(kd::AbstractKdTree) = kd.handle
 
 type KdTreeFLANN{T} <: AbstractKdTree
     handle::SharedPtr
@@ -16,14 +16,12 @@ function call{T}(::Type{KdTreeFLANN{T}})
 end
 
 setInputCloud(kd::AbstractKdTree, cloud::PointCloud) =
-    icxx"$(handle(kd)).get()->setInputCloud($(handle(cloud)));"
+    @cxx cxxpointer(handle(kd))->setInputCloud(handle(cloud))
 
 function nearestKSearch(flann::KdTreeFLANN, point, k::Integer,
     k_indices::StdVector, k_sqr_distances::StdVector)
     k = Cint(k)
-    found_neighs = icxx"""
-        $(flann.handle).get()->nearestKSearch($point, $k, $k_indices,
-            $k_sqr_distances);
-    """
+    found_neighs = @cxx cxxpointer(handle(flann))->nearestKSearch(
+        point, k, k_indices, k_sqr_distances)
     Int(found_neighs)
 end

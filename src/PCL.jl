@@ -64,7 +64,7 @@ function include_headers(top)
     addHeaderDir(joinpath(top, "pcl"), kind=C_System)
 
     # top level
-    VERBOSE && info("Include top-level headers")
+    VERBOSE && info("Include pcl top-level headers")
     for name in ["pcl_base.h", "correspondence.h"]
         cxxinclude(joinpath(top, "pcl", name))
     end

@@ -2,6 +2,8 @@
 
 abstract PointCloudColorHandler
 
+@inline handle(p::PointCloudColorHandler) = p.handle
+
 typealias CxxPointCloudColorHandlerRGBField{T} cxxt"boost::shared_ptr<pcl::visualization::PointCloudColorHandlerRGBField<$T>>"
 typealias CxxPointCloudColorHandlerCustom{T} cxxt"boost::shared_ptr<pcl::visualization::PointCloudColorHandlerCustom<$T>>"
 
@@ -45,6 +47,8 @@ type PCLVisualizer
     PCLVisualizer(handle::CxxPCLVisualizerPtr) = new(handle)
 end
 
+@inline handle(viewer::PCLVisualizer) = viewer.handle
+
 function PCLVisualizer(name::AbstractString="", create_interactor::Bool=true)
     handle = icxx"""
         boost::shared_ptr<pcl::visualization::PCLVisualizer>(
@@ -54,9 +58,16 @@ function PCLVisualizer(name::AbstractString="", create_interactor::Bool=true)
     PCLVisualizer(handle)
 end
 
-function setBackgroundColor(viewer::PCLVisualizer, x, y, z)
-    icxx"$(viewer.handle).get()->setBackgroundColor($x, $y, $z);"
-end
+setBackgroundColor(viewer::PCLVisualizer, x, y, z) =
+    @cxx cxxpointer(handle(viewer))->setBackgroundColor(x, y, z)
+addCoordinateSystem(viewer::PCLVisualizer, n) =
+    @cxx cxxpointer(handle(viewer))->addCoordinateSystem($n)
+initCameraParameters(viewer::PCLVisualizer) =
+    @cxx cxxpointer(handle(viewer))->initCameraParameters()
+wasStopped(viewer::PCLVisualizer) =
+    @cxx cxxpointer(handle(viewer))->wasStopped()
+spinOnce(viewer::PCLVisualizer, spin=100) =
+    @cxx cxxpointer(handle(viewer))->spinOnce(spin)
 
 function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     id::AbstractString="cloud", viewport::Int=0)
@@ -72,14 +83,6 @@ function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
         $(viewer.handle).get()->addPointCloud<$T>(
             $(cloud.handle), *$(color_handler.handle), $(pointer(id)),
             $viewport);"""
-end
-
-function addCoordinateSystem(viewer::PCLVisualizer, n)
-    icxx"$(viewer.handle).get()->addCoordinateSystem($n);"
-end
-
-function initCameraParameters(viewer::PCLVisualizer)
-    icxx"$(viewer.handle).get()->initCameraParameters();"
 end
 
 function run(viewer::PCLVisualizer; spin::Int=100, sleep::Int=100000)

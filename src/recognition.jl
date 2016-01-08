@@ -10,25 +10,22 @@ Abstract recognizers that implemnts the following methods:
 """
 abstract AbstractRecognizer
 
-handle(r::AbstractRecognizer) = r.handle
+@inline handle(r::AbstractRecognizer) = r.handle
 
-setInputCloud(recognizer::AbstractRecognizer, cloud::PointCloud) =
-    icxx"$(handle(recognizer)).get()->setInputCloud($(handle(cloud)));"
+for f in [:setInputCloud, :setInputRf, :setSceneCloud, :setSceneRf]
+    @eval begin
+        $f(recognizer::AbstractRecognizer, cloud::PointCloud) =
+            @cxx cxxpointer(handle(recognizer))->$f(handle(cloud))
+    end
+end
 
-setInputRf(recognizer::AbstractRecognizer, cloud::PointCloud) =
-    icxx"$(handle(recognizer)).get()->setInputRf($(handle(cloud)));"
-
-setSceneCloud(recognizer::AbstractRecognizer, cloud::PointCloud) =
-    icxx"$(handle(recognizer)).get()->setSceneCloud($(handle(cloud)));"
-
-setSceneRf(recognizer::AbstractRecognizer, cloud::PointCloud) =
-    icxx"$(handle(recognizer)).get()->setSceneRf($(handle(cloud)));"
-
-setModelSceneCorrespondences(recognizer::AbstractRecognizer, corr::Correspondences) =
-    icxx"$(handle(recognizer)).get()->setModelSceneCorrespondences($(corr.handle));"
+function setModelSceneCorrespondences(recognizer::AbstractRecognizer,
+    corr::Correspondences)
+    @cxx cxxpointer(handle(recognizer))->setModelSceneCorrespondences(handle(corr))
+end
 
 recognize(recognizer::AbstractRecognizer, rototranslations, clustered_corrs) =
-    icxx"$(handle(recognizer)).get()->recognize($rototranslations, $clustered_corrs);"
+    @cxx cxxpointer(handle(recognizer))->recognize(rototranslations, clustered_corrs)
 
 
 type GeometricConsistencyGrouping{MT,ST} <: AbstractRecognizer
@@ -42,11 +39,11 @@ function call{MT,ST}(::Type{GeometricConsistencyGrouping{MT,ST}})
     GeometricConsistencyGrouping{MT,ST}(handle)
 end
 
-setGCSize(g::GeometricConsistencyGrouping, s) =
-    icxx"$(handle(g)).get()->setGCSize($s);"
-setGCThreshold(g::GeometricConsistencyGrouping, t) =
-    icxx"$(handle(g)).get()->setGCThreshold($t);"
-
+for f in [:setGCSize, :setGCThreshold]
+    @eval begin
+        $f(g::GeometricConsistencyGrouping, s) = @cxx cxxpointer(handle(g))->$f(s)
+    end
+end
 
 type Hough3DGrouping{T1,T2,R1,R2} <: AbstractRecognizer
     handle::SharedPtr # TODO: typed
@@ -59,11 +56,14 @@ function call{T1,T2,R1,R2}(::Type{Hough3DGrouping{T1,T2,R1,R2}})
     Hough3DGrouping{T1,T2,R1,R2}(handle)
 end
 
-setHoughBinSize(h::Hough3DGrouping, s) =
-    icxx"$(handle(h)).get()->setHoughBinSize($s);"
-setHoughThreshold(h::Hough3DGrouping, s) =
-    icxx"$(handle(h)).get()->setHoughThreshold($s);"
-setUseInterpolation(h::Hough3DGrouping, s::Bool) =
-    icxx"$(handle(h)).get()->setUseInterpolation($s);"
-setUseDistanceWeight(h::Hough3DGrouping, s::Bool) =
-    icxx"$(handle(h)).get()->setUseDistanceWeight($s);"
+for f in [:setHoughBinSize, :setHoughThreshold]
+    @eval begin
+        $f(h::Hough3DGrouping, s) = @cxx cxxpointer(handle(h))->$f(s)
+    end
+end
+
+for f in [:setUseInterpolation, :setUseDistanceWeight]
+    @eval begin
+        $f(h::Hough3DGrouping, v::Bool) = @cxx cxxpointer(handle(h))->$f(v)
+    end
+end

@@ -11,22 +11,22 @@ Feature estimators that implemtents the following methods:
 """
 abstract AbstractFeatureEstimator
 
-handle(fe::AbstractFeatureEstimator) = fe.handle
+@inline handle(fe::AbstractFeatureEstimator) = fe.handle
 
 setRadiusSearch(n::AbstractFeatureEstimator, rad) =
-    icxx"$(handle(n)).get()->setRadiusSearch($rad);"
+    @cxx cxxpointer(handle(n))->setRadiusSearch(rad)
 
 setInputCloud(n::AbstractFeatureEstimator, cloud::PointCloud) =
-    icxx"$(handle(n)).get()->setInputCloud($(handle(cloud)));"
+    @cxx cxxpointer(handle(n))->setInputCloud(handle(cloud))
 
 setInputNormals(n::AbstractFeatureEstimator, normals::PointCloud) =
-    icxx"$(handle(n)).get()->setInputNormals($(handle(normals)));"
+    @cxx cxxpointer(handle(n))->setInputNormals(handle(normals))
 
 setSearchSurface(n::AbstractFeatureEstimator, surface::PointCloud) =
-    icxx"$(handle(n)).get()->setSearchSurface($(handle(surface)));"
+    @cxx cxxpointer(handle(n))->setSearchSurface(handle(surface))
 
 compute(n::AbstractFeatureEstimator, descriptors::PointCloud) =
-    icxx"$(handle(n)).get()->compute(*$(handle(descriptors)));"
+    icxx"$(cxxpointer(handle(n)))->compute(*$(handle(descriptors)));"
 
 
 type NormalEstimationOMP{PT,NT} <: AbstractFeatureEstimator
@@ -40,7 +40,7 @@ function call{PT,NT}(::Type{NormalEstimationOMP{PT,NT}})
     NormalEstimationOMP{PT,NT}(handle)
 end
 
-setKSearch(n::NormalEstimationOMP, k) = icxx"$(handle(n)).get()->setKSearch($k);"
+setKSearch(n::NormalEstimationOMP, k) = @cxx cxxpointer(handle(n))->setKSearch(k)
 
 type SHOTEstimationOMP{PT,NT,OT} <: AbstractFeatureEstimator
     handle::SharedPtr # TODO: typed
@@ -65,4 +65,4 @@ function call{T,N,F}(::Type{BOARDLocalReferenceFrameEstimation{T,N,F}})
 end
 
 setFindHoles(rfe::BOARDLocalReferenceFrameEstimation, v::Bool) =
-    icxx"$(handle(rfe)).get()->setFindHoles($v);"
+    @cxx cxxpointer(handle(rfe))->setFindHoles(v)
