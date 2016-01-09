@@ -22,12 +22,14 @@ function getPointCloudXYZRGB(registration, undistorted, registered)
             x,y,z,r,g,b = getPointXYZRGB(registration, undistorted,
                 registered, ri, ci)
             isnan(z) && icxx"$(cloud.handle)->is_dense = false;"
-            icxx"$p->x = $x;"
-            icxx"$p->y = $y;"
-            icxx"$p->z = $z;"
-            icxx"$p->r = $r;"
-            icxx"$p->g = $g;"
-            icxx"$p->b = $b;"
+            icxx"""
+            $p->x = $x;
+            $p->y = $y;
+            $p->z = $z;
+            $p->r = $r;
+            $p->g = $g;
+            $p->b = $b;
+            """
         end
     end
     cloud
