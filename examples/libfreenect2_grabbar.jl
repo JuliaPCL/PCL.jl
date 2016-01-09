@@ -52,6 +52,8 @@ cloud = pcl.PointCloud{pcl.PointXYZRGB}(w, h)
 color_handler = pcl.PointCloudColorHandlerRGBField(cloud)
 pcl.addPointCloud(viewer, cloud, color_handler, id="libfreenect2")
 
+fps = 60.0
+total_frames = 1
 while !pcl.wasStopped(viewer)
     frames = waitForNewFrame(listener)
     color = frames[FrameType.COLOR]
@@ -59,18 +61,21 @@ while !pcl.wasStopped(viewer)
     depth = frames[FrameType.DEPTH]
 
     # Depth and color registration
-    apply(registration, color, depth, undistorted, registered)
-
-    # Get point cloud from registered color and undistored depth
-    @time cloud = getPointCloudXYZRGB(registration, undistorted, registered)
+    t = @elapsed begin
+        apply(registration, color, depth, undistorted, registered)
+        cloud = getPointCloudXYZRGB(registration, undistorted, registered)
+    end
+    fps = (1.0/t + (total_frames - 1) * fps) / total_frames
+    println("Registration and getPointCloudXYZRGB: $fps Hz")
 
     save_pcd && pcl.savePCDFile(genfilename(), cloud; binary_mode=true)
 
     color_handler = pcl.PointCloudColorHandlerRGBField(cloud)
     pcl.updatePointCloud(viewer, cloud, color_handler, id="libfreenect2")
-    pcl.spinOnce(viewer)
+    pcl.spinOnce(viewer, 1)
 
     map(release, [color, ir, depth])
+    total_frames += 1
 end
 
 stop(device)
