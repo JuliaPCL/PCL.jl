@@ -21,10 +21,7 @@ function getPointCloudXYZRGB(registration, undistorted, registered)
             p = icxx"$(pointsptr) + $w * $ri + $ci;"
             x,y,z,r,g,b = getPointXYZRGB(registration, undistorted,
                 registered, ri, ci)
-            if isnan(z)
-                x = NaN32; y = NaN32; z = NaN32;
-                icxx"$(cloud.handle)->is_dense = false;"
-            end
+            isnan(z) && icxx"$(cloud.handle)->is_dense = false;"
             icxx"$p->x = $x;"
             icxx"$p->y = $y;"
             icxx"$p->z = $z;"
