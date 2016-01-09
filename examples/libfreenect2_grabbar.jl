@@ -14,24 +14,19 @@ function getPointCloudXYZRGB(registration, undistorted, registered)
     w = width(undistorted)
     h = height(undistorted)
     cloud = pcl.PointCloud{pcl.PointXYZRGB}(w, h)
-    icxx"$(cloud.handle)->is_dense = true;"
+    icxx"$(cloud.handle)->is_dense = false;"
     pointsptr = icxx"&$(cloud.handle)->points[0];"
-    for ri in 0:h-1
-        for ci in 0:w-1
-            p = icxx"$(pointsptr) + $w * $ri + $ci;"
-            x,y,z,r,g,b = getPointXYZRGB(registration, undistorted,
-                registered, ri, ci)
-            isnan(z) && icxx"$(cloud.handle)->is_dense = false;"
-            icxx"""
-            $p->x = $x;
-            $p->y = $y;
-            $p->z = $z;
-            $p->r = $r;
-            $p->g = $g;
-            $p->b = $b;
-            """
-        end
-    end
+    # NOTE: function call inside loop below is somewhat expensive for real-time
+    # point cloud processing. Here we wrap it into a single icxx for efficiency.
+    icxx"""
+    for (size_t ri = 0; ri < $h; ++ri) {
+        for (size_t ci = 0; ci < $w; ++ci) {
+            auto p = $(pointsptr) + $w * ri + ci;
+            $(registration)->getPointXYZRGB($(undistorted.handle),
+                $(registered.handle), ri, ci, p->x, p->y, p->z, p->rgb);
+        }
+    }
+    """
     cloud
 end
 
