@@ -47,6 +47,21 @@ end
 
 call(::Type{PointXYZ}, x, y, z) = icxx"pcl::PointXYZ($x, $y, $z);"
 
+import Base: show
+
+function show(io::IO, p::pcl.PointXYZRGBValOrRef)
+    x = icxx"$p.x;"
+    y = icxx"$p.y;"
+    z = icxx"$p.z;"
+    r = icxx"$p.r;"
+    g = icxx"$p.g;"
+    b = icxx"$p.b;"
+    print(io, string(typeof(p)));
+    print(io, "\n");
+    print(io, "(x,y,z,r,g,b): ");
+    print(io, (x,y,z,r,g,b))
+end
+
 type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
 end
@@ -67,6 +82,13 @@ function call{T}(::Type{PointCloud{T}}, pcd_file::AbstractString)
     cloud = PointCloud(handle)
     pcl.loadPCDFile(pcd_file, cloud)
     return cloud
+end
+
+"""Create PointCloud instance given width and height"""
+function call{T}(::Type{PointCloud{T}}, w::Integer, h::Integer)
+    handle = icxx"""boost::shared_ptr<pcl::PointCloud<$T>>(
+        new pcl::PointCloud<$T>($w, $h));"""
+    PointCloud(handle)
 end
 
 length(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->size();")

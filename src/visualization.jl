@@ -99,6 +99,20 @@ function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
             $viewport);"""
 end
 
+function updatePointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
+    id::AbstractString="cloud")
+    icxx"""
+        $(viewer.handle).get()->updatePointCloud<$T>(
+            $(cloud.handle), $(pointer(id)));"""
+end
+
+function updatePointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
+    color_handler::PointCloudColorHandler; id::AbstractString="cloud")
+    icxx"""
+        $(viewer.handle).get()->updatePointCloud<$T>(
+            $(cloud.handle), *$(color_handler.handle), $(pointer(id)));"""
+end
+
 function run(viewer::PCLVisualizer; spin::Int=100, sleep::Int=100000)
     icxx"""
     while (!$(viewer.handle)->wasStopped()) {
