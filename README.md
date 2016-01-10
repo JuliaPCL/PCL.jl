@@ -39,12 +39,20 @@ julia> PCL.pcl.libpcl_common
 
 ### PCLVisualizer [[code]](examples/pcl_visualizer.jl)
 
-<div align="center"><img src="examples/gif/milk_cartoon_all_small_clorox.gif" /></div>
+<div align="center"><img src="examples/images/milk_cartoon_all_small_clorox.gif" /></div>
 
 ### Real-time Kinect v2 grabber [[code]](examples/libfreenect2_grabbar.jl)
 
-<div align="center"><img src="examples/gif/libfreenect2_integration.gif" /></div>
+<div align="center"><img src="examples/images/libfreenect2_integration.gif" /></div>
 
 Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v2.
+
+### 3D Object Recognition based on Correspondence Grouping [[code]](examples/correspondence_grouping.jl)
+
+<div align="center"><img src="examples/images/correspondence_grouping.png" /></div>
+
+### Hypothesis Verification for 3D Object Recognition [[code]](examples/global_hypothesis_verification.jl)
+
+<div align="center"><img src="examples/images/global_hypothesis_verification.png" /></div>
 
 You can find more examples in [examples directory](examples/).
