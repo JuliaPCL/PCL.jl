@@ -151,6 +151,7 @@ if isdir(local_include_top)
 elseif isdir(joinpath(system_include_top, "pcl"))
     VERBOSE && info("Including headers from system path: $system_include_top")
     pcl_version = get_pcl_version(system_include_top)
+    topdir_to_be_included = system_include_top
 else
     error("Cannot find PCL headers")
 end
