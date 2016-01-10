@@ -6,6 +6,8 @@ import PCL.pcl: @sharedptr, SharedPtr
 
 milk_cartoon_path = joinpath(dirname(@__FILE__), "data",
     "milk_cartoon_all_small_clorox.pcd")
+table_scene_lms400_path = joinpath(dirname(@__FILE__), "data",
+    "table_scene_lms400.pcd")
 
 @testset "@sharedptr" begin
     v = @sharedptr "std::vector<double>"
@@ -55,6 +57,34 @@ end
     @test pcl.loadPCDFile(milk_cartoon_path, cloudxyz) == 0
     cloud_xyzrgb = pcl.PointCloud{pcl.PointXYZRGB}()
     @test pcl.loadPCDFile(milk_cartoon_path, cloud_xyzrgb) == 0
+end
+
+@testset "pcl::filters" begin
+    cloud = pcl.PointCloud{pcl.PointXYZ}(table_scene_lms400_path)
+    cloud_filtered = pcl.PointCloud{pcl.PointXYZ}()
+
+    uniform_sampling = pcl.UniformSampling{pcl.PointXYZ}()
+    pcl.setInputCloud(uniform_sampling, cloud)
+    pcl.setRadiusSearch(uniform_sampling, 0.01)
+    pcl.filter(uniform_sampling, cloud_filtered)
+    @test length(cloud_filtered) < length(cloud)
+
+    for sor in [
+        pcl.VoxelGrid{pcl.PointXYZ}(),
+        pcl.ApproximateVoxelGrid{pcl.PointXYZ}()
+        ]
+        pcl.setInputCloud(sor, cloud)
+        pcl.setLeafSize(sor, 0.01, 0.01, 0.01)
+        pcl.filter(sor, cloud_filtered)
+        @test length(cloud_filtered) < length(cloud)
+    end
+
+    sor = pcl.StatisticalOutlierRemoval{pcl.PointXYZ}()
+    pcl.setInputCloud(sor, cloud)
+    pcl.setMeanK(sor, 10)
+    pcl.setStddevMulThresh(sor, 1.0)
+    pcl.filter(sor, cloud_filtered)
+    @test length(cloud_filtered) < length(cloud)
 end
 
 @testset "std::vector" begin

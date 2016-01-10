@@ -37,13 +37,23 @@ setFilterLimits(pass::PassThrough, lo, hi) =
 setFilterLimitsNegative(pass::PassThrough, v::Bool) =
     @cxx cxxpointer(handle(pass))->setFilterLimitsNegative(v)
 
-type VoxelGrid{T} <: AbstractFilter
+abstract AbstractVoxelGridFilter <: AbstractFilter
+
+setLeafSize(v::AbstractVoxelGridFilter, lx, ly, lz) =
+    @cxx cxxpointer(handle(v))->setLeafSize(lx, ly, lz)
+
+type VoxelGrid{T} <: AbstractVoxelGridFilter
     handle::SharedPtr
 end
 
 call{T}(::Type{VoxelGrid{T}}) = VoxelGrid{T}(@sharedptr "pcl::VoxelGrid<\$T>")
-setLeafSize(v::VoxelGrid, lx, ly, lz) =
-    @cxx cxxpointer(handle(v))->setLeafSize(lx, ly, lz)
+
+type ApproximateVoxelGrid{T} <: AbstractVoxelGridFilter
+    handle::SharedPtr
+end
+
+call{T}(::Type{ApproximateVoxelGrid{T}}) =
+    ApproximateVoxelGrid{T}(@sharedptr "pcl::ApproximateVoxelGrid<\$T>")
 
 type StatisticalOutlierRemoval{T} <: AbstractFilter
     handle::SharedPtr
