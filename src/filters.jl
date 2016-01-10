@@ -36,3 +36,11 @@ setFilterLimits(pass::PassThrough, lo, hi) =
     @cxx cxxpointer(handle(pass))->setFilterLimits(lo, hi)
 setFilterLimitsNegative(pass::PassThrough, v::Bool) =
     @cxx cxxpointer(handle(pass))->setFilterLimitsNegative(v)
+
+type VoxelGrid{T} <: AbstractFilter
+    handle::SharedPtr
+end
+
+call{T}(::Type{VoxelGrid{T}}) = VoxelGrid{T}(@sharedptr "pcl::VoxelGrid<\$T>")
+setLeafSize(v::VoxelGrid, lx, ly, lz) =
+    @cxx cxxpointer(handle(v))->setLeafSize(lx, ly, lz)
