@@ -1,11 +1,8 @@
 # PCL
 
-A Julia interface for Point Cloud Library (PCL)
+A Julia interface for [Point Cloud Library (PCL)](http://www.pointclouds.org/)
 
-![examples/gif/milk_cartoon_all_small_clorox.gif](examples/gif/milk_cartoon_all_small_clorox.gif)
-
-Note that PCL.jl was started as an experimental project and not full-featured.
-
+Note that PCL.jl was started as an experimental project.
 
 ## Dependencies
 
@@ -37,3 +34,17 @@ julia> using PCL
 julia> PCL.pcl.libpcl_common
 "$your_home_dir_path/.julia/v0.5/PCL/deps/usr/lib/libpcl_common.dylib"
 ```
+
+## How it works
+
+### PCLVisualizer [[code]](examples/pcl_visualizer.jl)
+
+<div align="center"><img src="examples/gif/milk_cartoon_all_small_clorox.gif" /></div>
+
+### Real-time Kinect v2 grabber [[code]](examples/libfreenect2_grabbar.jl)
+
+<div align="center"><img src="examples/gif/libfreenect2_integration.gif" /></div>
+
+Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v2.
+
+You can find more examples in [examples directory](examples/).
