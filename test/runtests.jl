@@ -2,8 +2,17 @@ using PCL
 using Cxx
 using Base.Test
 
+import PCL.pcl: @sharedptr, SharedPtr
+
 milk_cartoon_path = joinpath(dirname(@__FILE__), "data",
     "milk_cartoon_all_small_clorox.pcd")
+
+@testset "@sharedptr" begin
+    v = @sharedptr "std::vector<double>"
+    @test icxx"$v->size();" == 0
+    v = @sharedptr "std::vector<double>" "10"
+    @test icxx"$v->size();" == 10
+end
 
 @testset "Point types" begin
     p = pcl.PointXYZ()
