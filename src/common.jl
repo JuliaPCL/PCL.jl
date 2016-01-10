@@ -1,6 +1,6 @@
 ### common ###
 
-import Base: call, eltype, length, size, getindex, push!
+import Base: call, eltype, length, size, getindex, setindex!, push!
 
 typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
 
@@ -49,7 +49,7 @@ call(::Type{PointXYZ}, x, y, z) = icxx"pcl::PointXYZ($x, $y, $z);"
 
 import Base: show
 
-function show(io::IO, p::pcl.PointXYZRGBValOrRef)
+function show(io::IO, p::PointXYZRGBValOrRef)
     x = icxx"$p.x;"
     y = icxx"$p.y;"
     z = icxx"$p.z;"
@@ -62,13 +62,33 @@ function show(io::IO, p::pcl.PointXYZRGBValOrRef)
     print(io, (x,y,z,r,g,b))
 end
 
+function show(io::IO, p::PointXYZValOrRef)
+    x = icxx"$p.x;"
+    y = icxx"$p.y;"
+    z = icxx"$p.z;"
+    print(io, string(typeof(p)));
+    print(io, "\n");
+    print(io, "(x,y,z): ");
+    print(io, (x,y,z))
+end
+
 type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
 end
 
 @inline handle(cloud::PointCloud) = cloud.handle
 
-getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud)).get()->at($i);"
+getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud))->at($i);"
+
+function getindex(cloud::PointCloud, i::Integer, name::Symbol)
+    p = icxx"&$(handle(cloud))->points[$i];"
+    @eval @cxx $p->$name
+end
+function setindex!(cloud::PointCloud, v, i::Integer, name::Symbol)
+    p = icxx"&$(handle(cloud))->points[$i];"
+    vp = @eval @cxx &($p->$name)
+    unsafe_store!(vp, v, 1)
+end
 
 """Create empty PointCloud instance"""
 function call{T}(::Type{PointCloud{T}})
