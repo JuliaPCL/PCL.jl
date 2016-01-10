@@ -57,6 +57,7 @@ addCoordinateSystem(viewer::PCLVisualizer, n) =
     @cxx cxxpointer(handle(viewer))->addCoordinateSystem($n)
 spinOnce(viewer::PCLVisualizer, spin=1) =
     @cxx cxxpointer(handle(viewer))->spinOnce(spin)
+spin(viewer::PCLVisualizer) = @cxx cxxpointer(handle(viewer))->spin()
 
 import Base: close
 
