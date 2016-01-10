@@ -20,7 +20,10 @@ println("PointCloud before filtering: $(length(cloud_filtered)) data points")
 
 if vis
     viewer = pcl.PCLVisualizer("pcl visualizer")
-    pcl.addPointCloud(viewer, cloud_filtered)
+    red_handler = pcl.PointCloudColorHandlerCustom(cloud, 255, 0, 0)
+    green_handler = pcl.PointCloudColorHandlerCustom(cloud, 0, 255, 0)
+    pcl.addPointCloud(viewer, cloud, red_handler, id="cloud")
+    pcl.addPointCloud(viewer, cloud_filtered, green_handler, id="cloud_filtered")
     while !pcl.wasStopped(viewer)
         pcl.spinOnce(viewer)
     end
