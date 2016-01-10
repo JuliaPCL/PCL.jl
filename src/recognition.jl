@@ -33,9 +33,7 @@ type GeometricConsistencyGrouping{MT,ST} <: AbstractRecognizer
 end
 
 function call{MT,ST}(::Type{GeometricConsistencyGrouping{MT,ST}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::GeometricConsistencyGrouping<$MT,$ST>>(
-        new pcl::GeometricConsistencyGrouping<$MT,$ST>);"""
+    handle = @sharedptr "pcl::GeometricConsistencyGrouping<\$MT,\$ST>"
     GeometricConsistencyGrouping{MT,ST}(handle)
 end
 
@@ -50,9 +48,7 @@ type Hough3DGrouping{T1,T2,R1,R2} <: AbstractRecognizer
 end
 
 function call{T1,T2,R1,R2}(::Type{Hough3DGrouping{T1,T2,R1,R2}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::Hough3DGrouping<$T1,$T2,$R1,$R2>>(
-        new pcl::Hough3DGrouping<$T1,$T2,$R1,$R2>);"""
+    handle = @sharedptr "pcl::Hough3DGrouping<\$T1,\$T2,\$R1,\$R2>"
     Hough3DGrouping{T1,T2,R1,R2}(handle)
 end
 

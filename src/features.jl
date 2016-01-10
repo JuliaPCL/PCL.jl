@@ -33,9 +33,7 @@ type NormalEstimationOMP{PT,NT} <: AbstractFeatureEstimator
 end
 
 function call{PT,NT}(::Type{NormalEstimationOMP{PT,NT}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::NormalEstimationOMP<$PT,$NT>>(
-        new pcl::NormalEstimationOMP<$PT,$NT>);"""
+    handle = @sharedptr "pcl::NormalEstimationOMP<\$PT,\$NT>"
     NormalEstimationOMP{PT,NT}(handle)
 end
 
@@ -46,9 +44,7 @@ type SHOTEstimationOMP{PT,NT,OT} <: AbstractFeatureEstimator
 end
 
 function call{PT,NT,OT}(::Type{SHOTEstimationOMP{PT,NT,OT}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::SHOTEstimationOMP<$PT,$NT,$OT>>(
-        new pcl::SHOTEstimationOMP<$PT,$NT,$OT>);"""
+    handle = @sharedptr "pcl::SHOTEstimationOMP<\$PT,\$NT,\$OT>"
     SHOTEstimationOMP{PT,NT,OT}(handle)
 end
 
@@ -57,9 +53,7 @@ type BOARDLocalReferenceFrameEstimation{T,N,F} <: AbstractFeatureEstimator
 end
 
 function call{T,N,F}(::Type{BOARDLocalReferenceFrameEstimation{T,N,F}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::BOARDLocalReferenceFrameEstimation<$T,$N,$F>>(
-        new pcl::BOARDLocalReferenceFrameEstimation<$T,$N,$F>);"""
+    handle = @sharedptr "pcl::BOARDLocalReferenceFrameEstimation<\$T,\$N,\$F>"
     BOARDLocalReferenceFrameEstimation{T,N,F}(handle)
 end
 

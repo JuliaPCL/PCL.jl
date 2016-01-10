@@ -9,9 +9,7 @@ type KdTreeFLANN{T} <: AbstractKdTree
 end
 
 function call{T}(::Type{KdTreeFLANN{T}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::KdTreeFLANN<$T>>(
-        new pcl::KdTreeFLANN<$T>);"""
+    handle = @sharedptr "pcl::KdTreeFLANN<\$T>"
     KdTreeFLANN{T}(handle)
 end
 

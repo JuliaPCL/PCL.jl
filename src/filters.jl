@@ -14,9 +14,7 @@ type UniformSampling{T} <: AbstractFilter
 end
 
 function call{T}(::Type{UniformSampling{T}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::UniformSampling<$T>>(
-        new pcl::UniformSampling<$T>);"""
+    handle = @sharedptr "pcl::UniformSampling<\$T>"
     UniformSampling{T}(handle)
 end
 
@@ -28,9 +26,7 @@ type PassThrough{T} <: AbstractFilter
 end
 
 function call{T}(::Type{PassThrough{T}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::PassThrough<$T>>(
-        new pcl::PassThrough<$T>);"""
+    handle = @sharedptr "pcl::PassThrough<\$T>"
     PassThrough{T}(handle)
 end
 

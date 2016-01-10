@@ -120,7 +120,7 @@ function include_headers(top)
 
     # filters
     VERBOSE && info("Include pcl::filters headers")
-    @timevb for name in ["uniform_sampling.h", "passthrough.h"]
+    @timevb for name in ["uniform_sampling.h", "passthrough.h", "voxel_grid.h"]
         cxxinclude(joinpath(top, "pcl", "filters", name))
     end
 

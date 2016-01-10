@@ -8,9 +8,7 @@ type IterativeClosestPoint{T1,T2} <: AbstractRegistration
 end
 
 function call{T1,T2}(::Type{IterativeClosestPoint{T1,T2}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::IterativeClosestPoint<$T1,$T2>>(
-        new pcl::IterativeClosestPoint<$T1,$T2>);"""
+    handle = @sharedptr "pcl::IterativeClosestPoint<\$T1,\$T2>"
     IterativeClosestPoint{T1,T2}(handle)
 end
 
