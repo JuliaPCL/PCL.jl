@@ -44,3 +44,18 @@ end
 call{T}(::Type{VoxelGrid{T}}) = VoxelGrid{T}(@sharedptr "pcl::VoxelGrid<\$T>")
 setLeafSize(v::VoxelGrid, lx, ly, lz) =
     @cxx cxxpointer(handle(v))->setLeafSize(lx, ly, lz)
+
+type StatisticalOutlierRemoval{T} <: AbstractFilter
+    handle::SharedPtr
+end
+
+function call{T}(::Type{StatisticalOutlierRemoval{T}})
+    StatisticalOutlierRemoval{T}(
+        @sharedptr "pcl::StatisticalOutlierRemoval<\$T>")
+end
+
+for f in [:setMeanK, :setStddevMulThresh]
+    @eval begin
+        $f(s::StatisticalOutlierRemoval, v) = @cxx cxxpointer(handle(s))->$f(v)
+    end
+end
