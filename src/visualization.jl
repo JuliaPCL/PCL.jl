@@ -45,7 +45,7 @@ end
 
 @inline handle(viewer::PCLVisualizer) = viewer.handle
 
-function PCLVisualizer(name::AbstractString="", create_interactor::Bool=true)
+function PCLVisualizer(name::AbstractString=""; create_interactor::Bool=true)
     handle = @sharedptr("pcl::visualization::PCLVisualizer",
         "\$(pointer(name)), \$create_interactor")
     PCLVisualizer(handle)
@@ -53,11 +53,32 @@ end
 
 setBackgroundColor(viewer::PCLVisualizer, x, y, z) =
     @cxx cxxpointer(handle(viewer))->setBackgroundColor(x, y, z)
-addCoordinateSystem(viewer::PCLVisualizer, n) =
-    @cxx cxxpointer(handle(viewer))->addCoordinateSystem($n)
+addCoordinateSystem(viewer::PCLVisualizer, scale) =
+    @cxx cxxpointer(handle(viewer))->addCoordinateSystem(scale)
+addCoordinateSystem(viewer::PCLVisualizer, scale, x, y, z) =
+    @cxx cxxpointer(handle(viewer))->addCoordinateSystem(scale, x, y, z)
 spinOnce(viewer::PCLVisualizer, spin=1) =
     @cxx cxxpointer(handle(viewer))->spinOnce(spin)
-spin(viewer::PCLVisualizer) = @cxx cxxpointer(handle(viewer))->spin()
+
+# Generally, you don't have to chagne camera parameters manually. This would be
+# useful for off-screen rendering in paricular.
+function setCameraPosition(viewer::PCLVisualizer,
+        pos_x, pos_y, pos_z,
+        up_x, up_y, up_z; viewport::Integer=0)
+    @cxx cxxpointer(handle(viewer))->setCameraPosition(
+        pos_x, pos_y, pos_z, up_x, up_y, up_z, viewport)
+end
+function setCameraPosition(viewer::PCLVisualizer,
+        pos_x, pos_y, pos_z,
+        view_x, view_y, view_z,
+        up_x, up_y, up_z; viewport::Integer=0)
+    @cxx cxxpointer(handle(viewer))->setCameraPosition(
+    pos_x, pos_y, pos_z, view_x, view_y, view_z, up_x, up_y, up_z, viewport)
+end
+function setCameraClipDistances(viewer::PCLVisualizer, near, far;
+    viewport::Integer=0)
+    @cxx cxxpointer(handle(viewer))->setCameraClipDistances(near, far, viewport)
+end
 
 import Base: close
 
@@ -71,6 +92,8 @@ for f in [
         :close,
         :updateCamera,
         :resetCamera,
+        :setShowFPS,
+        :spin,
         ]
     @eval begin
         $f(viewer::PCLVisualizer) = @cxx cxxpointer(handle(viewer))->$f()
@@ -172,7 +195,7 @@ cxx"""
 namespace vis {
 
 std::vector<unsigned char>
-render_to_vec(vtkSmartPointer<vtkRenderWindow> &renderWindow) {
+renderToVec(vtkSmartPointer<vtkRenderWindow> &renderWindow) {
   renderWindow->Render();
 
   vtkSmartPointer<vtkWindowToImageFilter> windowToImageFilter =
@@ -201,7 +224,37 @@ render_to_vec(vtkSmartPointer<vtkRenderWindow> &renderWindow) {
 # > display("text/html", "<img src=data:image/png;base64,$(base64encode(v))>")
 # should display image in a jupyter notebook
 function renderedData(viewer::PCLVisualizer)
-    vec = @cxx vis::render_to_vec(getRenderWindow(viewer))
+    vec = @cxx vis::renderToVec(getRenderWindow(viewer))
     p = icxx"&$(vec[0]);"
     pointer_to_array(p, length(vec))
 end
+
+# just for debugging: to be removed
+cxx"""
+namespace vis {
+
+void dumpCameraParameters(pcl::visualization::PCLVisualizer::Ptr &vis) {
+  std::vector<pcl::visualization::Camera> cameras;
+  vis->getCameras(cameras);
+  for (size_t i = 0; i < cameras.size(); ++i) {
+    auto &c = cameras[i];
+    std::cout << "[Camera #" << i << "]" << std::endl;
+    std::cout << "focal : " << c.focal[0] << " " << c.focal[1] << " "
+              << c.focal[2] << std::endl;
+    std::cout << "pos : " << c.pos[0] << " " << c.pos[1] << " " << c.pos[2]
+              << std::endl;
+    std::cout << "view : " << c.view[0] << " " << c.view[1] << " " << c.view[2]
+              << std::endl;
+    std::cout << "clip : " << c.clip[0] << " " << c.clip[1] << std::endl;
+    std::cout << "fovy : " << c.fovy << std::endl;
+    std::cout << "window_size : " << c.window_size[0] << " " << c.window_size[1]
+              << std::endl;
+    std::cout << "window_pos : " << c.window_pos[0] << " " << c.window_pos[1]
+              << std::endl;
+  }
+}
+
+} // end namespace vis
+"""
+dumpCameraParameters(viewer::PCLVisualizer) =
+    @cxx vis::dumpCameraParameters(viewer)
