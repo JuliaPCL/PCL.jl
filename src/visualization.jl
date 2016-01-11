@@ -166,3 +166,42 @@ end
 
 renderToPng(viewer::PCLVisualizer, s::AbstractString) =
     @cxx vis::renderToPng(getRenderWindow(viewer), pointer(s))
+
+
+cxx"""
+namespace vis {
+
+std::vector<unsigned char>
+render_to_vec(vtkSmartPointer<vtkRenderWindow> &renderWindow) {
+  renderWindow->Render();
+
+  vtkSmartPointer<vtkWindowToImageFilter> windowToImageFilter =
+      vtkSmartPointer<vtkWindowToImageFilter>::New();
+  windowToImageFilter->SetInput(renderWindow);
+  windowToImageFilter->Update();
+
+  vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
+  writer->SetWriteToMemory(1);
+  writer->SetInputConnection(windowToImageFilter->GetOutputPort());
+  writer->Write();
+
+  auto rawPngBuffer = writer->GetResult();
+  auto rawPointer = rawPngBuffer->GetPointer(0);
+  auto total_size =
+      rawPngBuffer->GetDataSize() * rawPngBuffer->GetDataTypeSize();
+  std::vector<unsigned char> buffer(rawPointer, rawPointer + total_size);
+
+  return buffer;
+}
+
+} // end namespace vis
+"""
+
+# > v = renderedData(viewer)
+# > display("text/html", "<img src=data:image/png;base64,$(base64encode(v))>")
+# should display image in a jupyter notebook
+function renderedData(viewer::PCLVisualizer)
+    vec = @cxx vis::render_to_vec(getRenderWindow(viewer))
+    p = icxx"&$(vec[0]);"
+    pointer_to_array(p, length(vec))
+end
