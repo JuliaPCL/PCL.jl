@@ -11,7 +11,7 @@ pcl.setMeanK(sor, 50)
 pcl.setStddevMulThresh(sor, 1.0)
 pcl.filter(sor, cloud_filtered)
 
-viewer = pcl.PCLVisualizer("pcl visualizeer", false)
+viewer = pcl.PCLVisualizer("pcl visualizeer", create_interactor=false)
 @assert !pcl.hasInteractor(viewer)
 pcl.setOffScreenRendering(viewer, true)
 
