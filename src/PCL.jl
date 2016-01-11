@@ -88,7 +88,12 @@ function include_headers(top)
     if has_vtk_backend
         VERBOSE && info("adding vtk and visualization module headers")
         addHeaderDir("/usr/local/include/vtk-$vtk_version/", kind=C_System)
-        cxxinclude(joinpath(top, "pcl", "visualization", "pcl_visualizer.h"))
+        cxx"""
+        #define protected public  // to access PCLVisualizer::interactor_
+        #include <pcl/visualization/pcl_visualizer.h>
+        #undef protected
+        """
+        # cxxinclude(joinpath(top, "pcl", "visualization", "pcl_visualizer.h"))
     end
 
     # io

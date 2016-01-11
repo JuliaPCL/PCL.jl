@@ -115,3 +115,54 @@ function run(viewer::PCLVisualizer; spin::Int=1, sleep::Int=100000)
     }
     """
 end
+
+### For off-screen rendering ###
+
+cxx"""
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkWindowToImageFilter.h>
+#include <vtkPNGWriter.h>
+"""
+
+cxx"""
+namespace vis {
+
+int renderToPng(vtkSmartPointer<vtkRenderWindow> &renderWindow,
+                const char *filename) {
+  renderWindow->Render();
+
+  vtkSmartPointer<vtkWindowToImageFilter> windowToImageFilter =
+      vtkSmartPointer<vtkWindowToImageFilter>::New();
+  windowToImageFilter->SetInput(renderWindow);
+  windowToImageFilter->Update();
+
+  vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
+  writer->SetFileName(filename);
+  writer->SetInputConnection(windowToImageFilter->GetOutputPort());
+  writer->Write();
+  return 0;
+}
+
+} // end namespace vis
+"""
+
+getRenderWindow(viewer::PCLVisualizer) =
+    icxx"$(viewer.handle)->getRenderWindow();"
+# NOTE: I had to access a protected  member of PCLVisualizer  `interactor_`
+hasInteractor(viewer::PCLVisualizer) =
+    icxx"$(viewer.handle)->interactor_ != NULL;"
+
+function setOffScreenRendering(viewer::PCLVisualizer, v::Bool)
+    if hasInteractor(viewer) && v
+        error("Shouldn't have interactor for off screeen rendering")
+    end
+    icxx"$(getRenderWindow(viewer))->SetOffScreenRendering($v);"
+end
+
+renderToPng(viewer::PCLVisualizer, s::AbstractString) =
+    @cxx vis::renderToPng(getRenderWindow(viewer), pointer(s))
