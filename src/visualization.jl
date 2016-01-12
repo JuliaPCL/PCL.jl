@@ -103,32 +103,27 @@ setShowFPS(viewer::PCLVisualizer, v::Bool) =
 
 function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     id::AbstractString="cloud", viewport::Int=0)
-    icxx"""
-        $(viewer.handle).get()->addPointCloud<$T>(
-            $(cloud.handle), $(pointer(id)), $viewport);"""
+    @cxx cxxpointer(handle(viewer))->addPointCloud(handle(cloud), pointer(id),
+        viewport)
 end
 
 function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
     color_handler::PointCloudColorHandler;
     id::AbstractString="cloud", viewport::Int=0)
-    icxx"""
-        $(viewer.handle).get()->addPointCloud<$T>(
-            $(cloud.handle), *$(color_handler.handle), $(pointer(id)),
-            $viewport);"""
+    @cxx cxxpointer(handle(viewer))->addPointCloud(handle(cloud),
+        cxxderef(handle(color_handler)), pointer(id), viewport)
 end
 
 function updatePointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     id::AbstractString="cloud")
-    icxx"""
-        $(viewer.handle).get()->updatePointCloud<$T>(
-            $(cloud.handle), $(pointer(id)));"""
+    @cxx cxxpointer(handle(viewer))->updatePointCloud(handle(cloud),
+        pointer(id))
 end
 
 function updatePointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
     color_handler::PointCloudColorHandler; id::AbstractString="cloud")
-    icxx"""
-        $(viewer.handle).get()->updatePointCloud<$T>(
-            $(cloud.handle), *$(color_handler.handle), $(pointer(id)));"""
+    @cxx cxxpointer(handle(viewer))->updatePointCloud(handle(cloud),
+        cxxderef(handle(color_handler)), pointer(id))
 end
 
 function run(viewer::PCLVisualizer; spin::Int=1, sleep::Int=100000)
