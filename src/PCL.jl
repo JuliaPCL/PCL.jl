@@ -43,9 +43,9 @@ using CxxStd
 
 macro timevb(expr)
     if VERBOSE
-        return quote @time $expr end
+        return Expr(:macrocall, symbol("@time"), expr)
     else
-        return quote $expr end
+        return expr
     end
 end
 
