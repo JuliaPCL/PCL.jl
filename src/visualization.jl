@@ -92,13 +92,14 @@ for f in [
         :close,
         :updateCamera,
         :resetCamera,
-        :setShowFPS,
         :spin,
         ]
     @eval begin
         $f(viewer::PCLVisualizer) = @cxx cxxpointer(handle(viewer))->$f()
     end
 end
+setShowFPS(viewer::PCLVisualizer, v::Bool) =
+    @cxx cxxpointer(handle(viewer))->setShowFPS(v)
 
 function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     id::AbstractString="cloud", viewport::Int=0)
