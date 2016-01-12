@@ -7,14 +7,24 @@ module pcl
 
 const VERBOSE = Bool(parse(Int, get(ENV, "PCLJL_VERBOSE", "1")))
 
+const BOOST_INCLUDE_DIR = get(ENV, "BOOST_INCLUDE_DIR", "/usr/local/include")
+const FLANN_INCLUDE_DIR = get(ENV, "FLANN_INCLUDE_DIR", "/usr/local/include")
+const EIGEN_INCLUDE_DIR = get(ENV, "EIGEN_INCLUDE_DIR",
+    "/usr/local/include/eigen3")
+
 searchdir(path, key) = filter(x->contains(x, key), readdir(path))
 
+const VTK_INCLUDE_DIR_PARENT = get(ENV, "VTK_INCLUDE_DIR_PARENT",
+    "/usr/local/include")
+
 # Search GUI backend
-vtk_dirs = searchdir("/usr/local/include", "vtk-")
-if !isempty(vtk_dirs)
+vtk_dirs = searchdir(VTK_INCLUDE_DIR_PARENT, "vtk-")
+const VTK_INCLUDE_DIR = get(ENV, "VTK_INCLUDE_DIR",
+    isempty(vtk_dirs) ? "" : joinpath(VTK_INCLUDE_DIR_PARENT, vtk_dirs[1]))
+
+if isdir(VTK_INCLUDE_DIR)
     global const has_vtk_backend = true
-    global const vtk_version = vtk_dirs[1][5:end]
-    VERBOSE && info("vtk backend enabled. version: $vtk_version")
+    VERBOSE && info("vtk include directory found: $VTK_INCLUDE_DIR")
 end
 
 using BinDeps
@@ -53,20 +63,25 @@ for lib in [
     p == C_NULL && warn("Failed to load: $lib")
 end
 
+# Make sure vtk libraries are loaded before calling @cxx vtkVersion::xxx()
+if has_vtk_backend
+    cxxinclude(joinpath(VTK_INCLUDE_DIR, "vtkVersion.h"))
+    global const vtk_version = bytestring(@cxx vtkVersion::GetVTKVersion())
+    VERBOSE && info("vtk version: $vtk_version")
+end
+
 function include_headers(top)
     # This is necesarry, but not sure why...
     cxx"""#include <iostream>"""
 
-    # Add top of the system directory that contains whole boost library
-    # so that #include <boost/xxx.hpp> works
-    boost_parent_dir = "/usr/local/include"
-    addHeaderDir(boost_parent_dir, kind=C_System)
+    # Boost (required)
+    addHeaderDir(BOOST_INCLUDE_DIR, kind=C_System)
 
     # Eigen (required)
-    addHeaderDir("/usr/local/include/eigen3", kind=C_System)
+    addHeaderDir(EIGEN_INCLUDE_DIR, kind=C_System)
 
     # FLANN (required)
-    addHeaderDir("/usr/local/include/flann", kind=C_System)
+    addHeaderDir(FLANN_INCLUDE_DIR, kind=C_System)
 
     # PCL top directory
     addHeaderDir(top, kind=C_System)
@@ -87,7 +102,7 @@ function include_headers(top)
     # visualization
     if has_vtk_backend
         VERBOSE && info("adding vtk and visualization module headers")
-        addHeaderDir("/usr/local/include/vtk-$vtk_version/", kind=C_System)
+        addHeaderDir(VTK_INCLUDE_DIR, kind=C_System)
         cxx"""
         #define protected public  // to access PCLVisualizer::interactor_
         #include <pcl/visualization/pcl_visualizer.h>
@@ -173,11 +188,11 @@ for name in [
     "kdtree",
     "recognition",
     "registration",
-    "visualization"
     ]
     include(string(name, ".jl"))
 end
 
+has_vtk_backend && include("visualization.jl")
 
 end # module pcl
 
