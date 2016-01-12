@@ -179,6 +179,16 @@ end
 VERBOSE && info("pcl_version: $pcl_version")
 include_headers(joinpath(topdir_to_be_included, "pcl-$pcl_version"))
 
+# Check FLANN vesion
+# make sure FLANN_INCLUDE_DIR is addded as kind=C_System
+cxxinclude(joinpath(FLANN_INCLUDE_DIR, "flann/flann.h"))
+cxx"""
+std::string getFLANNVersion() { return FLANN_VERSION_; }
+"""
+getFLANNVersion() = bytestring(@cxx getFLANNVersion())
+VERBOSE && info("FLANN version: $(getFLANNVersion())")
+
+
 for name in [
     "std",
     "common",
