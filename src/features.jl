@@ -28,7 +28,9 @@ setSearchSurface(n::AbstractFeatureEstimator, surface::PointCloud) =
 compute(n::AbstractFeatureEstimator, descriptors::PointCloud) =
     @cxx cxxpointer(handle(n))->compute(cxxderef(handle(descriptors)))
 
-type NormalEstimationOMP{PT,NT} <: AbstractFeatureEstimator
+abstract AbstractNormalEstimator <: AbstractFeatureEstimator
+
+type NormalEstimationOMP{PT,NT} <: AbstractNormalEstimator
     handle::SharedPtr # TODO: typed
 end
 
@@ -37,7 +39,17 @@ function call{PT,NT}(::Type{NormalEstimationOMP{PT,NT}})
     NormalEstimationOMP{PT,NT}(handle)
 end
 
-setKSearch(n::NormalEstimationOMP, k) = @cxx cxxpointer(handle(n))->setKSearch(k)
+type NormalEstimation{PT,NT} <: AbstractNormalEstimator
+    handle::SharedPtr # TODO: typed
+end
+
+function call{PT,NT}(::Type{NormalEstimation{PT,NT}})
+    handle = @sharedptr "pcl::NormalEstimation<\$PT,\$NT>"
+    NormalEstimation{PT,NT}(handle)
+end
+
+setKSearch(n::AbstractNormalEstimator, k) =
+    @cxx cxxpointer(handle(n))->setKSearch(k)
 
 type SHOTEstimationOMP{PT,NT,OT} <: AbstractFeatureEstimator
     handle::SharedPtr # TODO: typed
