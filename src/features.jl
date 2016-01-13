@@ -51,13 +51,24 @@ end
 setKSearch(n::AbstractNormalEstimator, k) =
     @cxx cxxpointer(handle(n))->setKSearch(k)
 
-type SHOTEstimationOMP{PT,NT,OT} <: AbstractFeatureEstimator
+abstract AbstractSHOTEstimator <: AbstractFeatureEstimator
+
+type SHOTEstimationOMP{PT,NT,OT} <: AbstractSHOTEstimator
     handle::SharedPtr # TODO: typed
 end
 
 function call{PT,NT,OT}(::Type{SHOTEstimationOMP{PT,NT,OT}})
     handle = @sharedptr "pcl::SHOTEstimationOMP<\$PT,\$NT,\$OT>"
     SHOTEstimationOMP{PT,NT,OT}(handle)
+end
+
+type SHOTEstimation{PT,NT,OT} <: AbstractSHOTEstimator
+    handle::SharedPtr # TODO: typed
+end
+
+function call{PT,NT,OT}(::Type{SHOTEstimation{PT,NT,OT}})
+    handle = @sharedptr "pcl::SHOTEstimation<\$PT,\$NT,\$OT>"
+    SHOTEstimation{PT,NT,OT}(handle)
 end
 
 type BOARDLocalReferenceFrameEstimation{T,N,F} <: AbstractFeatureEstimator
