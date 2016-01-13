@@ -85,6 +85,13 @@ end
     pcl.setStddevMulThresh(sor, 1.0)
     pcl.filter(sor, cloud_filtered)
     @test length(cloud_filtered) < length(cloud)
+
+    r = pcl.RadiusOutlierRemoval{pcl.PointXYZ}()
+    pcl.setInputCloud(r, cloud)
+    pcl.setRadiusSearch(r, 0.2)
+    pcl.setMinNeighborsInRadius(r, 5)
+    pcl.filter(r, cloud_filtered)
+    @test length(cloud_filtered) < length(cloud)
 end
 
 @testset "std::vector" begin

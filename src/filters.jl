@@ -69,3 +69,18 @@ for f in [:setMeanK, :setStddevMulThresh]
         $f(s::StatisticalOutlierRemoval, v) = @cxx cxxpointer(handle(s))->$f(v)
     end
 end
+
+type RadiusOutlierRemoval{T} <:  AbstractFilter
+    handle::SharedPtr
+end
+
+function call{T}(::Type{RadiusOutlierRemoval{T}})
+    RadiusOutlierRemoval{T}(
+        @sharedptr "pcl::RadiusOutlierRemoval<\$T>")
+end
+
+for f in [:setRadiusSearch, :setMinNeighborsInRadius]
+    @eval begin
+        $f(r::RadiusOutlierRemoval, v) = @cxx cxxpointer(handle(r))->$f(v)
+    end
+end
