@@ -189,7 +189,6 @@ function _defconstructor_impl(expr::Expr, cxxname, is_sharedptr::Bool)
     end
 
     if type_params != nothing
-        type_params = map(esc, type_params)
         callexpr = Expr(:call,
             Expr(:curly, Expr(:., :Base, QuoteNode(:call)), type_params...),
             fargs...)
@@ -198,7 +197,7 @@ function _defconstructor_impl(expr::Expr, cxxname, is_sharedptr::Bool)
     end
 
     # Function definition
-    def = Expr(:function, callexpr, Expr(:block, body))
+    def = esc(Expr(:function, callexpr, Expr(:block, body)))
     # @show def
 
     return def

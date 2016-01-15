@@ -108,29 +108,14 @@ function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
         cxxderef(handle(cloud_out)), transform)
 end
 
-type Correspondence
-    handle::cxxt"pcl::Correspondence"
-end
+@defpcltype Correspondence "pcl::Correspondence"
+@defconstructor CorrespondenceVal() "pcl::Correspondence"
+@defconstructor(CorrespondenceVal(index_query, index_match, distance),
+    "pcl::Correspondence")
 
-call(::Type{Correspondence}) = Correspondence(
-    icxx"pcl::Correspondence();")
-function call(::Type{Correspondence}, index_query, index_match, distance)
-    handle = icxx"pcl::Correspondence($index_query, $index_match, $distance);"
-    Correspondence(handle)
-end
-
-type Correspondences
-    handle::cxxt"boost::shared_ptr<std::vector<pcl::Correspondence,
-        Eigen::aligned_allocator<pcl::Correspondence>>>"
-end
-
-@inline handle(c::Union{Correspondences,Correspondence}) = c.handle
-
-function call(::Type{Correspondences})
-    handle = @sharedptr "pcl::Correspondences"
-    Correspondences(handle)
-end
+@defpcltype Correspondences "pcl::Correspondences"
+@defptrconstructor Correspondences() "pcl::Correspondences"
 
 length(cs::Correspondences) = convert(Int, @cxx cxxpointer(handle(cs))->size())
-push!(cs::Correspondences, c::Correspondence) =
+push!(cs::Correspondences, c::CorrespondenceVal) =
     @cxx cxxpointer(handle(cs))->push_back(handle(c))
