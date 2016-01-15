@@ -26,10 +26,15 @@ pcl_io = pcl_library_dependency("libpcl_io")
 pcl_features = pcl_library_dependency("libpcl_features")
 pcl_filters = pcl_library_dependency("libpcl_filters")
 pcl_kdtree = pcl_library_dependency("libpcl_kdtree")
+pcl_keypoints = pcl_library_dependency("libpcl_keypoints")
 pcl_segmentation = pcl_library_dependency("libpcl_segmentation")
 pcl_visualization = pcl_library_dependency("libpcl_visualization")
 pcl_recognition = pcl_library_dependency("libpcl_recognition")
 pcl_registration = pcl_library_dependency("libpcl_registration")
+pcl_octree = pcl_library_dependency("libpcl_octree")
+pcl_surface = pcl_library_dependency("libpcl_surface")
+pcl_people = pcl_library_dependency("libpcl_people")
+pcl_tracking = pcl_library_dependency("libpcl_tracking")
 
 pcl_libs = [
     pcl_common,
@@ -37,10 +42,15 @@ pcl_libs = [
     pcl_features,
     pcl_filters,
     pcl_kdtree,
+    pcl_keypoints,
     pcl_segmentation,
     pcl_visualization,
     pcl_recognition,
     pcl_registration,
+    pcl_octree,
+    pcl_surface,
+    pcl_people,
+    pcl_tracking,
     ]
 
 github_root = "https://github.com/PointCloudLibrary/pcl"
@@ -80,8 +90,13 @@ provides(SimpleBuild,
     :libpcl_features => :libpcl_features,
     :libpcl_filters => :libpcl_filters,
     :libpcl_kdtree => :libpcl_kdtree,
+    :libpcl_keypoints => :libpcl_keypoints,
     :libpcl_segmentation => :libpcl_segmentation,
     :libpcl_visualization => :libpcl_visualization,
     :libpcl_recognition => :libpcl_recognition,
     :libpcl_registration => :libpcl_registration,
+    :libpcl_octree => :libpcl_octree,
+    :libpcl_surface => :libpcl_surface,
+    :libpcl_people => :libpcl_people,
+    :libpcl_tracking => :libpcl_tracking,
     )
