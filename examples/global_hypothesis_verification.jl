@@ -4,6 +4,8 @@
 using PCL
 using Cxx
 
+vis = false
+
 model_pcd = Pkg.dir("PCL", "test", "data", "milk.pcd")
 scene_pcd = Pkg.dir("PCL", "test", "data", "milk_cartoon_all_small_clorox.pcd")
 
@@ -91,7 +93,7 @@ for i in 0:length(scene_descriptors)-1
     found_neighs = pcl.nearestKSearch(match_search, scene_descriptors[i],
         1, neigh_indices, neigh_sqr_dists)
     if found_neighs == 1 && (Float32(neigh_sqr_dists[0]) < Float32(0.25))
-        corr = pcl.Correspondence(neigh_indices[0], i, neigh_sqr_dists[0])
+        corr = pcl.CorrespondenceVal(neigh_indices[0], i, neigh_sqr_dists[0])
         push!(model_scene_corrs, corr)
     end
 end
@@ -191,22 +193,22 @@ for i in 0:length(hypothesis_mask)-1
     end
 end
 
-# error("stopped")
+if vis
+    info("Prepare PCL visualizer...")
+    viewer = pcl.PCLVisualizer("pcl visualizer")
+    color_handler = pcl.PointCloudColorHandlerRGBField(scene)
+    pcl.addPointCloud(viewer, scene, color_handler, id="scene")
 
-info("Prepare PCL visualizer...")
-viewer = pcl.PCLVisualizer("pcl visualizer")
-color_handler = pcl.PointCloudColorHandlerRGBField(scene)
-pcl.addPointCloud(viewer, scene, color_handler, id="scene")
+    for i in 0:length(rototranslations)-1
+        rotated_model = pcl.PointCloud{T}()
+        pcl.transformPointCloud(model, rotated_model, rototranslations[i])
 
-for i in 0:length(rototranslations)-1
-    rotated_model = pcl.PointCloud{T}()
-    pcl.transformPointCloud(model, rotated_model, rototranslations[i])
+        r,g,b = icxx"$hypothesis_mask[$i]==true;" ? (255,0,0) : (0,255,0)
+        color_handler = pcl.PointCloudColorHandlerCustom(scene, r, g, b)
+        pcl.addPointCloud(viewer, rotated_model, color_handler, id="instance $i")
+    end
 
-    r,g,b = icxx"$hypothesis_mask[$i]==true;" ? (255,0,0) : (0,255,0)
-    color_handler = pcl.PointCloudColorHandlerCustom(scene, r, g, b)
-    pcl.addPointCloud(viewer, rotated_model, color_handler, id="instance $i")
-end
-
-while !pcl.wasStopped(viewer)
-    pcl.spinOnce(viewer)
+    while !pcl.wasStopped(viewer)
+        pcl.spinOnce(viewer)
+    end
 end
