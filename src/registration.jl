@@ -4,13 +4,9 @@ abstract AbstractRegistration
 @inline handle(r::AbstractRegistration) = r.handle
 
 type IterativeClosestPoint{T1,T2} <: AbstractRegistration
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::IterativeClosestPoint<$T1,$T2>>"
 end
-
-function call{T1,T2}(::Type{IterativeClosestPoint{T1,T2}})
-    handle = @sharedptr "pcl::IterativeClosestPoint<\$T1,\$T2>"
-    IterativeClosestPoint{T1,T2}(handle)
-end
+@defconstructor IterativeClosestPoint{T1,T2}()
 
 for f in [:setMaximumIterations, :setMaxCorrespondenceDistance]
     @eval begin

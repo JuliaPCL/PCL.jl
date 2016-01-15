@@ -4,11 +4,6 @@ import Base: call, eltype, length, size, getindex, setindex!, push!
 
 typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
 
-macro sharedptr(name, args...)
-    Expr(:macrocall, symbol("@icxx_str"), """
-    boost::shared_ptr<$name>(new $name($(args...)));""")
-end
-
 cxxpointer(p) = p
 cxxpointer(p::SharedPtr) = @cxx p->get()
 cxxderef(x) = icxx"*$x;"
@@ -80,6 +75,8 @@ end
 type PointCloud{T}
     handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
 end
+@defconstructor PointCloud{T}()
+@defconstructor PointCloud{T}(w::Integer, h::Integer)
 
 @inline handle(cloud::PointCloud) = cloud.handle
 
@@ -95,24 +92,12 @@ function setindex!(cloud::PointCloud, v, i::Integer, name::Symbol)
     unsafe_store!(vp, v, 1)
 end
 
-"""Create empty PointCloud instance"""
-function call{T}(::Type{PointCloud{T}})
-    handle = @sharedptr "pcl::PointCloud<\$T>"
-    PointCloud(handle)
-end
-
 """Create PointCloud instance and then load PCD data."""
 function call{T}(::Type{PointCloud{T}}, pcd_file::AbstractString)
     handle = @sharedptr "pcl::PointCloud<\$T>"
     cloud = PointCloud(handle)
     pcl.loadPCDFile(pcd_file, cloud)
     return cloud
-end
-
-"""Create PointCloud instance given width and height"""
-function call{T}(::Type{PointCloud{T}}, w::Integer, h::Integer)
-    handle = @sharedptr "pcl::PointCloud<\$T>" "\$w, \$h"
-    PointCloud(handle)
 end
 
 length(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->size();")
@@ -123,10 +108,8 @@ points(cloud::PointCloud) = icxx"$(handle(cloud))->points;"
 
 function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
     transform)
-    icxx"""
-        pcl::transformPointCloud(*$(cloud_in.handle), *$(cloud_out.handle),
-            $transform);
-    """
+    @cxx pcl::transformPointCloud(cxxderef(handle(cloud_in)),
+        cxxderef(handle(cloud_out)), transform)
 end
 
 type Correspondence

@@ -10,25 +10,17 @@ filter(f::AbstractFilter, cloud::PointCloud) =
     @cxx cxxpointer(handle(f))->filter(cxxderef(handle(cloud)))
 
 type UniformSampling{T} <: AbstractFilter
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::UniformSampling<$T>>"
 end
-
-function call{T}(::Type{UniformSampling{T}})
-    handle = @sharedptr "pcl::UniformSampling<\$T>"
-    UniformSampling{T}(handle)
-end
+@defconstructor UniformSampling{T}()
 
 setRadiusSearch(us::UniformSampling, ss) =
     @cxx cxxpointer(handle(us))->setRadiusSearch(ss)
 
 type PassThrough{T} <: AbstractFilter
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::PassThrough<$T>>"
 end
-
-function call{T}(::Type{PassThrough{T}})
-    handle = @sharedptr "pcl::PassThrough<\$T>"
-    PassThrough{T}(handle)
-end
+@defconstructor PassThrough{T}()
 
 setFilterFieldName(pass::PassThrough, name::AbstractString) =
     @cxx cxxpointer(handle(pass))->setFilterFieldName(pointer(name))
@@ -43,26 +35,21 @@ setLeafSize(v::AbstractVoxelGridFilter, lx, ly, lz) =
     @cxx cxxpointer(handle(v))->setLeafSize(lx, ly, lz)
 
 type VoxelGrid{T} <: AbstractVoxelGridFilter
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::VoxelGrid<$T>>"
 end
-
-call{T}(::Type{VoxelGrid{T}}) = VoxelGrid{T}(@sharedptr "pcl::VoxelGrid<\$T>")
+@defconstructor VoxelGrid{T}()
 
 type ApproximateVoxelGrid{T} <: AbstractVoxelGridFilter
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::ApproximateVoxelGrid<$T>>"
 end
+@defconstructor ApproximateVoxelGrid{T}()
 
-call{T}(::Type{ApproximateVoxelGrid{T}}) =
-    ApproximateVoxelGrid{T}(@sharedptr "pcl::ApproximateVoxelGrid<\$T>")
 
 type StatisticalOutlierRemoval{T} <: AbstractFilter
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::StatisticalOutlierRemoval<$T>>"
 end
+@defconstructor StatisticalOutlierRemoval{T}()
 
-function call{T}(::Type{StatisticalOutlierRemoval{T}})
-    StatisticalOutlierRemoval{T}(
-        @sharedptr "pcl::StatisticalOutlierRemoval<\$T>")
-end
 
 for f in [:setMeanK, :setStddevMulThresh]
     @eval begin
@@ -71,13 +58,10 @@ for f in [:setMeanK, :setStddevMulThresh]
 end
 
 type RadiusOutlierRemoval{T} <:  AbstractFilter
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::RadiusOutlierRemoval<$T>>"
 end
+@defconstructor RadiusOutlierRemoval{T}()
 
-function call{T}(::Type{RadiusOutlierRemoval{T}})
-    RadiusOutlierRemoval{T}(
-        @sharedptr "pcl::RadiusOutlierRemoval<\$T>")
-end
 
 for f in [:setRadiusSearch, :setMinNeighborsInRadius]
     @eval begin

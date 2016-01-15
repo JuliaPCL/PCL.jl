@@ -29,13 +29,9 @@ recognize(recognizer::AbstractRecognizer, rototranslations, clustered_corrs) =
 
 
 type GeometricConsistencyGrouping{MT,ST} <: AbstractRecognizer
-    handle::SharedPtr # TODO: typed
+    handle::cxxt"boost::shared_ptr<pcl::GeometricConsistencyGrouping<$MT,$ST>>"
 end
-
-function call{MT,ST}(::Type{GeometricConsistencyGrouping{MT,ST}})
-    handle = @sharedptr "pcl::GeometricConsistencyGrouping<\$MT,\$ST>"
-    GeometricConsistencyGrouping{MT,ST}(handle)
-end
+@defconstructor GeometricConsistencyGrouping{MT,ST}()
 
 for f in [:setGCSize, :setGCThreshold]
     @eval begin
@@ -44,13 +40,9 @@ for f in [:setGCSize, :setGCThreshold]
 end
 
 type Hough3DGrouping{T1,T2,R1,R2} <: AbstractRecognizer
-    handle::SharedPtr # TODO: typed
+    handle::cxxt"boost::shared_ptr<pcl::Hough3DGrouping<$T1,$T2,$R1,$R2>>"
 end
-
-function call{T1,T2,R1,R2}(::Type{Hough3DGrouping{T1,T2,R1,R2}})
-    handle = @sharedptr "pcl::Hough3DGrouping<\$T1,\$T2,\$R1,\$R2>"
-    Hough3DGrouping{T1,T2,R1,R2}(handle)
-end
+@defconstructor Hough3DGrouping{T1,T2,R1,R2}()
 
 for f in [:setHoughBinSize, :setHoughThreshold]
     @eval begin
@@ -69,15 +61,9 @@ abstract AbstractVerifier
 @inline handle(v::AbstractVerifier) = v.handle
 
 type GlobalHypothesesVerification{MT,ST} <: AbstractVerifier
-    handle::SharedPtr # TODO: typed
+    handle::cxxt"boost::shared_ptr<pcl::GlobalHypothesesVerification<$MT,$ST>>"
 end
-
-function call{MT,ST}(::Type{GlobalHypothesesVerification{MT,ST}})
-    handle = icxx"""
-        boost::shared_ptr<pcl::GlobalHypothesesVerification<$MT,$ST>>(
-        new pcl::GlobalHypothesesVerification<$MT,$ST>);"""
-    GlobalHypothesesVerification{MT,ST}(handle)
-end
+@defconstructor GlobalHypothesesVerification{MT,ST}()
 
 for f in [:setSceneCloud, :setOcclusionCloud]
     @eval begin

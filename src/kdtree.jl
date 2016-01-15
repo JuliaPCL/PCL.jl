@@ -5,13 +5,9 @@ abstract AbstractKdTree
 @inline handle(kd::AbstractKdTree) = kd.handle
 
 type KdTreeFLANN{T} <: AbstractKdTree
-    handle::SharedPtr
+    handle::cxxt"boost::shared_ptr<pcl::KdTreeFLANN<$T>>"
 end
-
-function call{T}(::Type{KdTreeFLANN{T}})
-    handle = @sharedptr "pcl::KdTreeFLANN<\$T>"
-    KdTreeFLANN{T}(handle)
-end
+@defconstructor KdTreeFLANN{T}()
 
 setInputCloud(kd::AbstractKdTree, cloud::PointCloud) =
     @cxx cxxpointer(handle(kd))->setInputCloud(handle(cloud))

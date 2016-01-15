@@ -191,6 +191,7 @@ VERBOSE && info("FLANN version: $(getFLANNVersion())")
 
 
 for name in [
+    "macros",
     "std",
     "common",
     "io",
