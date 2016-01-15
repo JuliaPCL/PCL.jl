@@ -34,10 +34,12 @@ for (name, type_params, supername) in [
     (:GlobalHypothesesVerification, (:MT,:ST), AbstractVerifier),
     ]
     cxxname = "pcl::$name"
-    n = Expr(:curly, name, type_params...)
+    name_with_params = Expr(:curly, name, type_params...)
+    valname_with_params = Expr(:curly, symbol(name, "Val"), type_params...)
     @eval begin
-        @defpcltype $n<: $supername $cxxname
-        @defptrconstructor $n() $cxxname
+        @defpcltype $name_with_params <: $supername $cxxname
+        @defptrconstructor $name_with_params() $cxxname
+        @defconstructor $valname_with_params() $cxxname
     end
 end
 

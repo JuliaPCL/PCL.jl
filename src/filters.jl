@@ -19,9 +19,11 @@ for (name, supername) in [
     (:RadiusOutlierRemoval, AbstractFilter),
     ]
     cxxname = "pcl::$name"
+    valname = symbol(name, "Val")
     @eval begin
         @defpcltype $name{T} <: $supername $cxxname
         @defptrconstructor $name{T}() $cxxname
+        @defconstructor $valname{T}() $cxxname
     end
 end
 

@@ -4,6 +4,7 @@ abstract AbstractKdTree
 
 @defpcltype KdTreeFLANN{T} <: AbstractKdTree "pcl::KdTreeFLANN"
 @defptrconstructor KdTreeFLANN{T}() "pcl::KdTreeFLANN"
+@defconstructor KdTreeFLANNVal{T}() "pcl::KdTreeFLANN"
 
 setInputCloud(kd::AbstractKdTree, cloud::PointCloud) =
     @cxx cxxpointer(handle(kd))->setInputCloud(handle(cloud))

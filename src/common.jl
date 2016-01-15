@@ -75,6 +75,8 @@ end
 @defpcltype PointCloud{T} "pcl::PointCloud"
 @defptrconstructor PointCloud{T}() "pcl::PointCloud"
 @defptrconstructor PointCloud{T}(w::Integer, h::Integer) "pcl::PointCloud"
+@defconstructor PointCloudVal{T}() "pcl::PointCloud"
+@defconstructor PointCloudVal{T}(w::Integer, h::Integer) "pcl::PointCloud"
 
 getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud))->at($i);"
 

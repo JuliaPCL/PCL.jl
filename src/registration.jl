@@ -2,6 +2,7 @@ abstract AbstractRegistration
 
 @defpcltype IterativeClosestPoint{T1,T2} "pcl::IterativeClosestPoint"
 @defptrconstructor IterativeClosestPoint{T1,T2}() "pcl::IterativeClosestPoint"
+@defconstructor IterativeClosestPointVal{T1,T2}() "pcl::IterativeClosestPoint"
 
 for f in [:setMaximumIterations, :setMaxCorrespondenceDistance]
     @eval begin
