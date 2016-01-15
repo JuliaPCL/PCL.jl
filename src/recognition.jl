@@ -9,8 +9,7 @@ Abstract recognizers that implemnts the following methods:
 - recognize
 """
 abstract AbstractRecognizer
-
-@inline handle(r::AbstractRecognizer) = r.handle
+abstract AbstractVerifier
 
 for f in [:setInputCloud, :setInputRf, :setSceneCloud, :setSceneRf]
     @eval begin
@@ -21,28 +20,32 @@ end
 
 function setModelSceneCorrespondences(recognizer::AbstractRecognizer,
     corr::Correspondences)
-    @cxx cxxpointer(handle(recognizer))->setModelSceneCorrespondences(handle(corr))
+    @cxx cxxpointer(handle(recognizer))->setModelSceneCorrespondences(
+        handle(corr))
 end
 
 recognize(recognizer::AbstractRecognizer, rototranslations, clustered_corrs) =
-    @cxx cxxpointer(handle(recognizer))->recognize(rototranslations, clustered_corrs)
+    @cxx cxxpointer(handle(recognizer))->recognize(rototranslations,
+        clustered_corrs)
 
-
-type GeometricConsistencyGrouping{MT,ST} <: AbstractRecognizer
-    handle::cxxt"boost::shared_ptr<pcl::GeometricConsistencyGrouping<$MT,$ST>>"
+for (name, type_params, supername) in [
+    (:GeometricConsistencyGrouping, (:MT,:ST), AbstractRecognizer),
+    (:Hough3DGrouping, (:T1,:T2,:R1,:R2), AbstractRecognizer),
+    (:GlobalHypothesesVerification, (:MT,:ST), AbstractVerifier),
+    ]
+    cxxname = "pcl::$name"
+    n = Expr(:curly, name, type_params...)
+    @eval begin
+        @defpcltype $n<: $supername $cxxname
+        @defptrconstructor $n() $cxxname
+    end
 end
-@defconstructor GeometricConsistencyGrouping{MT,ST}()
 
 for f in [:setGCSize, :setGCThreshold]
     @eval begin
         $f(g::GeometricConsistencyGrouping, s) = @cxx cxxpointer(handle(g))->$f(s)
     end
 end
-
-type Hough3DGrouping{T1,T2,R1,R2} <: AbstractRecognizer
-    handle::cxxt"boost::shared_ptr<pcl::Hough3DGrouping<$T1,$T2,$R1,$R2>>"
-end
-@defconstructor Hough3DGrouping{T1,T2,R1,R2}()
 
 for f in [:setHoughBinSize, :setHoughThreshold]
     @eval begin
@@ -55,15 +58,6 @@ for f in [:setUseInterpolation, :setUseDistanceWeight]
         $f(h::Hough3DGrouping, v::Bool) = @cxx cxxpointer(handle(h))->$f(v)
     end
 end
-
-abstract AbstractVerifier
-
-@inline handle(v::AbstractVerifier) = v.handle
-
-type GlobalHypothesesVerification{MT,ST} <: AbstractVerifier
-    handle::cxxt"boost::shared_ptr<pcl::GlobalHypothesesVerification<$MT,$ST>>"
-end
-@defconstructor GlobalHypothesesVerification{MT,ST}()
 
 for f in [:setSceneCloud, :setOcclusionCloud]
     @eval begin

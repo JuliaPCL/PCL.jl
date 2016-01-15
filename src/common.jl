@@ -72,13 +72,9 @@ function show(io::IO, p::PointXYZValOrRef)
     print(io, (x,y,z))
 end
 
-type PointCloud{T}
-    handle::cxxt"boost::shared_ptr<pcl::PointCloud<$T>>"
-end
-@defconstructor PointCloud{T}()
-@defconstructor PointCloud{T}(w::Integer, h::Integer)
-
-@inline handle(cloud::PointCloud) = cloud.handle
+@defpcltype PointCloud{T} "pcl::PointCloud"
+@defptrconstructor PointCloud{T}() "pcl::PointCloud"
+@defptrconstructor PointCloud{T}(w::Integer, h::Integer) "pcl::PointCloud"
 
 getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud))->at($i);"
 

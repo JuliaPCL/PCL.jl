@@ -10,6 +10,8 @@ Feature estimators that implemtents the following methods:
 - compute
 """
 abstract AbstractFeatureEstimator
+abstract AbstractNormalEstimator <: AbstractFeatureEstimator
+abstract AbstractSHOTEstimator <: AbstractFeatureEstimator
 
 @inline handle(fe::AbstractFeatureEstimator) = fe.handle
 
@@ -28,37 +30,23 @@ setSearchSurface(n::AbstractFeatureEstimator, surface::PointCloud) =
 compute(n::AbstractFeatureEstimator, descriptors::PointCloud) =
     @cxx cxxpointer(handle(n))->compute(cxxderef(handle(descriptors)))
 
-abstract AbstractNormalEstimator <: AbstractFeatureEstimator
-
-type NormalEstimationOMP{PT,NT} <: AbstractNormalEstimator
-    handle::cxxt"boost::shared_ptr<pcl::NormalEstimationOMP<$PT,$NT>>"
+for (name, type_params, supername) in [
+    (:NormalEstimation, (:PT,:NT), AbstractNormalEstimator),
+    (:NormalEstimationOMP, (:PT,:NT), AbstractNormalEstimator),
+    (:SHOTEstimation, (:PT,:NT,:OT), AbstractSHOTEstimator),
+    (:SHOTEstimationOMP, (:PT,:NT,:OT), AbstractSHOTEstimator),
+    (:BOARDLocalReferenceFrameEstimation, (:T,:N,:F),  AbstractFeatureEstimator),
+    ]
+    cxxname = "pcl::$name"
+    n = Expr(:curly, name, type_params...)
+    @eval begin
+        @defpcltype $n<: $supername $cxxname
+        @defptrconstructor $n() $cxxname
+    end
 end
-@defconstructor NormalEstimationOMP{PT,NT}()
-
-type NormalEstimation{PT,NT} <: AbstractNormalEstimator
-    handle::cxxt"boost::shared_ptr<pcl::NormalEstimation<$PT,$NT>>"
-end
-@defconstructor NormalEstimation{PT,NT}()
 
 setKSearch(n::AbstractNormalEstimator, k) =
     @cxx cxxpointer(handle(n))->setKSearch(k)
-
-abstract AbstractSHOTEstimator <: AbstractFeatureEstimator
-
-type SHOTEstimationOMP{PT,NT,OT} <: AbstractSHOTEstimator
-    handle::cxxt"boost::shared_ptr<pcl::SHOTEstimationOMP<$PT,$NT,$OT>>"
-end
-@defconstructor SHOTEstimationOMP{PT,NT,OT}()
-
-type SHOTEstimation{PT,NT,OT} <: AbstractSHOTEstimator
-    handle::cxxt"boost::shared_ptr<pcl::SHOTEstimation<$PT,$NT,$OT>>"
-end
-@defconstructor SHOTEstimation{PT,NT,OT}()
-
-type BOARDLocalReferenceFrameEstimation{T,N,F} <: AbstractFeatureEstimator
-    handle::cxxt"boost::shared_ptr<pcl::BOARDLocalReferenceFrameEstimation<$T,$N,$F>>"
-end
-@defconstructor BOARDLocalReferenceFrameEstimation{T,N,F}()
 
 setFindHoles(rfe::BOARDLocalReferenceFrameEstimation, v::Bool) =
     @cxx cxxpointer(handle(rfe))->setFindHoles(v)
