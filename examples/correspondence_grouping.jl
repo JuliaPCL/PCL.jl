@@ -39,7 +39,7 @@ pcl.compute(norm_est, model_normals)
 
 pcl.setInputCloud(norm_est, scene)
 pcl.compute(norm_est, scene_normals)
-begin
+
 # Downsample
 info("Uniform sampling")
 uniform_sampling = pcl.UniformSampling{T}()
