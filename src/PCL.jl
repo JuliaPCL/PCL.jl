@@ -89,7 +89,7 @@ function include_headers(top)
 
     # top level
     VERBOSE && info("Include pcl top-level headers")
-    @timevb for name in ["pcl_base.h", "correspondence.h"]
+    @timevb for name in ["pcl_base.h", "correspondence.h", "ModelCoefficients.h"]
         cxxinclude(joinpath(top, "pcl", name))
     end
 
@@ -151,6 +151,18 @@ function include_headers(top)
     @timevb for name in ["kdtree_flann.h", "impl/kdtree_flann.hpp"]
         cxxinclude(joinpath(top, "pcl", "kdtree", name))
     end
+
+    # sample_consensus
+    VERBOSE && info("Include pcl::sample_consensus headers")
+    @timevb for name in ["model_types.h", "method_types.h"]
+        cxxinclude(joinpath(top, "pcl", "sample_consensus", name))
+    end
+
+    # segmentation
+    VERBOSE && info("Include pcl::segmentation headers")
+    @timevb for name in ["sac_segmentation.h"]
+        cxxinclude(joinpath(top, "pcl", "segmentation", name))
+    end
 end
 
 
@@ -193,6 +205,7 @@ VERBOSE && info("FLANN version: $(getFLANNVersion())")
 for name in [
     "macros",
     "std",
+    "constants",
     "common",
     "io",
     "filters",
@@ -200,6 +213,7 @@ for name in [
     "kdtree",
     "recognition",
     "registration",
+    "segmentation",
     ]
     include(string(name, ".jl"))
 end

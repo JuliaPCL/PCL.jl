@@ -110,6 +110,10 @@ function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
         cxxderef(handle(cloud_out)), transform)
 end
 
+@defpcltype PCLPointCloud2 "pcl::PCLPointCloud2"
+@defptrconstructor PCLPointCloud2() "pcl::PCLPointCloud2"
+@defconstructor PCLPointCloud2Val() "pcl::PCLPointCloud2"
+
 @defpcltype Correspondence "pcl::Correspondence"
 @defconstructor CorrespondenceVal() "pcl::Correspondence"
 @defconstructor(CorrespondenceVal(index_query, index_match, distance),
@@ -121,3 +125,11 @@ end
 length(cs::Correspondences) = convert(Int, @cxx cxxpointer(handle(cs))->size())
 push!(cs::Correspondences, c::CorrespondenceVal) =
     @cxx cxxpointer(handle(cs))->push_back(handle(c))
+
+@defpcltype ModelCoefficients "pcl::ModelCoefficients"
+@defptrconstructor ModelCoefficients() "pcl::ModelCoefficients"
+@defconstructor ModelCoefficientsVal() "pcl::ModelCoefficients"
+
+@defpcltype PointIndices "pcl::PointIndices"
+@defptrconstructor PointIndices() "pcl::PointIndices"
+@defconstructor PointIndicesVal() "pcl::PointIndices"
