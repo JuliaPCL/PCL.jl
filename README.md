@@ -55,4 +55,8 @@ Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v
 
 <div align="center"><img src="examples/images/global_hypothesis_verification.png" /></div>
 
+### Extracting indices from a PointCloud [[code]](examples/extract_indices.jl)
+
+<div align="center"><img src="examples/images/extract_indices.png" /></div>
+
 You can find more examples in [examples directory](examples/).
