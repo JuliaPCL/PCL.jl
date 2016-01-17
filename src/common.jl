@@ -78,6 +78,21 @@ end
 @defconstructor PointCloudVal{T}() "pcl::PointCloud"
 @defconstructor PointCloudVal{T}(w::Integer, h::Integer) "pcl::PointCloud"
 
+import Base: similar
+
+similar{T}(cloud::PointCloud{T}) = PointCloud{T}(width(cloud), height(cloud))
+
+import Base: copy, deepcopy
+
+function deepcopy{T}(cloud::PointCloud{T})
+    cloud_out = PointCloud{T}()
+    @cxx pcl::copyPointCloud(cxxderef(handle(cloud)),
+        cxxderef(handle(cloud_out)))
+    cloud_out
+end
+
+copy(cloud::PointCloud) = cloud
+
 getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud))->at($i);"
 
 function getindex(cloud::PointCloud, i::Integer, name::Symbol)
@@ -103,6 +118,7 @@ width(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->width;")
 height(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->height;")
 is_dense(cloud::PointCloud) = icxx"$(handle(cloud))->is_dense;"
 points(cloud::PointCloud) = icxx"$(handle(cloud))->points;"
+
 
 function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
     transform)
@@ -130,6 +146,12 @@ push!(cs::Correspondences, c::CorrespondenceVal) =
 @defptrconstructor ModelCoefficients() "pcl::ModelCoefficients"
 @defconstructor ModelCoefficientsVal() "pcl::ModelCoefficients"
 
+length(coef::ModelCoefficients) =
+    convert(Int, icxx"$(handle(coef))->values.size();")
+
 @defpcltype PointIndices "pcl::PointIndices"
 @defptrconstructor PointIndices() "pcl::PointIndices"
 @defconstructor PointIndicesVal() "pcl::PointIndices"
+
+length(indices::PointIndices) =
+    convert(Int, icxx"$(handle(indices))->indices.size();")

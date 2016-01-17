@@ -17,6 +17,7 @@ for (name, supername) in [
     (:ApproximateVoxelGrid, AbstractVoxelGridFilter),
     (:StatisticalOutlierRemoval, AbstractFilter),
     (:RadiusOutlierRemoval, AbstractFilter),
+    (:ExtractIndices, AbstractFilter),
     ]
     cxxname = "pcl::$name"
     valname = symbol(name, "Val")
@@ -53,3 +54,12 @@ for f in [:setRadiusSearch, :setMinNeighborsInRadius]
         $f(r::RadiusOutlierRemoval, v) = @cxx cxxpointer(handle(r))->$f(v)
     end
 end
+
+for f in [:setNegative]
+    @eval begin
+        $f(ex::ExtractIndices, v::Bool) = @cxx cxxpointer(handle(ex))->$f(v)
+    end
+end
+
+setIndices(e::ExtractIndices, indices::PointIndices) =
+    @cxx cxxpointer(handle(e))->setIndices(handle(indices))

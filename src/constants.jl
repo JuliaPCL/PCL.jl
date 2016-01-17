@@ -23,7 +23,7 @@ for enumname in [
     @eval begin
         enumtyp = $ex
         isa(enumtyp, Cxx.CppEnum)
-        global $enumname = enumtyp.val
+        global const $enumname = enumtyp.val
     end
 end
 
@@ -38,7 +38,7 @@ for intname in [
     ]
     ex = Expr(:macrocall, symbol("@icxx_str"), string("pcl::", intname, ";"))
     @eval begin
-        global $intname = $ex
+        global const $intname = $ex
         @assert isa($intname, Cint)
     end
 end
