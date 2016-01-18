@@ -120,6 +120,11 @@ function updatePointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
         cxxderef(handle(color_handler)), pointer(id))
 end
 
+function removePointCloud(viewer::PCLVisualizer;
+        id::AbstractString="cloud", viewport::Int=0)
+    @cxx cxxpointer(handle(viewer))->removePointCloud(pointer(id), viewport)
+end
+
 function run(viewer::PCLVisualizer; spin::Int=1, sleep::Int=100000)
     icxx"""
     while (!$(viewer.handle)->wasStopped()) {

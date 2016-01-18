@@ -78,6 +78,9 @@ end
 @defconstructor PointCloudVal{T}() "pcl::PointCloud"
 @defconstructor PointCloudVal{T}(w::Integer, h::Integer) "pcl::PointCloud"
 
+eltype{T}(cloud::PointCloud{T}) = T
+eltype{T}(cloud::PointCloudVal{T}) = T
+
 import Base: similar
 
 similar{T}(cloud::PointCloud{T}) = PointCloud{T}(width(cloud), height(cloud))

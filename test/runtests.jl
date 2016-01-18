@@ -54,6 +54,9 @@ end
     cloud = pcl.PointCloud{pcl.PointXYZ}(2,3)
     @test pcl.width(cloud) == 2
     @test pcl.height(cloud) == 3
+
+    @test typeof(pcl.PointCloud{eltype(cloud)}()) == typeof(cloud)
+    @test typeof(similar(cloud)) == typeof(cloud)
 end
 
 @testset "pcl::io" begin
