@@ -16,8 +16,6 @@ function getPointCloudXYZRGB(registration, undistorted, registered)
     cloud = pcl.PointCloud{pcl.PointXYZRGB}(w, h)
     icxx"$(cloud.handle)->is_dense = false;"
     pointsptr = icxx"&$(cloud.handle)->points[0];"
-    # NOTE: function call inside loop below is somewhat expensive for real-time
-    # point cloud processing. Here we wrap it into a single icxx for efficiency.
     icxx"""
     for (size_t ri = 0; ri < $h; ++ri) {
         for (size_t ci = 0; ci < $w; ++ci) {
