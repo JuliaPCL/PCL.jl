@@ -122,6 +122,11 @@ height(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->height;")
 is_dense(cloud::PointCloud) = icxx"$(handle(cloud))->is_dense;"
 points(cloud::PointCloud) = icxx"$(handle(cloud))->points;"
 
+length(cloud::PointCloudVal) = convert(Int, icxx"$(handle(cloud)).size();")
+width(cloud::PointCloudVal) = convert(Int, icxx"$(handle(cloud)).width;")
+height(cloud::PointCloudVal) = convert(Int, icxx"$(handle(cloud)).height;")
+is_dense(cloud::PointCloudVal) = icxx"$(handle(cloud)).is_dense;"
+points(cloud::PointCloudVal) = icxx"$(handle(cloud)).points;"
 
 function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
     transform)

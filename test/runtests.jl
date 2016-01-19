@@ -59,6 +59,14 @@ end
     @test typeof(similar(cloud)) == typeof(cloud)
 end
 
+@testset "PointCloudVal" begin
+    cloud = pcl.PointCloudVal{pcl.PointXYZ}(2,3)
+    @test length(cloud) == 6
+    @test pcl.width(cloud) == 2
+    @test pcl.height(cloud) == 3
+    @test pcl.is_dense(cloud) == true
+end
+
 @testset "pcl::io" begin
     cloudxyz = pcl.PointCloud{pcl.PointXYZ}()
     @test pcl.loadPCDFile(milk_cartoon_path, cloudxyz) == 0
