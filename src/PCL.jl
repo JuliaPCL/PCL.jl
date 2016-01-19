@@ -25,6 +25,8 @@ const VTK_INCLUDE_DIR = get(ENV, "VTK_INCLUDE_DIR",
 if isdir(VTK_INCLUDE_DIR)
     global const has_vtk_backend = true
     VERBOSE && info("vtk include directory found: $VTK_INCLUDE_DIR")
+else
+    global const has_vtk_backend = false
 end
 
 using BinDeps
