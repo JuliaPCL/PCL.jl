@@ -57,9 +57,16 @@ for lib in [
         libpcl_io,
         libpcl_features,
         libpcl_filters,
+        libpcl_kdtree,
+        libpcl_keypoints,
         libpcl_segmentation,
         libpcl_visualization,
+        libpcl_recognition,
         libpcl_registration,
+        libpcl_octree,
+        libpcl_surface,
+        libpcl_people,
+        libpcl_tracking,
         ]
     p = Libdl.dlopen_e(lib, Libdl.RTLD_GLOBAL)
     p == C_NULL && warn("Failed to load: $lib")
