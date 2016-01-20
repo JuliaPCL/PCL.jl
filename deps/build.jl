@@ -34,6 +34,7 @@ pcl_registration = pcl_library_dependency("libpcl_registration")
 pcl_octree = pcl_library_dependency("libpcl_octree")
 pcl_surface = pcl_library_dependency("libpcl_surface")
 pcl_people = pcl_library_dependency("libpcl_people")
+pcl_search = pcl_library_dependency("libpcl_search")
 pcl_tracking = pcl_library_dependency("libpcl_tracking")
 
 pcl_libs = [
@@ -50,6 +51,7 @@ pcl_libs = [
     pcl_octree,
     pcl_surface,
     pcl_people,
+    pcl_search,
     pcl_tracking,
     ]
 
@@ -98,5 +100,6 @@ provides(SimpleBuild,
     :libpcl_octree => :libpcl_octree,
     :libpcl_surface => :libpcl_surface,
     :libpcl_people => :libpcl_people,
+    :libpcl_search => :libpcl_search,
     :libpcl_tracking => :libpcl_tracking,
     )

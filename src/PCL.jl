@@ -22,11 +22,9 @@ vtk_dirs = searchdir(VTK_INCLUDE_DIR_PARENT, "vtk-")
 const VTK_INCLUDE_DIR = get(ENV, "VTK_INCLUDE_DIR",
     isempty(vtk_dirs) ? "" : joinpath(VTK_INCLUDE_DIR_PARENT, vtk_dirs[1]))
 
-if isdir(VTK_INCLUDE_DIR)
-    global const has_vtk_backend = true
+const has_vtk_backend = isfile(joinpath(VTK_INCLUDE_DIR, "vtkVersion.h"))
+if has_vtk_backend
     VERBOSE && info("vtk include directory found: $VTK_INCLUDE_DIR")
-else
-    global const has_vtk_backend = false
 end
 
 using BinDeps
@@ -66,6 +64,7 @@ for lib in [
         libpcl_octree,
         libpcl_surface,
         libpcl_people,
+        libpcl_search,
         libpcl_tracking,
         ]
     p = Libdl.dlopen_e(lib, Libdl.RTLD_GLOBAL)
@@ -98,7 +97,8 @@ function include_headers(top)
 
     # top level
     VERBOSE && info("Include pcl top-level headers")
-    @timevb for name in ["pcl_base.h", "correspondence.h", "ModelCoefficients.h"]
+    @timevb for name in ["pcl_base.h", "point_types.h", "correspondence.h",
+        "ModelCoefficients.h"]
         cxxinclude(joinpath(top, "pcl", name))
     end
 
@@ -169,8 +169,14 @@ function include_headers(top)
 
     # segmentation
     VERBOSE && info("Include pcl::segmentation headers")
-    @timevb for name in ["sac_segmentation.h"]
+    @timevb for name in ["sac_segmentation.h", "region_growing_rgb.h"]
         cxxinclude(joinpath(top, "pcl", "segmentation", name))
+    end
+
+    # search
+    VERBOSE && info("Include pcl::search headers")
+    @timevb for name in ["search.h", "kdtree.h"]
+        cxxinclude(joinpath(top, "pcl", "search", name))
     end
 end
 
@@ -201,6 +207,14 @@ end
 VERBOSE && info("pcl_version: $pcl_version")
 include_headers(joinpath(topdir_to_be_included, "pcl-$pcl_version"))
 
+# Check boost version
+const _BOOST_VERSION = icxx"BOOST_VERSION;"
+const BOOST_VERSION_MAJOR = trunc(Int, _BOOST_VERSION / 100000)
+const BOOST_VERSION_MINOR = trunc(Int, _BOOST_VERSION / 100 % 1000)
+const BOOST_VERSION_PATCH = trunc(Int, _BOOST_VERSION % 100)
+const BOOST_VERSION = join([BOOST_VERSION_MAJOR, BOOST_VERSION_MINOR, BOOST_VERSION_PATCH], ".")
+VERBOSE && info("boost version: $BOOST_VERSION")
+
 # Check FLANN vesion
 # make sure FLANN_INCLUDE_DIR is addded as kind=C_System
 cxxinclude(joinpath(FLANN_INCLUDE_DIR, "flann/flann.h"))
@@ -220,6 +234,7 @@ for name in [
     "filters",
     "features",
     "kdtree",
+    "search",
     "recognition",
     "registration",
     "segmentation",

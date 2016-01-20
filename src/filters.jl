@@ -9,6 +9,8 @@ setInputCloud(f::AbstractFilter, cloud::PointCloud) =
     @cxx cxxpointer(handle(f))->setInputCloud(handle(cloud))
 filter(f::AbstractFilter, cloud::PointCloud) =
     @cxx cxxpointer(handle(f))->filter(cxxderef(handle(cloud)))
+filter(f::AbstractFilter, cloud::SharedPtr) =
+    @cxx cxxpointer(handle(f))->filter(cxxderef(cloud))
 
 for (name, supername) in [
     (:UniformSampling, AbstractFilter),
