@@ -134,6 +134,17 @@ function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
         cxxderef(handle(cloud_out)), transform)
 end
 
+function removeNaNFromPointCloud(cloud_in::PointCloud,
+    indices::CxxStd.StdVector{Cint})
+    @cxx pcl::removeNaNFromPointCloud(cxxderef(handle(cloud_in)), indices)
+end
+
+function removeNaNFromPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
+    indices::CxxStd.StdVector{Cint})
+    @cxx pcl::removeNaNFromPointCloud(cxxderef(handle(cloud_in)),
+        cxxderef(handle(cloud_out)), indices)
+end
+
 @defpcltype PCLPointCloud2 "pcl::PCLPointCloud2"
 @defptrconstructor PCLPointCloud2() "pcl::PCLPointCloud2"
 @defconstructor PCLPointCloud2Val() "pcl::PCLPointCloud2"
