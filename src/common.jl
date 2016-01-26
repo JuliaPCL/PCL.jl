@@ -22,7 +22,6 @@ for name in [
     :Axis,
     :PointNormal,
     :PointXYZRGBNormal,
-    :PointXYZRGBNormal,
     :PointXYZINormal,
     :PointXYZLNormal,
     :ReferenceFrame,
