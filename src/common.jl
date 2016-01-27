@@ -133,6 +133,10 @@ function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
         cxxderef(handle(cloud_out)), transform)
 end
 
+function compute3DCentroid(cloud_in::PointCloud, vec4f)
+    @cxx pcl::compute3DCentroid(cxxderef(handle(cloud_in)), vec4f)
+end
+
 function removeNaNFromPointCloud(cloud_in::PointCloud,
     indices::CxxStd.StdVector{Cint})
     @cxx pcl::removeNaNFromPointCloud(cxxderef(handle(cloud_in)), indices)

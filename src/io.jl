@@ -9,8 +9,8 @@ function loadPCDFile{T}(s::AbstractString, cloud::PointCloud{T})
 end
 
 function savePCDFile{T}(s::AbstractString, cloud::PointCloud{T};
-        binary_mode=false)
-    ret = @cxx pcl::io::savePCDFile(pointer(s), cxxderef(handle(cloud)))
+        binary_mode=true)
+    ret = @cxx pcl::io::savePCDFile(pointer(s), cxxderef(handle(cloud)), binary_mode)
     if ret != 0
         error("failed to save PCD file: code $ret")
     end

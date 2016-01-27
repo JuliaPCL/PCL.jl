@@ -97,14 +97,14 @@ function include_headers(top)
 
     # top level
     VERBOSE && info("Include pcl top-level headers")
-    @timevb for name in ["pcl_base.h", "point_types.h", "correspondence.h",
-        "ModelCoefficients.h"]
+    @timevb for name in ["pcl_base.h", "point_cloud.h", "point_types.h",
+            "correspondence.h", "ModelCoefficients.h"]
         cxxinclude(joinpath(top, "pcl", name))
     end
 
     # common
     VERBOSE && info("Include pcl::common headers")
-    @timevb for name in ["common_headers.h", "transforms.h"]
+    @timevb for name in ["common_headers.h", "transforms.h", "centroid.h"]
         cxxinclude(joinpath(top, "pcl", "common", name))
     end
 
@@ -178,6 +178,22 @@ function include_headers(top)
     @timevb for name in ["search.h", "kdtree.h"]
         cxxinclude(joinpath(top, "pcl", "search", name))
     end
+
+    # tracking
+    VERBOSE && info("Include pcl::tracking headers")
+    @timevb for name in [
+            "approx_nearest_pair_point_cloud_coherence.h",
+            "coherence.h",
+            "distance_coherence.h",
+            "hsv_color_coherence.h",
+            "kld_adaptive_particle_filter_omp.h",
+            "nearest_pair_point_cloud_coherence.h",
+            "particle_filter.h",
+            "particle_filter_omp.h",
+            "tracking.h",
+            ]
+        cxxinclude(joinpath(top, "pcl", "tracking", name))
+    end
 end
 
 
@@ -235,9 +251,11 @@ for name in [
     "features",
     "kdtree",
     "search",
+    "octree",
     "recognition",
     "registration",
     "segmentation",
+    "tracking",
     ]
     include(string(name, ".jl"))
 end

@@ -37,9 +37,12 @@ setFilterFieldName(pass::PassThrough, name::AbstractString) =
     @cxx cxxpointer(handle(pass))->setFilterFieldName(pointer(name))
 setFilterLimits(pass::PassThrough, lo, hi) =
     @cxx cxxpointer(handle(pass))->setFilterLimits(lo, hi)
-setFilterLimitsNegative(pass::PassThrough, v::Bool) =
-    @cxx cxxpointer(handle(pass))->setFilterLimitsNegative(v)
 
+for f in [:setKeepOrganized, :setFilterLimitsNegative]
+    @eval begin
+        $f(pass::PassThrough, v::Bool) = @cxx cxxpointer(handle(pass))->$f(v)
+    end
+end
 
 setLeafSize(v::AbstractVoxelGridFilter, lx, ly, lz) =
     @cxx cxxpointer(handle(v))->setLeafSize(lx, ly, lz)
