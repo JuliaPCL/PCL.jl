@@ -43,12 +43,23 @@ undistorted = FrameContainer(w, h, 4, key=Libfreenect2.FRAME_DEPTH)
 registered = FrameContainer(w, h, 4, key=Libfreenect2.FRAME_COLOR)
 
 info("Prepare PCL visualizer...")
-viewer = pcl.PCLVisualizer("pcl visualizer")
+global viewer = pcl.PCLVisualizer("pcl visualizer")
 
 # Add empty poind
 cloud = pcl.PointCloud{pcl.PointXYZRGB}(w, h)
 color_handler = pcl.PointCloudColorHandlerRGBField(cloud)
 pcl.addPointCloud(viewer, cloud, color_handler, id="libfreenect2")
+
+global should_save = false
+cxx"""
+void viewer_cb(const pcl::visualization::KeyboardEvent &event) {
+    std::cout << "key event:" << event.getKeyCode() << std::endl;
+    if (event.getKeyCode() == 's') {
+        $:(global should_save = true; nothing);
+    }
+}
+"""
+icxx"$(pcl.handle(viewer))->registerKeyboardCallback(viewer_cb);"
 
 while !pcl.wasStopped(viewer)
     frames = waitForNewFrame(listener)
@@ -63,7 +74,11 @@ while !pcl.wasStopped(viewer)
     end
     println("Registration and getPointCloudXYZRGB: $(1/t) Hz")
 
-    save_pcd && pcl.savePCDFile(genfilename(), cloud; binary_mode=true)
+    if should_save
+        info("save pcd file...")
+        pcl.savePCDFile(genfilename(), cloud; binary_mode=true)
+        should_save = false
+    end
 
     color_handler = pcl.PointCloudColorHandlerRGBField(cloud)
     pcl.updatePointCloud(viewer, cloud, color_handler, id="libfreenect2")
