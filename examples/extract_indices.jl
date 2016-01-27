@@ -6,12 +6,14 @@ using Cxx
 
 vis = false
 
+PT = pcl.PointXYZRGB
+
 pcd_file = Pkg.dir("PCL", "test", "data", "table_scene_lms400.pcd")
 
-cloud = pcl.PointCloud{pcl.PointXYZ}(pcd_file)
-cloud_filtered = pcl.PointCloud{pcl.PointXYZ}()
+cloud = pcl.PointCloud{PT}(pcd_file)
+cloud_filtered = pcl.PointCloud{PT}()
 
-vgf = pcl.VoxelGrid{pcl.PointXYZ}()
+vgf = pcl.VoxelGrid{PT}()
 pcl.setInputCloud(vgf, cloud)
 pcl.setLeafSize(vgf, 0.01, 0.01, 0.01)
 filter(vgf, cloud_filtered)
@@ -22,14 +24,14 @@ println("PointCloud after filtering: ", length(cloud_filtered), " data points")
 coefficients = pcl.ModelCoefficients()
 inliers = pcl.PointIndices()
 
-seg = pcl.SACSegmentation{pcl.PointXYZ}()
+seg = pcl.SACSegmentation{PT}()
 pcl.setOptimizeCoefficients(seg, true)
 pcl.setModelType(seg, pcl.SACMODEL_PLANE)
 pcl.setMethodType(seg, pcl.SAC_RANSAC)
 pcl.setMaxIterations(seg, 1000)
 pcl.setDistanceThreshold(seg, 0.01)
 
-extract = pcl.ExtractIndices{pcl.PointXYZ}()
+extract = pcl.ExtractIndices{PT}()
 nr_points = length(cloud_filtered)
 
 planes = []
@@ -44,8 +46,8 @@ while length(cloud_filtered) > 0.3 * nr_points
         error("Could not estimate a planar model for the given dataset.")
     end
 
-    cloud_p = pcl.PointCloud{pcl.PointXYZ}()
-    cloud_f = pcl.PointCloud{pcl.PointXYZ}()
+    cloud_p = pcl.PointCloud{PT}()
+    cloud_f = pcl.PointCloud{PT}()
 
     pcl.setInputCloud(extract, cloud_filtered)
     pcl.setIndices(extract, inliers)
@@ -67,7 +69,7 @@ if vis
     viewer = pcl.PCLVisualizer("pcl visualizer")
     @show length(planes)
     for i in 1:length(planes)
-        color = i == 1 ? (255,0,0) : i == 2 ? (0,255,0) : tuple(rand(UInt, 3))
+        color = i == 1 ? (255,0,0) : i == 2 ? (0,255,0) : tuple(rand(UInt, 3)...)
         @show color
         handler = pcl.PointCloudColorHandlerCustom(planes[i], color...)
         pcl.addPointCloud(viewer, planes[i], handler, id="plane $i")
