@@ -7,9 +7,8 @@ abstract AbstractVoxelGridFilter <: AbstractFilter
 
 setInputCloud(f::AbstractFilter, cloud::PointCloud) =
     icxx"$(handle(f))->setInputCloud($(handle(cloud)));"
+filter(f::AbstractFilter, cloud) = icxx"$(handle(f))->filter(*$(cloud));"
 filter(f::AbstractFilter, cloud::PointCloud) =
-    icxx"$(handle(f))->filter(*$(handle(cloud)));"
-filter(f::AbstractFilter, cloud::SharedPtr) =
     icxx"$(handle(f))->filter(*$(handle(cloud)));"
 
 for (name, supername) in [
@@ -31,17 +30,16 @@ for (name, supername) in [
 end
 
 setRadiusSearch(us::UniformSampling, ss) =
-    @cxx cxxpointer(handle(us))->setRadiusSearch(ss)
+    icxx"$(handle(us))->setRadiusSearch($ss);"
 
 setFilterFieldName(pass::PassThrough, name::AbstractString) =
-    @cxx cxxpointer(handle(pass))->setFilterFieldName(pointer(name))
+    icxx"$(handle(pass))->setFilterFieldName($(pointer(name)));"
 setFilterLimits(pass::PassThrough, lo, hi) =
-    @cxx cxxpointer(handle(pass))->setFilterLimits(lo, hi)
+    icxx"$(handle(pass))->setFilterLimits($lo, $hi);"
 
 for f in [:setKeepOrganized, :setFilterLimitsNegative]
-    @eval begin
-        $f(pass::PassThrough, v::Bool) = @cxx cxxpointer(handle(pass))->$f(v)
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(pass))->$f(\$v);")
+    @eval $f(pass::PassThrough, v::Bool) = $body
 end
 
 setLeafSize(v::AbstractVoxelGridFilter, lx, ly, lz) =
@@ -49,22 +47,19 @@ setLeafSize(v::AbstractVoxelGridFilter, lx, ly, lz) =
 
 
 for f in [:setMeanK, :setStddevMulThresh]
-    @eval begin
-        $f(s::StatisticalOutlierRemoval, v) = @cxx cxxpointer(handle(s))->$f(v)
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(s))->$f(\$v);")
+    @eval $f(s::StatisticalOutlierRemoval, v) = $body
 end
 
 for f in [:setRadiusSearch, :setMinNeighborsInRadius]
-    @eval begin
-        $f(r::RadiusOutlierRemoval, v) = @cxx cxxpointer(handle(r))->$f(v)
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(r))->$f(\$v);")
+    @eval $f(r::RadiusOutlierRemoval, v) = $body
 end
 
-for f in [:setNegative]
-    @eval begin
-        $f(ex::ExtractIndices, v::Bool) = @cxx cxxpointer(handle(ex))->$f(v)
-    end
+for f in [:setNegative, :setIndices]
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(ex))->$f(\$v);")
+    @eval $f(ex::ExtractIndices, v) = $body
 end
 
-setIndices(e::ExtractIndices, indices::PointIndices) =
-    icxx"$(handle(e))->setIndices($(handle(indices)));"
+setIndices(ex::ExtractIndices, indices::PointIndices) =
+    setIndices(ex, handle(indices))
