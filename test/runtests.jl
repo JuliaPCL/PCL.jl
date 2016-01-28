@@ -139,3 +139,20 @@ end
         @test length(pcl.StdVector{Float64}(n)) == n
     end
 end
+
+# Tutorials
+tutorial_dir = joinpath(dirname(@__FILE__), "..", "examples")
+for f in [
+        "passthrough",
+        "global_hypothesis_verification",
+        "voxel_grid",
+        "correspondence_grouping",
+        "planar_segmentation",
+        "statistical_removal",
+        "region_growing_rgb_segmentation",
+        "extract_indices",
+        ]
+    @testset "$f" begin
+        include(joinpath(tutorial_dir, string(f, ".jl")))
+    end
+end

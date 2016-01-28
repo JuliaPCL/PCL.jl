@@ -7,7 +7,8 @@ abstract AbstractVoxelGridFilter <: AbstractFilter
 
 setInputCloud(f::AbstractFilter, cloud::PointCloud) =
     icxx"$(handle(f))->setInputCloud($(handle(cloud)));"
-filter(f::AbstractFilter, cloud) = icxx"$(handle(f))->filter(*$(cloud));"
+filter(f::AbstractFilter, cloud::cxxt"boost::shared_ptr<std::vector<int>>") =
+    icxx"$(handle(f))->filter(*$(cloud));"
 filter(f::AbstractFilter, cloud::PointCloud) =
     icxx"$(handle(f))->filter(*$(handle(cloud)));"
 
