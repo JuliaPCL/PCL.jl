@@ -12,16 +12,15 @@ abstract AbstractRecognizer
 abstract AbstractVerifier
 
 for f in [:setInputCloud, :setInputRf, :setSceneCloud, :setSceneRf]
-    @eval begin
-        $f(recognizer::AbstractRecognizer, cloud::PointCloud) =
-            @cxx cxxpointer(handle(recognizer))->$f(handle(cloud))
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"),
+        "\$(handle(recognizer))->$f(\$(handle(cloud)));")
+    @eval $f(recognizer::AbstractRecognizer, cloud::PointCloud) = $body
 end
 
 function setModelSceneCorrespondences(recognizer::AbstractRecognizer,
     corr::Correspondences)
-    @cxx cxxpointer(handle(recognizer))->setModelSceneCorrespondences(
-        handle(corr))
+    icxx"$(handle(recognizer))->setModelSceneCorrespondences(
+        $(handle(corr)));"
 end
 
 recognize(recognizer::AbstractRecognizer, rototranslations, clustered_corrs) =
@@ -62,15 +61,14 @@ for f in [:setUseInterpolation, :setUseDistanceWeight]
 end
 
 for f in [:setSceneCloud, :setOcclusionCloud]
-    @eval begin
-        $f(ver::GlobalHypothesesVerification, cloud::PointCloud) =
-            @cxx cxxpointer(handle(ver))->$f(handle(cloud))
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"),
+        "\$(handle(ver))->$f(\$(handle(cloud)));")
+    @eval $f(ver::GlobalHypothesesVerification, cloud::PointCloud) = $body
 end
 
 function addModels(ver::GlobalHypothesesVerification, models::CxxStd.StdVector,
     occlusion_reasoning=false)
-    @cxx cxxpointer(handle(ver))->addModels(models, occlusion_reasoning)
+    icxx"$(handle(ver))->addModels($models, $occlusion_reasoning);"
 end
 
 for f in [:setInlierThreshold, :setOcclusionThreshold, :setRegularizer,

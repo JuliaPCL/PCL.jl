@@ -6,11 +6,11 @@ abstract AbstractVoxelGridFilter <: AbstractFilter
 @inline handle(f::AbstractFilter) = f.handle
 
 setInputCloud(f::AbstractFilter, cloud::PointCloud) =
-    @cxx cxxpointer(handle(f))->setInputCloud(handle(cloud))
+    icxx"$(handle(f))->setInputCloud($(handle(cloud)));"
 filter(f::AbstractFilter, cloud::PointCloud) =
-    @cxx cxxpointer(handle(f))->filter(cxxderef(handle(cloud)))
+    icxx"$(handle(f))->filter(*$(handle(cloud)));"
 filter(f::AbstractFilter, cloud::SharedPtr) =
-    @cxx cxxpointer(handle(f))->filter(cxxderef(cloud))
+    icxx"$(handle(f))->filter(*$(handle(cloud)));"
 
 for (name, supername) in [
     (:UniformSampling, AbstractFilter),
@@ -67,4 +67,4 @@ for f in [:setNegative]
 end
 
 setIndices(e::ExtractIndices, indices::PointIndices) =
-    @cxx cxxpointer(handle(e))->setIndices(handle(indices))
+    icxx"$(handle(e))->setIndices($(handle(indices)));"

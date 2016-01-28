@@ -46,32 +46,33 @@ function PCLVisualizer(name::AbstractString=""; create_interactor::Bool=true)
 end
 
 setBackgroundColor(viewer::PCLVisualizer, x, y, z) =
-    @cxx cxxpointer(handle(viewer))->setBackgroundColor(x, y, z)
+    icxx"$(handle(viewer))->setBackgroundColor($x, $y, $z);"
 addCoordinateSystem(viewer::PCLVisualizer, scale) =
-    @cxx cxxpointer(handle(viewer))->addCoordinateSystem(scale)
+    icxx"$(handle(viewer))->addCoordinateSystem($scale);"
 addCoordinateSystem(viewer::PCLVisualizer, scale, x, y, z) =
-    @cxx cxxpointer(handle(viewer))->addCoordinateSystem(scale, x, y, z)
+    icxx"$(handle(viewer))->addCoordinateSystem($scale, $x, $y, $z);"
 spinOnce(viewer::PCLVisualizer, spin=1) =
-    @cxx cxxpointer(handle(viewer))->spinOnce(spin)
+    icxx"$(handle(viewer))->spinOnce($spin);"
 
 # Generally, you don't have to chagne camera parameters manually. This would be
 # useful for off-screen rendering in paricular.
 function setCameraPosition(viewer::PCLVisualizer,
         pos_x, pos_y, pos_z,
         up_x, up_y, up_z; viewport::Integer=0)
-    @cxx cxxpointer(handle(viewer))->setCameraPosition(
-        pos_x, pos_y, pos_z, up_x, up_y, up_z, viewport)
+    icxx"$(handle(viewer))->setCameraPosition(
+        $pos_x, $pos_y, $pos_z, $up_x, $up_y, $up_z, $viewport);"
 end
 function setCameraPosition(viewer::PCLVisualizer,
         pos_x, pos_y, pos_z,
         view_x, view_y, view_z,
         up_x, up_y, up_z; viewport::Integer=0)
-    @cxx cxxpointer(handle(viewer))->setCameraPosition(
-    pos_x, pos_y, pos_z, view_x, view_y, view_z, up_x, up_y, up_z, viewport)
+    icxx"$(handle(viewer))->setCameraPosition(
+        $pos_x, $pos_y, $pos_z, $view_x, $view_y, $view_z,
+        $up_x, $up_y, $up_z, $viewport);"
 end
 function setCameraClipDistances(viewer::PCLVisualizer, near, far;
     viewport::Integer=0)
-    @cxx cxxpointer(handle(viewer))->setCameraClipDistances(near, far, viewport)
+    icxx"$(handle(viewer))->setCameraClipDistances($near, $far, $viewport);"
 end
 
 import Base: close
@@ -88,41 +89,40 @@ for f in [
         :resetCamera,
         :spin,
         ]
-    @eval begin
-        $f(viewer::PCLVisualizer) = @cxx cxxpointer(handle(viewer))->$f()
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(viewer))->$f();")
+    @eval $f(viewer::PCLVisualizer) = $body
 end
 setShowFPS(viewer::PCLVisualizer, v::Bool) =
     @cxx cxxpointer(handle(viewer))->setShowFPS(v)
 
 function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     id::AbstractString="cloud", viewport::Int=0)
-    @cxx cxxpointer(handle(viewer))->addPointCloud(handle(cloud), pointer(id),
-        viewport)
+    icxx"$(handle(viewer))->addPointCloud($(handle(cloud)), $(pointer(id)),
+        $viewport);"
 end
 
 function addPointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
     color_handler::PointCloudColorHandler;
     id::AbstractString="cloud", viewport::Int=0)
-    @cxx cxxpointer(handle(viewer))->addPointCloud(handle(cloud),
-        cxxderef(handle(color_handler)), pointer(id), viewport)
+    icxx"$(handle(viewer))->addPointCloud($(handle(cloud)),
+        *$(handle(color_handler)), $(pointer(id)), $viewport);"
 end
 
 function updatePointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T};
     id::AbstractString="cloud")
-    @cxx cxxpointer(handle(viewer))->updatePointCloud(handle(cloud),
-        pointer(id))
+    icxx"$(handle(viewer))->updatePointCloud($(handle(cloud)),
+        $(pointer(id)));"
 end
 
 function updatePointCloud{T}(viewer::PCLVisualizer, cloud::PointCloud{T},
     color_handler::PointCloudColorHandler; id::AbstractString="cloud")
-    @cxx cxxpointer(handle(viewer))->updatePointCloud(handle(cloud),
-        cxxderef(handle(color_handler)), pointer(id))
+    icxx"$(handle(viewer))->updatePointCloud($(handle(cloud)),
+        *$(handle(color_handler)), $(pointer(id)));"
 end
 
 function removePointCloud(viewer::PCLVisualizer;
         id::AbstractString="cloud", viewport::Int=0)
-    @cxx cxxpointer(handle(viewer))->removePointCloud(pointer(id), viewport)
+    icxx"$(handle(viewer))->removePointCloud($(pointer(id)), $viewport);"
 end
 
 function run(viewer::PCLVisualizer; spin::Int=1, sleep::Int=100000)

@@ -16,19 +16,19 @@ abstract AbstractSHOTEstimator <: AbstractFeatureEstimator
 @inline handle(fe::AbstractFeatureEstimator) = fe.handle
 
 setRadiusSearch(n::AbstractFeatureEstimator, rad) =
-    @cxx cxxpointer(handle(n))->setRadiusSearch(rad)
+    icxx"$(handle(n))->setRadiusSearch($rad);"
 
 setInputCloud(n::AbstractFeatureEstimator, cloud::PointCloud) =
-    @cxx cxxpointer(handle(n))->setInputCloud(handle(cloud))
+    icxx"$(handle(n))->setInputCloud($(handle(cloud)));"
 
 setInputNormals(n::AbstractFeatureEstimator, normals::PointCloud) =
-    @cxx cxxpointer(handle(n))->setInputNormals(handle(normals))
+    icxx"$(handle(n))->setInputNormals($(handle(normals)));"
 
 setSearchSurface(n::AbstractFeatureEstimator, surface::PointCloud) =
-    @cxx cxxpointer(handle(n))->setSearchSurface(handle(surface))
+    icxx"$(handle(n))->setSearchSurface($(handle(surface)));"
 
 compute(n::AbstractFeatureEstimator, descriptors::PointCloud) =
-    @cxx cxxpointer(handle(n))->compute(cxxderef(handle(descriptors)))
+    icxx"$(handle(n))->compute(*$(handle(descriptors)));"
 
 for (name, type_params, supername) in [
     (:NormalEstimation, (:PT,:NT), AbstractNormalEstimator),
@@ -47,8 +47,7 @@ for (name, type_params, supername) in [
     end
 end
 
-setKSearch(n::AbstractNormalEstimator, k) =
-    @cxx cxxpointer(handle(n))->setKSearch(k)
+setKSearch(n::AbstractNormalEstimator, k) = icxx"$(handle(n))->setKSearch($k);"
 
 setFindHoles(rfe::BOARDLocalReferenceFrameEstimation, v::Bool) =
-    @cxx cxxpointer(handle(rfe))->setFindHoles(v)
+    icxx"$(handle(rfe))->setFindHoles($v);"

@@ -72,23 +72,20 @@ for f in [
         :setBinSize,
         :toEigenMatrix,
         ]
-    @eval begin
-        $f(t::AbstractKLDAdaptiveParticleFilterTracker, v) =
-            @cxx cxxpointer(handle(t))->$f(v)
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(t))->$f(\$v);")
+    @eval $f(t::AbstractKLDAdaptiveParticleFilterTracker, v) = $body
 end
 
 for f in [
         :getResult,
         ]
-    @eval begin
-        $f(t::AbstractKLDAdaptiveParticleFilterTracker) =
-            @cxx cxxpointer(handle(t))->$f()
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(t))->$f();")
+    @eval $f(t::AbstractKLDAdaptiveParticleFilterTracker) = $body
 end
 
 function getReferenceCloud(t::AbstractKLDAdaptiveParticleFilterTracker)
-    PointCloud(@cxx cxxpointer(handle(t))->getReferenceCloud())
+    cloud = icxx"$(handle(t))->getReferenceCloud();"
+    PointCloud(cloud)
 end
 
 function setInputCloud(t::AbstractKLDAdaptiveParticleFilterTracker,
@@ -111,7 +108,8 @@ for f in [
         :setSearchMethod,
         :setMaximumDistance,
         ]
-    @eval $f(c::AbstractCloudCoherence, v) = @cxx cxxpointer(handle(c))->$f(v)
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(c))->$f(\$v);")
+    @eval $f(c::AbstractCloudCoherence, v) = $body
 end
 
 function addPointCoherence(c::AbstractCloudCoherence,
@@ -125,5 +123,6 @@ setSearchMethod(c::AbstractCloudCoherence, t::AbstractOctree) =
 for f in [
         :setWeight,
         ]
-    @eval $f(t::AbstractCoherence, v) = @cxx cxxpointer(handle(t))->$f(v)
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(t))->$f(\$v);")
+    @eval $f(t::AbstractCoherence, v) = $body
 end

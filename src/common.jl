@@ -88,8 +88,7 @@ import Base: copy, deepcopy
 
 function deepcopy{T}(cloud::PointCloud{T})
     cloud_out = PointCloud{T}()
-    @cxx pcl::copyPointCloud(cxxderef(handle(cloud)),
-        cxxderef(handle(cloud_out)))
+    icxx"pcl::copyPointCloud(*$(handle(cloud)), *$(handle(cloud_out)));"
     cloud_out
 end
 
@@ -129,8 +128,8 @@ points(cloud::PointCloudVal) = icxx"$(handle(cloud)).points;"
 
 function transformPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
     transform)
-    @cxx pcl::transformPointCloud(cxxderef(handle(cloud_in)),
-        cxxderef(handle(cloud_out)), transform)
+    icxx"pcl::transformPointCloud(*$(handle(cloud_in)),
+        *$(handle(cloud_out)), $transform);"
 end
 
 function compute3DCentroid(cloud_in::PointCloud, vec4f)
@@ -139,13 +138,13 @@ end
 
 function removeNaNFromPointCloud(cloud_in::PointCloud,
     indices::CxxStd.StdVector{Cint})
-    @cxx pcl::removeNaNFromPointCloud(cxxderef(handle(cloud_in)), indices)
+    icxx"pcl::removeNaNFromPointCloud(*$(handle(cloud_in)), $indices);"
 end
 
 function removeNaNFromPointCloud(cloud_in::PointCloud, cloud_out::PointCloud,
     indices::CxxStd.StdVector{Cint})
-    @cxx pcl::removeNaNFromPointCloud(cxxderef(handle(cloud_in)),
-        cxxderef(handle(cloud_out)), indices)
+    icxx"pcl::removeNaNFromPointCloud(*$(handle(cloud_in)),
+        *$(handle(cloud_out)), $indices);"
 end
 
 @defpcltype PCLPointCloud2 "pcl::PCLPointCloud2"

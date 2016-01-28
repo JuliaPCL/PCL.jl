@@ -11,17 +11,16 @@ for f in [:setMaximumIterations, :setMaxCorrespondenceDistance]
 end
 
 for f in [:setInputTarget, :setInputSource]
-    @eval begin
-        $f(icp::IterativeClosestPoint, cloud::PointCloud) =
-            @cxx cxxpointer(handle(icp))->$f(handle(cloud))
-    end
-    @eval begin
-        $f(icp::IterativeClosestPoint, cloud) =
-            @cxx cxxpointer(handle(icp))->$f(cloud)
-    end
+    body1 = Expr(:macrocall, symbol("@icxx_str"),
+        "\$(handle(icp))->$f(\$(handle(cloud)));")
+    @eval $f(icp::IterativeClosestPoint, cloud::PointCloud) = $body1
+
+    body2 = Expr(:macrocall, symbol("@icxx_str"),
+        "\$(handle(icp))->$f(\$(cloud));")
+    @eval $f(icp::IterativeClosestPoint, cloud) = $body2
 end
 
 hasConverged(icp::IterativeClosestPoint) =
     @cxx cxxpointer(handle(icp))->hasConverged()
 align(icp::IterativeClosestPoint, cloud::PointCloud) =
-    @cxx cxxpointer(handle(icp))->align(cxxderef(handle(cloud)))
+    icxx"$(handle(icp))->align(*$(handle(cloud)));"

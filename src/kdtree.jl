@@ -7,7 +7,7 @@ abstract AbstractKdTree
 @defconstructor KdTreeFLANNVal{T}() "pcl::KdTreeFLANN"
 
 setInputCloud(kd::AbstractKdTree, cloud::PointCloud) =
-    @cxx cxxpointer(handle(kd))->setInputCloud(handle(cloud))
+    icxx"$(handle(kd))->setInputCloud($(handle(cloud)));"
 
 function nearestKSearch(flann::KdTreeFLANN, point, k::Integer,
     k_indices::StdVector, k_sqr_distances::StdVector)

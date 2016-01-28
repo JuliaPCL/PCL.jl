@@ -1,13 +1,12 @@
 abstract AbstractSegmentation
 
 setInputCloud(s::AbstractSegmentation, cloud::PointCloud) =
-    @cxx cxxpointer(handle(s))->setInputCloud(handle(cloud))
+    icxx"$(handle(s))->setInputCloud($(handle(cloud)));"
 setIndices(s::AbstractSegmentation, indices::SharedPtr) =
-    @cxx cxxpointer(handle(s))->setIndices(indices)
+    icxx"$(handle(s))->setIndices($indices);"
 function segment(s::AbstractSegmentation, inliers::PointIndices,
         coefficients::ModelCoefficients)
-    @cxx cxxpointer(handle(s))->segment(
-        cxxderef(handle(inliers)), cxxderef(handle(coefficients)))
+    icxx"$(handle(s))->segment(*$(handle(inliers)), *$(handle(coefficients)));"
 end
 
 for (name, supername) in [
@@ -52,5 +51,7 @@ setSearchMethod(s::RegionGrowingRGB, tree::KdTree) =
 extract(s::RegionGrowingRGB, clusters::CxxStd.StdVector) =
     @cxx cxxpointer(handle(s))->extract(clusters)
 
-getColoredCloud(s::RegionGrowingRGB) =
-    PointCloud(@cxx cxxpointer(handle(s))->getColoredCloud())
+function getColoredCloud(s::RegionGrowingRGB)
+    c = icxx"$(handle(s))->getColoredCloud();"
+    PointCloud(c)
+end
