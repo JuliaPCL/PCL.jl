@@ -6,7 +6,7 @@ using Cxx
 
 vis = false
 
-PT = pcl.PointXYZRGB
+PT = pcl.PointXYZ
 
 pcd_file = Pkg.dir("PCL", "test", "data", "table_scene_lms400.pcd")
 

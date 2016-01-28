@@ -22,7 +22,6 @@ filter(pass, indices)
 
 len = convert(Int, icxx"$(indices)->size();")
 @assert len > 0
-@show len
 
 reg = pcl.RegionGrowingRGB{pcl.PointXYZRGB}()
 pcl.setInputCloud(reg, cloud)
