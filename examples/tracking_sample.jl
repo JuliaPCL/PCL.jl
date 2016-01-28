@@ -54,7 +54,7 @@ icxx"$bin_size.roll = 0.1f;"
 icxx"$bin_size.pitch = 0.1f;"
 icxx"$bin_size.yaw = 0.1f;"
 
-pcl.setMaximumParticleNum(tracker, 700)
+pcl.setMaximumParticleNum(tracker, 500)
 pcl.setDelta(tracker, 0.99)
 pcl.setEpsilon(tracker, 0.2)
 pcl.setBinSize(tracker, bin_size)
@@ -72,6 +72,11 @@ pcl.setUseNormal(tracker, false);
 coherence = pcl.ApproxNearestPairPointCloudCoherence{RT}()
 
 distance_coherence = pcl.DistanceCoherence{RT}()
+color_coherence = pcl.HSVColorCoherence{RT}()
+pcl.setWeight(color_coherence, 0.1)
+
+pcl.addPointCoherence(coherence, distance_coherence)
+pcl.addPointCoherence(coherence, color_coherence)
 
 search = pcl.Octree{RT}(0.01)
 pcl.setSearchMethod(coherence, search)
@@ -191,11 +196,6 @@ registered = FrameContainer(w, h, 4, key=Libfreenect2.FRAME_COLOR)
 info("Prepare PCL visualizer...")
 global viewer = pcl.PCLVisualizer("pcl visualizer")
 
-# Add empty poind
-cloud = pcl.PointCloud{pcl.PointXYZRGB}(w, h)
-color_handler = pcl.PointCloudColorHandlerRGBField(cloud)
-pcl.addPointCloud(viewer, cloud, color_handler, id="libfreenect2")
-
 global should_save = false
 if !isdefined(:viewer_cb_defined)
     cxx"""
@@ -238,13 +238,15 @@ while !pcl.wasStopped(viewer)
         should_save = false
     end
 
-
     color_handler = pcl.PointCloudColorHandlerRGBField(cloud_pass_downsampled)
-    pcl.updatePointCloud(viewer, cloud_pass_downsampled, color_handler,
+    updated = pcl.updatePointCloud(viewer, cloud_pass_downsampled, color_handler,
         id="libfreenect2")
+    if !updated
+        pcl.addPointCloud(viewer, cloud_pass_downsampled, color_handler, id="libfreenect2")
+    end
     pcl.spinOnce(viewer, 1)
 
-    map(release, [color, ir, depth])
+    foreach(release, [color, ir, depth])
 
     global counter += 1
 end
