@@ -24,8 +24,7 @@ function setModelSceneCorrespondences(recognizer::AbstractRecognizer,
 end
 
 recognize(recognizer::AbstractRecognizer, rototranslations, clustered_corrs) =
-    @cxx cxxpointer(handle(recognizer))->recognize(rototranslations,
-        clustered_corrs)
+    icxx"$(handle(recognizer))->recognize($rototranslations, $clustered_corrs);"
 
 for (name, type_params, supername) in [
     (:GeometricConsistencyGrouping, (:MT,:ST), AbstractRecognizer),
@@ -43,21 +42,18 @@ for (name, type_params, supername) in [
 end
 
 for f in [:setGCSize, :setGCThreshold]
-    @eval begin
-        $f(g::GeometricConsistencyGrouping, s) = @cxx cxxpointer(handle(g))->$f(s)
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(g))->$f(\$s);")
+    @eval $f(g::GeometricConsistencyGrouping, s) = $body
 end
 
-for f in [:setHoughBinSize, :setHoughThreshold]
-    @eval begin
-        $f(h::Hough3DGrouping, s) = @cxx cxxpointer(handle(h))->$f(s)
-    end
-end
-
-for f in [:setUseInterpolation, :setUseDistanceWeight]
-    @eval begin
-        $f(h::Hough3DGrouping, v::Bool) = @cxx cxxpointer(handle(h))->$f(v)
-    end
+for f in [
+        :setHoughBinSize,
+        :setHoughThreshold,
+        :setUseInterpolation,
+        :setUseDistanceWeight,
+        ]
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(h))->$f(\$s);")
+    @eval $f(h::Hough3DGrouping, s) = $body
 end
 
 for f in [:setSceneCloud, :setOcclusionCloud]
@@ -71,21 +67,19 @@ function addModels(ver::GlobalHypothesesVerification, models::CxxStd.StdVector,
     icxx"$(handle(ver))->addModels($models, $occlusion_reasoning);"
 end
 
-for f in [:setInlierThreshold, :setOcclusionThreshold, :setRegularizer,
-    :setRadiusClutter, :setClutterRegularizer, :setRadiusNormals]
-    @eval begin
-        $f(ver::GlobalHypothesesVerification, v::AbstractFloat) =
-            @cxx cxxpointer(handle(ver))->$f(v)
-    end
+for f in [
+        :setInlierThreshold,
+        :setOcclusionThreshold,
+        :setRegularizer,
+        :setRadiusClutter,
+        :setClutterRegularizer,
+        :setRadiusNormals,
+        :setDetectClutter,
+        ]
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(ver))->$f(\$v);")
+    @eval $f(ver::GlobalHypothesesVerification, v) = $body
 end
 
-for f in [:setDetectClutter]
-    @eval begin
-        $f(ver::GlobalHypothesesVerification, v::Bool) =
-            @cxx cxxpointer(handle(ver))->$f(v)
-    end
-end
-
-verify(ver::GlobalHypothesesVerification) = @cxx cxxpointer(handle(ver))->verify()
+verify(ver::GlobalHypothesesVerification) = icxx"$(handle(ver))->verify();"
 getMask(ver::GlobalHypothesesVerification, mask::CxxStd.StdVector) =
-    @cxx cxxpointer(handle(ver))->getMask(mask)
+    icxx"$(handle(ver))->getMask($mask);"

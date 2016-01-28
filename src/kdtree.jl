@@ -12,7 +12,7 @@ setInputCloud(kd::AbstractKdTree, cloud::PointCloud) =
 function nearestKSearch(flann::KdTreeFLANN, point, k::Integer,
     k_indices::StdVector, k_sqr_distances::StdVector)
     k = Cint(k)
-    found_neighs = @cxx cxxpointer(handle(flann))->nearestKSearch(
-        point, k, k_indices, k_sqr_distances)
+    found_neighs = icxx"$(handle(flann))->nearestKSearch($point,
+        $k, $k_indices, $k_sqr_distances);"
     Int(found_neighs)
 end

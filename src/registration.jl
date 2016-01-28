@@ -5,9 +5,8 @@ abstract AbstractRegistration
 @defconstructor IterativeClosestPointVal{T1,T2}() "pcl::IterativeClosestPoint"
 
 for f in [:setMaximumIterations, :setMaxCorrespondenceDistance]
-    @eval begin
-        $f(icp::IterativeClosestPoint, s) = @cxx cxxpointer(handle(icp))->$f(s)
-    end
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(icp))->$f(\$s);")
+    @eval $f(icp::IterativeClosestPoint, s) = $body
 end
 
 for f in [:setInputTarget, :setInputSource]
@@ -20,7 +19,6 @@ for f in [:setInputTarget, :setInputSource]
     @eval $f(icp::IterativeClosestPoint, cloud) = $body2
 end
 
-hasConverged(icp::IterativeClosestPoint) =
-    @cxx cxxpointer(handle(icp))->hasConverged()
+hasConverged(icp::IterativeClosestPoint) = icxx"$(handle(icp))->hasConverged();"
 align(icp::IterativeClosestPoint, cloud::PointCloud) =
     icxx"$(handle(icp))->align(*$(handle(cloud)));"

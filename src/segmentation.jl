@@ -49,7 +49,7 @@ setSearchMethod(s::RegionGrowingRGB, tree::KdTree) =
     setSearchMethod(s, handle(tree))
 
 extract(s::RegionGrowingRGB, clusters::CxxStd.StdVector) =
-    @cxx cxxpointer(handle(s))->extract(clusters)
+    icxx"$(handle(s))->extract($clusters);"
 
 function getColoredCloud(s::RegionGrowingRGB)
     c = icxx"$(handle(s))->getColoredCloud();"
