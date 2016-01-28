@@ -1,4 +1,5 @@
 abstract AbstractTracker
+abstract AbstractCloudCoherence
 abstract AbstractCoherence
 
 abstract AbstractKLDAdaptiveParticleFilterTracker <: AbstractTracker
@@ -7,6 +8,10 @@ compute(t::AbstractTracker) = @cxx cxxpointer(handle(t))->compute()
 
 for name in [
     :ParticleXYZRPY,
+    :ParticleXYZR,
+    :ParticleXYRPY,
+    :ParticleXYRP,
+    :ParticleXYR,
     ]
     refname = symbol(name, :Ref)
     valorref = symbol(name, :ValOrRef)
@@ -28,8 +33,11 @@ end
 for (name, type_params, supername) in [
     (:KLDAdaptiveParticleFilterTracker, (:RT,:PT), AbstractKLDAdaptiveParticleFilterTracker),
     (:KLDAdaptiveParticleFilterOMPTracker, (:RT,:PT), AbstractKLDAdaptiveParticleFilterTracker),
-    (:ApproxNearestPairPointCloudCoherence, (:T,), AbstractCoherence),
+    (:ApproxNearestPairPointCloudCoherence, (:T,), AbstractCloudCoherence),
+    (:NearestPairPointCloudCoherence, (:T,), AbstractCloudCoherence),
     (:DistanceCoherence, (:T,), AbstractCoherence),
+    (:HSVColorCoherence, (:T,), AbstractCoherence),
+    (:NormalCoherence, (:T,), AbstractCoherence),
     ]
     cxxname = "pcl::tracking::$name"
     name_with_params = Expr(:curly, name, type_params...)
@@ -103,11 +111,19 @@ for f in [
         :setSearchMethod,
         :setMaximumDistance,
         ]
-    @eval begin
-        $f(c::ApproxNearestPairPointCloudCoherence, v) =
-            @cxx cxxpointer(handle(c))->$f(v)
-    end
+    @eval $f(c::AbstractCloudCoherence, v) = @cxx cxxpointer(handle(c))->$f(v)
 end
 
-setSearchMethod(c::ApproxNearestPairPointCloudCoherence, t::AbstractOctree) =
+function addPointCoherence(c::AbstractCloudCoherence,
+        coherence::AbstractCoherence)
+    addPointCoherence(c, handle(coherence))
+end
+
+setSearchMethod(c::AbstractCloudCoherence, t::AbstractOctree) =
     setSearchMethod(c, handle(t))
+
+for f in [
+        :setWeight,
+        ]
+    @eval $f(t::AbstractCoherence, v) = @cxx cxxpointer(handle(t))->$f(v)
+end

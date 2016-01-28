@@ -184,6 +184,7 @@ function include_headers(top)
     @timevb for name in [
             "approx_nearest_pair_point_cloud_coherence.h",
             "coherence.h",
+            "normal_coherence.h",
             "distance_coherence.h",
             "hsv_color_coherence.h",
             "kld_adaptive_particle_filter_omp.h",
