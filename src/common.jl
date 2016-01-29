@@ -161,7 +161,7 @@ end
 
 length(cs::Correspondences) = convert(Int, @cxx cxxpointer(handle(cs))->size())
 push!(cs::Correspondences, c::CorrespondenceVal) =
-    @cxx cxxpointer(handle(cs))->push_back(handle(c))
+    icxx"$(handle(cs))->push_back($(handle(c)));"
 
 @defpcltype ModelCoefficients "pcl::ModelCoefficients"
 @defptrconstructor ModelCoefficients() "pcl::ModelCoefficients"
