@@ -5,20 +5,20 @@ abstract PointCloudColorHandler
 @defpcltype(PointCloudColorHandlerRGBField{T} <: PointCloudColorHandler,
     "pcl::visualization::PointCloudColorHandlerRGBField")
 
-function call{T}(::Type{PointCloudColorHandlerRGBField{T}}, cloud::PointCloud)
+function (::Type{PointCloudColorHandlerRGBField{T}}){T}(cloud::PointCloud)
     handle = @sharedptr(
         "pcl::visualization::PointCloudColorHandlerRGBField<\$T>",
         "\$(cloud.handle)")
     PointCloudColorHandlerRGBField(handle)
 end
 
-call{T}(::Type{PointCloudColorHandlerRGBField}, cloud::PointCloud{T}) =
+(::Type{PointCloudColorHandlerRGBField}){T}(cloud::PointCloud{T}) =
     PointCloudColorHandlerRGBField{T}(cloud)
 
 @defpcltype(PointCloudColorHandlerCustom{T} <: PointCloudColorHandler,
     "pcl::visualization::PointCloudColorHandlerCustom")
 
-function call{T}(::Type{PointCloudColorHandlerCustom{T}}, cloud::PointCloud,
+function (::Type{PointCloudColorHandlerCustom{T}}){T}(cloud::PointCloud,
     r, g, b)
     handle = @sharedptr(
         "pcl::visualization::PointCloudColorHandlerCustom<\$T>",
@@ -26,7 +26,7 @@ function call{T}(::Type{PointCloudColorHandlerCustom{T}}, cloud::PointCloud,
     PointCloudColorHandlerCustom(handle)
 end
 
-call{T}(::Type{PointCloudColorHandlerCustom}, cloud::PointCloud{T}, r, g, b) =
+(::Type{PointCloudColorHandlerCustom}){T}(cloud::PointCloud{T}, r, g, b) =
     PointCloudColorHandlerCustom{T}(cloud, r, g, b)
 
 const CxxPCLVisualizerPtr =

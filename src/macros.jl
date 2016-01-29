@@ -189,16 +189,16 @@ function _defconstructor_impl(expr::Expr, cxxname, is_sharedptr::Bool)
     end
 
     if type_params != nothing
-        callexpr = Expr(:call,
-            Expr(:curly, Expr(:., :Base, QuoteNode(:call)), type_params...),
-            fargs...)
+        callexpr = Expr(:call, Expr(:curly, fargs[1], type_params...),
+            fargs[2:end]...)
     else
-        callexpr = Expr(:call, Expr(:., :Base, QuoteNode(:call)), fargs...)
+        callexpr = Expr(:call, fargs...)
     end
 
     # Function definition
     def = esc(Expr(:function, callexpr, Expr(:block, body)))
     # @show def
+    # return nothing
 
     return def
 end

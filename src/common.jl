@@ -41,10 +41,10 @@ for name in [
 
     # no args constructor
     body = Expr(:macrocall, symbol("@icxx_str"), string(cppname, "();"))
-    @eval call(::Type{$name}) = $body
+    @eval (::Type{$name})() = $body
 end
 
-call(::Type{PointXYZ}, x, y, z) = icxx"pcl::PointXYZ($x, $y, $z);"
+(::Type{PointXYZ})(x, y, z) = icxx"pcl::PointXYZ($x, $y, $z);"
 
 import Base: show
 
@@ -107,7 +107,7 @@ function setindex!(cloud::PointCloud, v, i::Integer, name::Symbol)
 end
 
 """Create PointCloud instance and then load PCD data."""
-function call{T}(::Type{PointCloud{T}}, pcd_file::AbstractString)
+function (::Type{PointCloud{T}}){T}(pcd_file::AbstractString)
     handle = @sharedptr "pcl::PointCloud<\$T>"
     cloud = PointCloud(handle)
     pcl.loadPCDFile(pcd_file, cloud)

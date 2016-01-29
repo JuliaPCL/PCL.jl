@@ -27,7 +27,7 @@ for name in [
 
     # no args constructor
     body = Expr(:macrocall, symbol("@icxx_str"), string(cppname, "();"))
-    @eval call(::Type{$name}) = $body
+    @eval (::Type{$name})() = $body
 end
 
 for (name, type_params, supername) in [
