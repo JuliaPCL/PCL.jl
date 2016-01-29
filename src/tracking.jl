@@ -4,7 +4,7 @@ abstract AbstractCoherence
 
 abstract AbstractKLDAdaptiveParticleFilterTracker <: AbstractTracker
 
-compute(t::AbstractTracker) = @cxx cxxpointer(handle(t))->compute()
+compute(t::AbstractTracker) = icxx"$(handle(t))->compute();"
 
 for name in [
     :ParticleXYZRPY,
