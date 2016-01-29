@@ -30,7 +30,7 @@ end
 
 f = Freenect2()
 device = openDefaultDevice(f, OpenGLPacketPipeline())
-listener = SyncMultiFrameListener()
+listener = SyncMultiFrameListenerPtr()
 setIrAndDepthFrameListener(device, listener)
 setColorFrameListener(device, listener)
 
@@ -39,8 +39,8 @@ start(device)
 # NOTE: must be called after start(device)
 registration = Registration(getIrCameraParams(device),
     getColorCameraParams(device))
-undistorted = FrameContainer(w, h, 4, key=Libfreenect2.FRAME_DEPTH)
-registered = FrameContainer(w, h, 4, key=Libfreenect2.FRAME_COLOR)
+undistorted = FramePtr(w, h, 4, key=Libfreenect2.FRAME_DEPTH)
+registered = FramePtr(w, h, 4, key=Libfreenect2.FRAME_COLOR)
 
 info("Prepare PCL visualizer...")
 global viewer = pcl.PCLVisualizer("pcl visualizer")
@@ -51,6 +51,7 @@ color_handler = pcl.PointCloudColorHandlerRGBField(cloud)
 pcl.addPointCloud(viewer, cloud, color_handler, id="libfreenect2")
 
 global should_save = false
+if !isdefined(:viewer_cb_defined) && VERSION < v"0.5.0-dev+2396"
 cxx"""
 void viewer_cb(const pcl::visualization::KeyboardEvent &event) {
     std::cout << "key event:" << event.getKeyCode() << std::endl;
@@ -59,7 +60,11 @@ void viewer_cb(const pcl::visualization::KeyboardEvent &event) {
     }
 }
 """
-icxx"$(pcl.handle(viewer))->registerKeyboardCallback(viewer_cb);"
+const viewer_cb_defined = true
+end
+if VERSION < v"0.5.0-dev+2396"
+    icxx"$(pcl.handle(viewer))->registerKeyboardCallback(viewer_cb);"
+end
 
 while !pcl.wasStopped(viewer)
     frames = waitForNewFrame(listener)
@@ -84,9 +89,14 @@ while !pcl.wasStopped(viewer)
     pcl.updatePointCloud(viewer, cloud, color_handler, id="libfreenect2")
     pcl.spinOnce(viewer, 1)
 
-    map(release, [color, ir, depth])
+    release(frames)
+
+    rand() > 0.95 && gc(false)
 end
 
 stop(device)
 close(device)
+release(listener)
+foreach(release, [undistorted, registered])
+
 close(viewer)
