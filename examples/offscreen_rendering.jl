@@ -20,5 +20,10 @@ green_handler = pcl.PointCloudColorHandlerCustom(cloud, 0, 255, 0)
 pcl.addPointCloud(viewer, cloud, red_handler, id="cloud")
 pcl.addPointCloud(viewer, cloud_filtered, green_handler, id="cloud_filtered")
 
-dst_filename = "test.png"
+dst_filename = string(tempname() |> x -> split(x, '/')[end], ".png")
 pcl.renderToPng(viewer, dst_filename)
+@assert isfile(dst_filename)
+
+println("renderToPng: $dst_filename was created")
+rm(dst_filename)
+println("$dst_filename was sucessfully removed")

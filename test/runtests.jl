@@ -151,6 +151,7 @@ for f in [
         "statistical_removal",
         "region_growing_rgb_segmentation",
         "extract_indices",
+        "offscreen_rendering",
         ]
     @testset "$f" begin
         include(joinpath(tutorial_dir, string(f, ".jl")))
