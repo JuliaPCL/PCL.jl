@@ -124,10 +124,8 @@ macro defpcltype(expr, cxxname)
     def = esc(quote
         $typdef
         $typaliases
-        has_sharedptr(x::$jlname_noparams_ptr) = true
-        has_sharedptr(x::$jlname_noparams_val) = false
-        handle(x::$jlname_noparams_ptr) = x.handle
-        handle(x::$jlname_noparams_val) = x.handle
+        @inline handle(x::$jlname_noparams_ptr) = x.handle
+        @inline handle(x::$jlname_noparams_val) = x.handle
     end)
 
     # @show def

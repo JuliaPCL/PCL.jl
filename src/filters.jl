@@ -3,8 +3,6 @@ import Base: call, filter
 abstract AbstractFilter
 abstract AbstractVoxelGridFilter <: AbstractFilter
 
-@inline handle(f::AbstractFilter) = f.handle
-
 setInputCloud(f::AbstractFilter, cloud::PointCloud) =
     icxx"$(handle(f))->setInputCloud($(handle(cloud)));"
 filter(f::AbstractFilter, cloud::cxxt"boost::shared_ptr<std::vector<int>>") =

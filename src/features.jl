@@ -13,8 +13,6 @@ abstract AbstractFeatureEstimator
 abstract AbstractNormalEstimator <: AbstractFeatureEstimator
 abstract AbstractSHOTEstimator <: AbstractFeatureEstimator
 
-@inline handle(fe::AbstractFeatureEstimator) = fe.handle
-
 setRadiusSearch(n::AbstractFeatureEstimator, rad) =
     icxx"$(handle(n))->setRadiusSearch($rad);"
 
