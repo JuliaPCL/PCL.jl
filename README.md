@@ -6,6 +6,7 @@ Note that PCL.jl was started as an experimental project.
 
 ## Dependencies
 
+- [Julia](https://github.com/JuliaLang/julia) (master)
 - [Cxx.jl](https://github.com/Keno/Cxx.jl)
 - [pcl](https://github.com/PointCloudLibrary/pcl) (master)
 
