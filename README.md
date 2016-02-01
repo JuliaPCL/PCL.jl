@@ -38,7 +38,11 @@ julia> PCL.pcl.libpcl_common
 
 ### Notes for osx
 
-- 
+```
+brew install cmake openni openni2 qhull boost glew flann eigen libusb vtk  
+```
+
+may help to build PCL.
 
 ## How it works
 
