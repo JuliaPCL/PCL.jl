@@ -44,6 +44,39 @@ brew install cmake openni openni2 qhull boost glew flann eigen libusb vtk
 
 may help to build PCL.
 
+## Documentation
+
+Please check the http://www.pointclouds.org/documentation/.
+
+## API
+
+- Function names should be exactly same between Julia and C++.
+- C++ template classes are available in Julia as templated types
+- Single namespace `pcl` in Julia (**inconsisten betweenJulia and C++. Might change**)
+- C++ dereferences which sometimes needed in C++, are hidden in implementation in Julia
+
+e.g. 
+
+In C++:
+
+```cpp
+pcl::PassThrough<pcl::PointXYZ> pass;
+pass.setInputCloud (cloud);
+pass.setFilterFieldName ("z");
+pass.setFilterLimits (0.0, 1.0);
+pass.filter (*cloud_filtered);
+```
+
+In Julia:
+
+```jl
+pass = pcl.PassThrough{pcl.PointXYZ}()
+pcl.setInputCloud(pass, cloud)
+pcl.setFilterFieldName(pass, "z")
+pcl.setFilterLimits(pass, 0.0, 1.0)
+pcl.filter(pass, cloud_filtered)
+```
+
 ## How it works
 
 ### PCLVisualizer [[code]](examples/pcl_visualizer.jl)
@@ -73,3 +106,12 @@ Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v
 <div align="center"><img src="examples/images/region_growing_rgb_segmentation.png" /></div>
 
 You can find more examples in [examples directory](examples/).
+
+## Something missing?
+
+You have two solutions:
+
+1. Write C++ using Cxx.jl. No glue code is required, but cannot get full benefit of Julia.
+2. Write Julia glue code (e.g. Julia type for C++ class, with appropriate generic functions), need certain work to maintain though.
+
+Currently PCL.jl takes the second approach. I'm still thinking what is the best way to make PCL.jl more usable.
