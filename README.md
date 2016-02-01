@@ -39,7 +39,7 @@ julia> PCL.pcl.libpcl_common
 ### Notes for osx
 
 ```
-brew install cmake openni openni2 qhull boost glew flann eigen libusb vtk  
+brew install cmake openni openni2 qhull boost glew flann eigen libusb vtk
 ```
 
 may help to build PCL.
@@ -55,7 +55,7 @@ Please check the http://www.pointclouds.org/documentation/.
 - Single namespace `pcl` in Julia (**inconsisten betweenJulia and C++. Might change**)
 - C++ dereferences which sometimes needed in C++, are hidden in implementation in Julia
 
-e.g. 
+e.g.
 
 In C++:
 
