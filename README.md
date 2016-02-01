@@ -52,7 +52,7 @@ Please check the http://www.pointclouds.org/documentation/.
 
 - Function names should be exactly same between Julia and C++.
 - C++ template classes are available in Julia as templated types
-- Single namespace `pcl` in Julia (**inconsisten betweenJulia and C++. Might change**)
+- Single namespace `pcl` in Julia (**inconsistent between Julia and C++. Might change**)
 - C++ dereferences which sometimes needed in C++, are hidden in implementation in Julia
 
 e.g.
