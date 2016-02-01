@@ -2,12 +2,12 @@
 
 A Julia interface for [Point Cloud Library (PCL)](http://www.pointclouds.org/)
 
-Note that PCL.jl was started as an experimental project.
+Note that PCL.jl was started as an experimental project and is very much work in progress. Currently only tested on osx 10.10.4.
 
 ## Dependencies
 
 - [Julia](https://github.com/JuliaLang/julia) (master)
-- [Cxx.jl](https://github.com/Keno/Cxx.jl)
+- [Cxx.jl](https://github.com/Keno/Cxx.jl) (master)
 - [pcl](https://github.com/PointCloudLibrary/pcl) (master)
 
 ## Installation
@@ -35,6 +35,10 @@ julia> using PCL
 julia> PCL.pcl.libpcl_common
 "$your_home_dir_path/.julia/v0.5/PCL/deps/usr/lib/libpcl_common.dylib"
 ```
+
+### Notes for osx
+
+- 
 
 ## How it works
 
