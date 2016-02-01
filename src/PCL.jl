@@ -78,10 +78,7 @@ if has_vtk_backend
     VERBOSE && info("vtk version: $vtk_version")
 end
 
-function include_headers(top)
-    # This is necesarry, but not sure why...
-    cxx"""#include <iostream>"""
-
+function add_header_dirs(top)
     # Boost (required)
     addHeaderDir(BOOST_INCLUDE_DIR, kind=C_System)
 
@@ -94,6 +91,11 @@ function include_headers(top)
     # PCL top directory
     addHeaderDir(top, kind=C_System)
     addHeaderDir(joinpath(top, "pcl"), kind=C_System)
+end
+
+function include_headers(top="")
+    # This is necesarry, but not sure why...
+    cxx"""#include <iostream>"""
 
     # top level
     VERBOSE && info("Include pcl top-level headers")
@@ -197,7 +199,6 @@ function include_headers(top)
     end
 end
 
-
 const system_include_top = "/usr/local/include"
 const local_include_top = joinpath(Pkg.dir("PCL", "deps", "usr", "include"))
 
@@ -222,7 +223,9 @@ else
 end
 
 VERBOSE && info("pcl_version: $pcl_version")
-include_headers(joinpath(topdir_to_be_included, "pcl-$pcl_version"))
+pcl_top_path = joinpath(topdir_to_be_included, "pcl-$pcl_version")
+add_header_dirs(pcl_top_path)
+include_headers(pcl_top_path)
 
 # Check boost version
 const _BOOST_VERSION = icxx"BOOST_VERSION;"
