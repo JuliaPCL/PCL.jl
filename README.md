@@ -12,16 +12,25 @@ Note that PCL.jl was started as an experimental project and is very much work in
 
 ## Installation
 
-You fist need to install [Cxx.jl](https://github.com/Keno/Cxx.jl). And then, you can install PCL.jl by:
+You fist need to install [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl). And then, you can install PCL.jl by:
 
 ```jl
 Pkg.clone("https://github.com/r9y9/PCL.jl.git")
 Pkg.build("PCL")
 ```
 
+**NOTE** 2016/02/02: at the moment, I recommend you to use [r9y9/Cxx.jl](https://github.com/r9y9/Cxx.jl) instead of [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl). This is required to pass all unittests in PCL.jl for now. 
+
 This should install PCL.jl and resolve its binary dependency property. Note that building PCL library (C++) is relatively complex (needs boost, flann, vtk, etc.), so you are recommended to check if PCL is able to build successfully first, and then build PCL.jl.
 
-By default, `Pkg.build("PCL")` will try to find system-installed PCL libraries. If you have already PCL libraries installed, you don't have to re-build PCL for PCL.jl, however, this might cause incompatibility to PCL.jl depends on your PCL version. If you have any problem with system-installed ones, please try to ignore them and rebuild PCL.jl by:
+By default, `Pkg.build("PCL")` will try to find system-installed PCL libraries. If you have already PCL libraries installed, you don't have to re-build PCL for PCL.jl, however, this might cause incompatibility to PCL.jl depends on your PCL version. If you have any problem with system-installed ones, please try to ignore them and rebuild PCL.jl as follows:
+
+In your terminal:
+```
+% export DYLD_LIBRARY_PATH=$HOME/.julia/v0.5/PCL/deps/usr/lib
+```
+
+and then in Julia REPL:
 
 ```jl
 julia> ENV["PCLJL_LIBRARY_IGNORE_PATH"] = "/usr/lib:/usr/local/lib" # depends on your environment
