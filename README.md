@@ -116,6 +116,10 @@ Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v
 
 You can find more examples in [examples directory](examples/).
 
+### Jupyter integration
+
+http://nbviewer.jupyter.org/gist/r9y9/6ed9a1d0b46993d374f5
+
 ## Something missing?
 
 You have two solutions:
