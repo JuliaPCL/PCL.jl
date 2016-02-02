@@ -12,7 +12,7 @@ Note that PCL.jl was started as an experimental project and is very much work in
 
 ## Installation
 
-You fist need to install [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl). And then, you can install PCL.jl by:
+You first need to install [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl). And then, you can install PCL.jl by:
 
 ```jl
 Pkg.clone("https://github.com/r9y9/PCL.jl.git")
