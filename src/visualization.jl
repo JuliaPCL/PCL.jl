@@ -125,6 +125,30 @@ function removePointCloud(viewer::PCLVisualizer;
     icxx"$(handle(viewer))->removePointCloud($(pointer(id)), $viewport);"
 end
 
+function addText(viewer::PCLVisualizer, text::AbstractString, xpos, ypos;
+        id::AbstractString="", viewport::Int=0)
+    icxx"$(handle(viewer))->addText($(pointer(text)), $xpos, $ypos,
+        $(pointer(id)), $viewport);"
+end
+
+function addText(viewer::PCLVisualizer, text::AbstractString, xpos, ypos,
+        r, g, b; id::AbstractString="", viewport::Int=0)
+    icxx"$(handle(viewer))->addText($(pointer(text)), $xpos, $ypos,
+        $r, $g, $b, $(pointer(id)), $viewport);"
+end
+
+function updateText(viewer::PCLVisualizer, text::AbstractString, xpos, ypos;
+        id::AbstractString="")
+    icxx"$(handle(viewer))->updateText($(pointer(text)), $xpos, $ypos,
+        $(pointer(id)));"
+end
+
+function updateText(viewer::PCLVisualizer, text::AbstractString, xpos, ypos,
+        r, g, b; id::AbstractString="")
+    icxx"$(handle(viewer))->updateText($(pointer(text)), $xpos, $ypos,
+        $r, $g, $b, $(pointer(id)));"
+end
+
 function run(viewer::PCLVisualizer; spin::Int=1, sleep::Int=100000)
     icxx"""
     while (!$(viewer.handle)->wasStopped()) {
