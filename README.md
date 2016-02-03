@@ -51,6 +51,13 @@ julia> PCL.pcl.libpcl_common
 brew install cmake openni openni2 qhull boost glew flann eigen libusb vtk
 ```
 
+and 
+
+```
+export OPENNI2_INCLUDE=/usr/local/include/ni2
+export OPENNI2_REDIST=/usr/local/lib/ni2
+```
+
 may help to build PCL.
 
 ## Documentation
