@@ -141,16 +141,7 @@ function (::Type{PointCloud{T}}){T}(path::AbstractString)
     handle = @sharedptr "pcl::PointCloud<\$T>"
     cloud = PointCloud(handle)
     @assert !isempty(path)
-    ext = splitext(path)[2]
-    if ext == ".pcd"
-        pcl.loadPCDFile(path, cloud)
-    elseif ext == ".obj"
-        pcl.loadOBJFile(path, cloud)
-    elseif ext == ".ply"
-        pcl.loadPLYFile(path, cloud)
-    else
-        warn("unknown file format: $ext")
-    end
+    pcl.load(path, cloud)
     return cloud
 end
 

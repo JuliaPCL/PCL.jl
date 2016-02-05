@@ -124,7 +124,7 @@ function include_headers(top="")
 
     # io
     VERBOSE && info("Include pcl::io headers")
-    @timevb for name in ["pcd_io.h", "ply_io.h", "obj_io.h"]
+    @timevb for name in ["pcd_io.h", "ply_io.h", "obj_io.h", "auto_io.h"]
         cxxinclude(joinpath(top, "pcl", "io", name))
     end
 

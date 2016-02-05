@@ -4,6 +4,7 @@ for f in [
         :loadPCDFile,
         :loadOBJFile,
         :loadPLYFile,
+        :load,
         ]
     ex = Expr(:macrocall, symbol("@icxx_str"),
         "pcl::io::$f(\$(pointer(s)), *\$(handle(cloud)));")
@@ -22,6 +23,7 @@ for f in [
         :savePCDFile,
         :saveOBJFile,
         :savePLYFile,
+        :save,
         ]
     ex = Expr(:macrocall, symbol("@icxx_str"),
         "pcl::io::$f(\$(pointer(s)), *\$(handle(cloud)));")
