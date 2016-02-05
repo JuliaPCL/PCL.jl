@@ -1,18 +1,38 @@
 ### io ###
 
-function loadPCDFile{T}(s::AbstractString, cloud::PointCloud{T})
-    ret = @cxx pcl::io::loadPCDFile(pointer(s), cxxderef(handle(cloud)))
-    if ret != 0
-        error("failed to load PCD file: code $ret")
+for f in [
+        :loadPCDFile,
+        :loadOBJFile,
+        :loadPLYFile,
+        ]
+    ex = Expr(:macrocall, symbol("@icxx_str"),
+        "pcl::io::$f(\$(pointer(s)), *\$(handle(cloud)));")
+    @eval begin
+        function $f{T}(s::AbstractString, cloud::PointCloud{T})
+            ret = $ex
+            if ret != 0
+                error("failed to $f: code $ret")
+            end
+            ret
+        end
     end
-    ret
 end
 
-function savePCDFile{T}(s::AbstractString, cloud::PointCloud{T};
-        binary_mode=true)
-    ret = @cxx pcl::io::savePCDFile(pointer(s), cxxderef(handle(cloud)), binary_mode)
-    if ret != 0
-        error("failed to save PCD file: code $ret")
+for f in [
+        :savePCDFile,
+        :saveOBJFile,
+        :savePLYFile,
+        ]
+    ex = Expr(:macrocall, symbol("@icxx_str"),
+        "pcl::io::$f(\$(pointer(s)), *\$(handle(cloud)));")
+    @eval begin
+        function $f{T}(s::AbstractString, cloud::PointCloud{T};
+                binary_mode::Bool=true)
+            ret = $ex
+            if ret != 0
+                error("failed to $f: code $ret")
+            end
+            ret
+        end
     end
-    ret
 end

@@ -137,10 +137,20 @@ function setindex!(cloud::PointCloud, v, i::Integer, name::Symbol)
 end
 
 """Create PointCloud instance and then load PCD data."""
-function (::Type{PointCloud{T}}){T}(pcd_file::AbstractString)
+function (::Type{PointCloud{T}}){T}(path::AbstractString)
     handle = @sharedptr "pcl::PointCloud<\$T>"
     cloud = PointCloud(handle)
-    pcl.loadPCDFile(pcd_file, cloud)
+    @assert !isempty(path)
+    ext = splitext(path)[2]
+    if ext == ".pcd"
+        pcl.loadPCDFile(path, cloud)
+    elseif ext == ".obj"
+        pcl.loadOBJFile(path, cloud)
+    elseif ext == ".ply"
+        pcl.loadPLYFile(path, cloud)
+    else
+        warn("unknown file format: $ext")
+    end
     return cloud
 end
 
