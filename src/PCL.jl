@@ -7,15 +7,17 @@ module pcl
 
 const VERBOSE = Bool(parse(Int, get(ENV, "PCLJL_VERBOSE", "1")))
 
-const BOOST_INCLUDE_DIR = get(ENV, "BOOST_INCLUDE_DIR", "/usr/local/include")
-const FLANN_INCLUDE_DIR = get(ENV, "FLANN_INCLUDE_DIR", "/usr/local/include")
+const BOOST_INCLUDE_DIR = get(ENV, "BOOST_INCLUDE_DIR",
+    @osx? "/usr/local/include" : "/usr/include")
+const FLANN_INCLUDE_DIR = get(ENV, "FLANN_INCLUDE_DIR",
+    @osx? "/usr/local/include" : "/usr/include")
 const EIGEN_INCLUDE_DIR = get(ENV, "EIGEN_INCLUDE_DIR",
-    "/usr/local/include/eigen3")
+    @osx? "/usr/local/include/eigen3" : "/usr/include/eigen3")
 
 searchdir(path, key) = filter(x->contains(x, key), readdir(path))
 
 const VTK_INCLUDE_DIR_PARENT = get(ENV, "VTK_INCLUDE_DIR_PARENT",
-    "/usr/local/include")
+    @osx? "/usr/local/include" : "/usr/include")
 
 # Search GUI backend
 vtk_dirs = searchdir(VTK_INCLUDE_DIR_PARENT, "vtk-")
