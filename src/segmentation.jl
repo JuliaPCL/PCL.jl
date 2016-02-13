@@ -29,7 +29,8 @@ for f in [
     :setMaxIterations,
     :setDistanceThreshold,
     ]
-    @eval $f(s::SACSegmentation, arg) = @cxx cxxpointer(handle(s))->$f(arg)
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(s))->$f(\$arg);")
+    @eval $f(s::SACSegmentation, arg) = $body
 end
 
 for f in [
@@ -42,7 +43,8 @@ for f in [
     :setSmoothnessThreshold,
     :setCurvatureThreshold,
     ]
-    @eval $f(s::RegionGrowingRGB, arg) = @cxx cxxpointer(handle(s))->$f(arg)
+    body = Expr(:macrocall, symbol("@icxx_str"), "\$(handle(s))->$f(\$arg);")
+    @eval $f(s::RegionGrowingRGB, arg) = $body
 end
 
 setSearchMethod(s::RegionGrowingRGB, tree::KdTree) =

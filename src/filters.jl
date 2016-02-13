@@ -42,7 +42,7 @@ for f in [:setKeepOrganized, :setFilterLimitsNegative]
 end
 
 setLeafSize(v::AbstractVoxelGridFilter, lx, ly, lz) =
-    @cxx cxxpointer(handle(v))->setLeafSize(lx, ly, lz)
+    icxx"$(handle(v))->setLeafSize($lx, $ly, $lz);"
 
 
 for f in [:setMeanK, :setStddevMulThresh]

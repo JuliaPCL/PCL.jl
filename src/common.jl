@@ -4,10 +4,6 @@ import Base: call, eltype, length, size, getindex, setindex!, push!
 
 typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
 
-cxxpointer(p) = p
-cxxpointer(p::SharedPtr) = @cxx p->get()
-cxxderef(x) = icxx"*$x;"
-
 ### PointType definitions ###
 
 # from PCL_POINT_TYPES in point_types.hpp
@@ -190,7 +186,7 @@ end
 @defpcltype Correspondences "pcl::Correspondences"
 @defptrconstructor Correspondences() "pcl::Correspondences"
 
-length(cs::Correspondences) = convert(Int, @cxx cxxpointer(handle(cs))->size())
+length(cs::Correspondences) = convert(Int, icxx"$(handle(cs))->size();")
 push!(cs::Correspondences, c::CorrespondenceVal) =
     icxx"$(handle(cs))->push_back($(handle(c)));"
 

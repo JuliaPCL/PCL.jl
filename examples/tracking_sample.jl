@@ -5,8 +5,6 @@ using PCL
 using Libfreenect2
 using Cxx
 
-import PCL.pcl: handle, cxxderef, cxxpointer
-
 RT = pcl.PointXYZRGB
 PT = pcl.ParticleXYZRPY
 
