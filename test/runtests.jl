@@ -14,6 +14,15 @@ table_scene_lms400_path = joinpath(dirname(@__FILE__), "data",
     @test icxx"$v->size();" == 0
     v = @sharedptr "std::vector<double>" "10"
     @test icxx"$v->size();" == 10
+
+    cloud = pcl.PointCloud{pcl.PointXYZ}()
+    @test pcl.use_count(cloud) == 1
+    cloud_copy = copy(cloud)
+    @test pcl.use_count(cloud) == 2
+    @test pcl.use_count(cloud_copy) == 2
+    cloud_copy = 0
+    gc()
+    @test pcl.use_count(cloud) == 1
 end
 
 @testset "Point types" begin

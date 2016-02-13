@@ -3,6 +3,7 @@
 import Base: call, eltype, length, size, getindex, setindex!, push!
 
 typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
+use_count(s::SharedPtr) = icxx"$s.use_count();"
 
 ### PointType definitions ###
 
@@ -118,7 +119,9 @@ function deepcopy{T}(cloud::PointCloud{T})
     cloud_out
 end
 
-copy(cloud::PointCloud) = cloud
+function copy(cloud::PointCloud)
+    PointCloud(icxx"auto c = $(cloud.handle); return c;")
+end
 
 getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud))->at($i);"
 

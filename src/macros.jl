@@ -1,3 +1,5 @@
+using Cxx
+
 function remove_type_annotation(e)
     if isa(e, Symbol)
         return e
@@ -126,6 +128,7 @@ macro defpcltype(expr, cxxname)
         $typaliases
         @inline handle(x::$jlname_noparams_ptr) = x.handle
         @inline handle(x::$jlname_noparams_val) = x.handle
+        use_count(x::$jlname_noparams_ptr) = icxx"$(x.handle).use_count();"
     end)
 
     # @show def
