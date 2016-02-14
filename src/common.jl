@@ -144,6 +144,8 @@ function (::Type{PointCloud{T}}){T}(path::AbstractString)
     return cloud
 end
 
+push!{T}(cloud::PointCloud{T}, p) = icxx"$(handle(cloud))->push_back($p);"
+
 length(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->size();")
 width(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->width;")
 height(cloud::PointCloud) = convert(Int, icxx"$(handle(cloud))->height;")
