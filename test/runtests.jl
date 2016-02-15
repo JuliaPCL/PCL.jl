@@ -14,7 +14,10 @@ table_scene_lms400_path = joinpath(dirname(@__FILE__), "data",
     @test icxx"$v->size();" == 0
     v = @sharedptr "std::vector<double>" "10"
     @test icxx"$v->size();" == 10
+end
 
+# TODO: The test below will fail in @testset (but why?)
+let
     cloud = pcl.PointCloud{pcl.PointXYZ}()
     @test pcl.use_count(cloud) == 1
     cloud_copy = copy(cloud)
@@ -66,6 +69,10 @@ end
 
     @test typeof(pcl.PointCloud{eltype(cloud)}()) == typeof(cloud)
     @test typeof(similar(cloud)) == typeof(cloud)
+
+    cloud = pcl.PointCloud{pcl.PointXYZ}()
+    push!(cloud, pcl.PointXYZ(5,5,5))
+    @test length(cloud) == 1
 end
 
 @testset "PointCloudVal" begin
