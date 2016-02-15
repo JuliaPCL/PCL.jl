@@ -67,6 +67,7 @@ srcdir = joinpath(BinDeps.depsdir(pcl_common), "src", "pcl-$(pcl_git_version)")
 cmake_options = [
     "-DCMAKE_INSTALL_PREFIX=$prefix",
     "-DPCL_SHARED_LIBS=ON",
+    "-DBUILD_tools=OFF",
     "-DCMAKE_BUILD_TYPE=Release",
 ]
 
