@@ -23,10 +23,9 @@ for f in [
         :savePCDFile,
         :saveOBJFile,
         :savePLYFile,
-        :save,
         ]
     ex = Expr(:macrocall, symbol("@icxx_str"),
-        "pcl::io::$f(\$(pointer(s)), *\$(handle(cloud)));")
+        "pcl::io::$f(\$(pointer(s)), *\$(handle(cloud)), \$binary_mode);")
     @eval begin
         function $f{T}(s::AbstractString, cloud::PointCloud{T};
                 binary_mode::Bool=true)
