@@ -1,6 +1,6 @@
 ### common ###
 
-import Base: call, eltype, length, size, getindex, setindex!, push!
+import Base: call, eltype, length, size, getindex, setindex!, push!, convert
 
 typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
 use_count(s::SharedPtr) = icxx"$s.use_count();"
@@ -121,6 +121,17 @@ end
 
 function copy(cloud::PointCloud)
     PointCloud(icxx"auto c = $(cloud.handle); return c;")
+end
+
+"""
+Converts a point cloud to a different type of point cloud
+
+e.g. PointCloud{PointXYZRGB} to PointCloud{PointXYZ}
+"""
+function convert{T}(::Type{PointCloud{T}}, cloud::PointCloud)
+    cloud_out = PointCloud{T}()
+    icxx"pcl::copyPointCloud(*$(handle(cloud)), *$(handle(cloud_out)));"
+    cloud_out
 end
 
 getindex(cloud::PointCloud, i::Integer) = icxx"$(handle(cloud))->at($i);"

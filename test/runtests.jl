@@ -75,6 +75,25 @@ end
     @test length(cloud) == 1
 end
 
+@testset "PointCloud conversions" begin
+    milk_cloud = pcl.PointCloud{pcl.PointXYZRGBA}(milk_cartoon_path)
+    non_nan_idx = 100000
+    @assert non_nan_idx < length(milk_cloud)
+
+    milk_cloud_xyzrgb = convert(pcl.PointCloud{pcl.PointXYZRGB}, milk_cloud)
+    @test isa(milk_cloud_xyzrgb, typeof(pcl.PointCloud{pcl.PointXYZRGB}()))
+    for (s, T) in [(:x, Float32), (:y, Float32), (:z, Float32),
+            (:r, UInt8), (:g, UInt8), (:b, UInt8)]
+        @test T(milk_cloud_xyzrgb[non_nan_idx,s]) == T(milk_cloud[non_nan_idx,s])
+    end
+
+    milk_cloud_xyz = convert(pcl.PointCloud{pcl.PointXYZ}, milk_cloud)
+    @test isa(milk_cloud_xyz, typeof(pcl.PointCloud{pcl.PointXYZ}()))
+    for (s, T) in [(:x, Float32), (:y, Float32), (:z, Float32)]
+        @test T(milk_cloud_xyzrgb[non_nan_idx,s]) == T(milk_cloud[non_nan_idx,s])
+    end
+end
+
 @testset "PointCloudVal" begin
     cloud = pcl.PointCloudVal{pcl.PointXYZ}(2,3)
     @test length(cloud) == 6
