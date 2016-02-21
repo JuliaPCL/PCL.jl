@@ -114,6 +114,10 @@ end
 eltype{T}(cloud::PointCloud{T}) = T
 eltype{T}(cloud::PointCloudVal{T}) = T
 
+function show(io::IO, cloud::Union{PointCloudPtr,PointCloudVal})
+    print(io, "$(length(cloud))-element " * string(typeof(cloud)))
+end
+
 import Base: similar
 
 similar{T}(cloud::PointCloud{T}) = PointCloud{T}(width(cloud), height(cloud))
