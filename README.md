@@ -6,7 +6,7 @@ Note that PCL.jl was started as an experimental project and is very much work in
 
 ## Why?
 
-PCL.jl was stated as an experimental project to give us **fast prototyping** using PCL in interactive environment, without much loss of computational efficiency and flexibility. 
+PCL.jl was stated to give us **fast prototyping** using PCL in interactive environment, without much loss of computational efficiency and flexibility. 
 
 You might find that there is already a python binding ([strawlab/python-pcl](https://github.com/strawlab/python-pcl)) for the purpose, however, it lacks flexibility in particular; it only supports `PointXYZ` for point clouds at the moment. I guess the reason why it doesn't support arbitary point types for point clouds is that there is not elegant and simple way to expose C++ templated classes in python ([actually I tried](https://github.com/r9y9/pypcl), but couldn't figure it out). Since I wanted to use arbiraty point types for point clouds, I decided to create a new one.
 
