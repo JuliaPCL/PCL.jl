@@ -1,7 +1,7 @@
 ### recognition ###
 
 VERBOSE && info("Include pcl::recognition headers")
-@timevb @timevb cxx"""
+@timevb cxx"""
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
 #include <pcl/recognition/hv/hv_go.h>
