@@ -65,6 +65,11 @@ for mod in [
         :visualization,
         ]
     libpath = joinpath(libdir, string("libpcl_", mod, ext))
+    if !Bool(parse(Int, get(ENV, "PCLJL_LOAD_$mod", "1")))
+        VERBOSE && println("disabled: module $(string(mod))")
+        modules[mod] = false
+        continue
+    end
     if isfile(libpath)
         modules[mod] = true
         libname = symbol(:libpcl_, mod)
@@ -74,6 +79,7 @@ for mod in [
         end
         VERBOSE && println("enabled: module $(string(mod))")
     else
+        VERBOSE && warn("not found: module $(string(mod))")
         modules[mod] = false
     end
 end
