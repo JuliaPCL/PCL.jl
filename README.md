@@ -1,6 +1,6 @@
 # PCL
 
-A Julia interface for [Point Cloud Library (PCL)](http://www.pointclouds.org/)
+A Julia interface for the [Point Cloud Library (PCL)](http://www.pointclouds.org/)
 
 Note that PCL.jl was started as an experimental project and is very much work in progress. Currently only tested on osx 10.10.4.
 
@@ -8,9 +8,9 @@ Note that PCL.jl was started as an experimental project and is very much work in
 
 PCL.jl was stated as an experimental project to give us **fast prototyping** using PCL in interactive environment, without much loss of computational efficiency and flexibility. 
 
-You might find that there is already python binding ([strawlab/python-pcl](https://github.com/strawlab/python-pcl)) for the purpose, however, it lacks flexibility in particular; it only supports `PointXYZ` for point clouds at the moment. I guess the reason why it doesn't support arbitary point types for point cloud is that there is not elegant and simple way to expose C++ templated classes in python ([actually I tried](https://github.com/r9y9/pypcl), but couldn't figure it out). Since I wanted to use arbiraty point types for point clouds, I decided to create a new one.
+You might find that there is already a python binding ([strawlab/python-pcl](https://github.com/strawlab/python-pcl)) for the purpose, however, it lacks flexibility in particular; it only supports `PointXYZ` for point clouds at the moment. I guess the reason why it doesn't support arbitary point types for point clouds is that there is not elegant and simple way to expose C++ templated classes in python ([actually I tried](https://github.com/r9y9/pypcl), but couldn't figure it out). Since I wanted to use arbiraty point types for point clouds, I decided to create a new one.
 
-The reasons why I started writing the [Julia](http://julialang.org/) binding are:
+The reasons why I started writing the [Julia](http://julialang.org/) (not python) binding are:
 
 - The Julia C++ interface [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl) is quite powerful.
  - It enables us to call C++ functions/methods directly from Julia *without any glue code* (unlike cython and swig), embed C++ into Julia and vise versa.
@@ -18,7 +18,7 @@ The reasons why I started writing the [Julia](http://julialang.org/) binding are
  - e.g. C++ `pcl::PointCloud<T>` can be represented as `PointCloud{T}` in Julia
  - I thought it's suitable to wrap PCL's heavily templated APIs. 
 
-I couldn't imagine that I'd create a similar binding with another language. There is a blog post that explains why I created PCL.jl (in Japanese): [Trying-to-use-pcl-in-dynamic-language | LESS IS MORE](http://r9y9.github.io/blog/2016/01/18/trying-to-use-pcl-in-dynamic-language/).
+I couldn't imagine that I'd create a binding with another language. There is a blog post that explains why I created PCL.jl (in Japanese): [Trying-to-use-pcl-in-dynamic-language | LESS IS MORE](http://r9y9.github.io/blog/2016/01/18/trying-to-use-pcl-in-dynamic-language/).
 
 ### Comparison to python-pcl
 
@@ -153,17 +153,18 @@ Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v
 
 <div align="center"><img src="examples/images/region_growing_rgb_segmentation.png" /></div>
 
-You can find more examples in [examples directory](examples/).
-
 ### Jupyter integration
 
 http://nbviewer.jupyter.org/gist/r9y9/6ed9a1d0b46993d374f5
+
+
+You can find more examples in [examples directory](examples/).
 
 ## Something missing?
 
 You have two solutions:
 
 1. Write C++ using Cxx.jl. No glue code is required, but cannot get full benefit of Julia.
-2. Write Julia glue code (e.g. Julia type for C++ class, with appropriate generic functions), need certain work to maintain though.
+2. Write Julia glue code (e.g. Julia type for C++ class, with appropriate functions), need certain work to maintain though.
 
 Currently PCL.jl takes the second approach. I'm still thinking what is the best way to make PCL.jl more usable.
