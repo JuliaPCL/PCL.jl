@@ -1,5 +1,12 @@
 ### visualization ###
 
+VERBOSE && info("Include pcl::visualization headers")
+@timevb cxx"""
+#define protected public  // to access PCLVisualizer::interactor_
+#include <pcl/visualization/pcl_visualizer.h>
+#undef protected
+"""
+
 abstract PointCloudColorHandler
 
 @defpcltype(PointCloudColorHandlerRGBField{T} <: PointCloudColorHandler,

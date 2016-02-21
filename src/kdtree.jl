@@ -1,4 +1,10 @@
-import Base: call
+### kdtree ###
+
+VERBOSE && info("Include pcl::kdtree headers")
+@timevb cxx"""
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
+"""
 
 abstract AbstractKdTree
 

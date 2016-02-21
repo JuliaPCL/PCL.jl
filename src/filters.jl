@@ -1,4 +1,18 @@
-import Base: call, filter
+### filters ###
+
+VERBOSE && info("Include pcl::filters headers")
+@timevb cxx"""
+#include <pcl/filters/uniform_sampling.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/approximate_voxel_grid.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/filters/radius_outlier_removal.h>
+#include <pcl/filters/extract_indices.h>
+"""
+
+import Base: filter
+
 
 abstract AbstractFilter
 abstract AbstractVoxelGridFilter <: AbstractFilter

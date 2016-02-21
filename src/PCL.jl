@@ -31,12 +31,51 @@ end
 
 using BinDeps
 
-# Load dependency
+# Load required dependency
 deps = joinpath(Pkg.dir("PCL"), "deps", "deps.jl")
 if isfile(deps)
     include(deps)
 else
     error("PCL not properly installed. Please run Pkg.build(\"PCL\")")
+end
+Libdl.dlopen(libpcl_common, Libdl.RTLD_GLOBAL)
+
+# Map that represents which modules to be enabled
+modules = Dict{Symbol,Bool}(:common => true)
+
+# Load optional dependency
+VERBOSE && info("Loading optional dependencies")
+libdir = dirname(libpcl_common)
+ext = splitext(libpcl_common)[2]
+for mod in [
+        :filters,
+        :search,
+        :surface,
+        :sample_consensus,
+        :kdtree,
+        :people,
+        :keypoints,
+        :recognition,
+        :features,
+        :registration,
+        :octree,
+        :io,
+        :tracking,
+        :segmentation,
+        :visualization,
+        ]
+    libpath = joinpath(libdir, string("libpcl_", mod, ext))
+    if isfile(libpath)
+        modules[mod] = true
+        libname = symbol(:libpcl_, mod)
+        @eval begin
+            global const $libname = $libpath
+            Libdl.dlopen($libname, Libdl.RTLD_GLOBAL)
+        end
+        VERBOSE && println("enabled: module $(string(mod))")
+    else
+        modules[mod] = false
+    end
 end
 
 VERBOSE && info("Loading Cxx.jl...")
@@ -51,30 +90,8 @@ macro timevb(expr)
     end
 end
 
-VERBOSE && info("dlopen...")
-for lib in [
-        libpcl_common,
-        libpcl_io,
-        libpcl_features,
-        libpcl_filters,
-        libpcl_kdtree,
-        libpcl_keypoints,
-        libpcl_segmentation,
-        libpcl_visualization,
-        libpcl_recognition,
-        libpcl_registration,
-        libpcl_octree,
-        libpcl_surface,
-        libpcl_people,
-        libpcl_search,
-        libpcl_tracking,
-        ]
-    p = Libdl.dlopen_e(lib, Libdl.RTLD_GLOBAL)
-    p == C_NULL && warn("Failed to load: $lib")
-end
-
 # Make sure vtk libraries are loaded before calling @cxx vtkVersion::xxx()
-if has_vtk_backend
+if has_vtk_backend && modules[:visualization]
     cxxinclude(joinpath(VTK_INCLUDE_DIR, "vtkVersion.h"))
     global const vtk_version = bytestring(@cxx vtkVersion::GetVTKVersion())
     VERBOSE && info("vtk version: $vtk_version")
@@ -90,115 +107,27 @@ function add_header_dirs(top)
     # FLANN (required)
     addHeaderDir(FLANN_INCLUDE_DIR, kind=C_System)
 
+    # VTK (optional)
+    has_vtk_backend && addHeaderDir(VTK_INCLUDE_DIR, kind=C_System)
+
     # PCL top directory
     addHeaderDir(top, kind=C_System)
     addHeaderDir(joinpath(top, "pcl"), kind=C_System)
 end
 
-function include_headers(top="")
+function include_toplevel_headers()
     # This is necesarry, but not sure why...
     cxx"""#include <iostream>"""
 
     # top level
     VERBOSE && info("Include pcl top-level headers")
-    @timevb for name in ["pcl_base.h", "point_cloud.h", "point_types.h",
-            "correspondence.h", "ModelCoefficients.h"]
-        cxxinclude(joinpath(top, "pcl", name))
-    end
-
-    # common
-    VERBOSE && info("Include pcl::common headers")
-    @timevb for name in ["common_headers.h", "transforms.h", "centroid.h"]
-        cxxinclude(joinpath(top, "pcl", "common", name))
-    end
-
-    # visualization
-    if has_vtk_backend
-        VERBOSE && info("adding vtk and visualization module headers")
-        addHeaderDir(VTK_INCLUDE_DIR, kind=C_System)
-        cxx"""
-        #define protected public  // to access PCLVisualizer::interactor_
-        #include <pcl/visualization/pcl_visualizer.h>
-        #undef protected
-        """
-        # cxxinclude(joinpath(top, "pcl", "visualization", "pcl_visualizer.h"))
-    end
-
-    # io
-    VERBOSE && info("Include pcl::io headers")
-    @timevb for name in ["pcd_io.h", "ply_io.h", "obj_io.h", "auto_io.h"]
-        cxxinclude(joinpath(top, "pcl", "io", name))
-    end
-
-    # registration
-    VERBOSE && info("Include pcl::registration headers")
-    @timevb for name in ["icp.h"]
-        cxxinclude(joinpath(top, "pcl", "registration", name))
-    end
-
-    # recognition
-    VERBOSE && info("Include pcl::recognition headers")
-    @timevb for name in [
-        "cg/hough_3d.h",
-        "cg/geometric_consistency.h",
-        "hv/hv_go.h"]
-        cxxinclude(joinpath(top, "pcl", "recognition", name))
-    end
-
-    # features
-    VERBOSE && info("Include pcl::features headers")
-    @timevb for name in ["normal_3d.h", "normal_3d_omp.h", "shot_omp.h", "board.h"]
-        cxxinclude(joinpath(top, "pcl", "features", name))
-    end
-
-    # filters
-    VERBOSE && info("Include pcl::filters headers")
-    @timevb for name in ["uniform_sampling.h", "passthrough.h", "voxel_grid.h",
-        "approximate_voxel_grid.h", "statistical_outlier_removal.h",
-        "radius_outlier_removal.h", "extract_indices.h"]
-        cxxinclude(joinpath(top, "pcl", "filters", name))
-    end
-
-    # kdtree
-    VERBOSE && info("Include pcl::kdtree headers")
-    @timevb for name in ["kdtree_flann.h", "impl/kdtree_flann.hpp"]
-        cxxinclude(joinpath(top, "pcl", "kdtree", name))
-    end
-
-    # sample_consensus
-    VERBOSE && info("Include pcl::sample_consensus headers")
-    @timevb for name in ["model_types.h", "method_types.h"]
-        cxxinclude(joinpath(top, "pcl", "sample_consensus", name))
-    end
-
-    # segmentation
-    VERBOSE && info("Include pcl::segmentation headers")
-    @timevb for name in ["sac_segmentation.h", "region_growing_rgb.h"]
-        cxxinclude(joinpath(top, "pcl", "segmentation", name))
-    end
-
-    # search
-    VERBOSE && info("Include pcl::search headers")
-    @timevb for name in ["search.h", "kdtree.h"]
-        cxxinclude(joinpath(top, "pcl", "search", name))
-    end
-
-    # tracking
-    VERBOSE && info("Include pcl::tracking headers")
-    @timevb for name in [
-            "approx_nearest_pair_point_cloud_coherence.h",
-            "coherence.h",
-            "normal_coherence.h",
-            "distance_coherence.h",
-            "hsv_color_coherence.h",
-            "kld_adaptive_particle_filter_omp.h",
-            "nearest_pair_point_cloud_coherence.h",
-            "particle_filter.h",
-            "particle_filter_omp.h",
-            "tracking.h",
-            ]
-        cxxinclude(joinpath(top, "pcl", "tracking", name))
-    end
+    @timevb cxx"""
+    #include <pcl/pcl_base.h>
+    #include <pcl/point_cloud.h>
+    #include <pcl/point_types.h>
+    #include <pcl/correspondence.h>
+    #include <pcl/ModelCoefficients.h>
+    """
 end
 
 const system_include_top = "/usr/local/include"
@@ -225,11 +154,16 @@ else
 end
 
 VERBOSE && info("pcl_version: $pcl_version")
-pcl_top_path = joinpath(topdir_to_be_included, "pcl-$pcl_version")
-add_header_dirs(pcl_top_path)
-include_headers(pcl_top_path)
+const base_include_path = joinpath(topdir_to_be_included, "pcl-$pcl_version")
+
+# Add header search paths
+add_header_dirs(base_include_path)
+
+# Once we add proper header search paths, include necessary headers
+include_toplevel_headers()
 
 # Check boost version
+cxxinclude(joinpath(BOOST_INCLUDE_DIR, "boost/version.hpp"))
 const _BOOST_VERSION = icxx"BOOST_VERSION;"
 const BOOST_VERSION_MAJOR = trunc(Int, _BOOST_VERSION / 100000)
 const BOOST_VERSION_MINOR = trunc(Int, _BOOST_VERSION / 100 % 1000)
@@ -247,26 +181,26 @@ getFLANNVersion() = bytestring(@cxx getFLANNVersion())
 VERBOSE && info("FLANN version: $(getFLANNVersion())")
 
 
-for name in [
-    "macros",
-    "std",
-    "constants",
-    "common",
-    "io",
-    "filters",
-    "features",
-    "kdtree",
-    "search",
-    "octree",
-    "recognition",
-    "registration",
-    "segmentation",
-    "tracking",
-    ]
+for name in ["macros", "std"]
     include(string(name, ".jl"))
 end
 
-has_vtk_backend && include("visualization.jl")
+modules[:common] && include("common.jl")
+modules[:visualization] && include("visualization.jl")
+modules[:io] && include("io.jl")
+modules[:filters] && include("filters.jl")
+modules[:features] && include("features.jl")
+modules[:kdtree] && include("kdtree.jl")
+modules[:search] && include("search.jl")
+modules[:octree] && include("octree.jl")
+modules[:surface] && include("surface.jl")
+modules[:sample_consensus] && include("sample_consensus.jl")
+modules[:keypoints] && include("keypoints.jl")
+modules[:people] && include("people.jl")
+modules[:recognition] && include("recognition.jl")
+modules[:registration] && include("registration.jl")
+modules[:segmentation] && include("segmentation.jl")
+modules[:tracking] && include("tracking.jl")
 
 end # module pcl
 

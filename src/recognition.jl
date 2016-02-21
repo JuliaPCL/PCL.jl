@@ -1,13 +1,12 @@
-"""
-Abstract recognizers that implemnts the following methods:
+### recognition ###
 
-- setInputCloud
-- setInputRf
-- setSceneCloud
-- setSceneRf
-- setModelSceneCorrespondences
-- recognize
+VERBOSE && info("Include pcl::recognition headers")
+@timevb @timevb cxx"""
+#include <pcl/recognition/cg/hough_3d.h>
+#include <pcl/recognition/cg/geometric_consistency.h>
+#include <pcl/recognition/hv/hv_go.h>
 """
+
 abstract AbstractRecognizer
 abstract AbstractVerifier
 

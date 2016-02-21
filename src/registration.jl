@@ -1,3 +1,10 @@
+### registration ###
+
+VERBOSE && info("Include pcl::registration headers")
+@timevb cxx"""
+#include <pcl/registration/icp.h>
+"""
+
 abstract AbstractRegistration
 
 @defpcltype IterativeClosestPoint{T1,T2} "pcl::IterativeClosestPoint"

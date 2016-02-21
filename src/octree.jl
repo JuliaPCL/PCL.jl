@@ -1,4 +1,9 @@
-import Base: call
+### octree ###
+
+VERBOSE && info("Include pcl::octree headers")
+@timevb cxx"""
+#include <pcl/search/octree.h>
+"""
 
 abstract AbstractOctree
 

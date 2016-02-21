@@ -2,6 +2,13 @@
 
 import Base: call, eltype, length, size, getindex, setindex!, push!, convert
 
+VERBOSE && info("Include pcl::common headers")
+@timevb cxx"""
+#include <pcl/common/common_headers.h>
+#include <pcl/common/transforms.h>
+#include <pcl/common/centroid.h>
+"""
+
 typealias SharedPtr{T} cxxt"boost::shared_ptr<$T>"
 use_count(s::SharedPtr) = icxx"$s.use_count();"
 

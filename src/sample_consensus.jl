@@ -1,3 +1,10 @@
+# sample_consensus
+VERBOSE && info("Include pcl::sample_consensus headers")
+@timevb cxx"""
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/sample_consensus/method_types.h>
+"""
+
 for enumname in [
     :SACMODEL_PLANE,
     :SACMODEL_LINE,

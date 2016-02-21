@@ -1,3 +1,11 @@
+### segmentation ###
+
+VERBOSE && info("Include pcl::segmentation headers")
+@timevb cxx"""
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/region_growing_rgb.h>
+"""
+
 abstract AbstractSegmentation
 
 setInputCloud(s::AbstractSegmentation, cloud::PointCloud) =

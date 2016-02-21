@@ -1,14 +1,13 @@
-import Base: call
+### features ###
 
+VERBOSE && info("Include pcl::features headers")
+@timevb cxx"""
+#include <pcl/features/normal_3d.h>
+#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/shot_omp.h>
+#include <pcl/features/board.h>
 """
-Feature estimators that implemtents the following methods:
 
-- setRadiusSearch
-- setInputCloud
-- setInputNormals
-- setSearchSurface
-- compute
-"""
 abstract AbstractFeatureEstimator
 abstract AbstractNormalEstimator <: AbstractFeatureEstimator
 abstract AbstractSHOTEstimator <: AbstractFeatureEstimator

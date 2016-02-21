@@ -1,5 +1,13 @@
 ### io ###
 
+VERBOSE && info("Include pcl::io headers")
+@timevb cxx"""
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/io/obj_io.h>
+#include <pcl/io/auto_io.h>
+"""
+
 for f in [
         :loadPCDFile,
         :loadOBJFile,

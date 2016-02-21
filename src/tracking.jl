@@ -1,3 +1,19 @@
+### tracking ###
+
+VERBOSE && info("Include pcl::tracking headers")
+@timevb cxx"""
+#include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
+#include <pcl/tracking/coherence.h>
+#include <pcl/tracking/normal_coherence.h>
+#include <pcl/tracking/distance_coherence.h>
+#include <pcl/tracking/hsv_color_coherence.h>
+#include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
+#include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
+#include <pcl/tracking/particle_filter.h>
+#include <pcl/tracking/particle_filter_omp.h>
+#include <pcl/tracking/tracking.h>
+"""
+
 abstract AbstractTracker
 abstract AbstractCloudCoherence
 abstract AbstractCoherence
