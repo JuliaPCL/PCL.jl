@@ -134,7 +134,7 @@ pcl.filter(pass, cloud_filtered)
 |`VTK_INCLUDE_DIR_PARENT`| `/usr/local/include` (`/usr/include/` for linux)|Parent directory for VTK includes|
 |`VTK_INCLUDE_DIR`| `${VTK_INCLUDE_DIR_PARENT}/vtk-${major}.${minor}`|VTK include directory (`${major}` and `${minor}` will be automatically detected)|
 |`PCLJL_LOAD_${module}`|1|Controls which modules to be loaded (e.g. to diable visualization module, set `PCLJL_LOAD_visualization=0`)|
-
+|`PCLJL_LIBRARY_IGNORE_PATH`||PCL shared library search ignore path|
 
 
 
