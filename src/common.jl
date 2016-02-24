@@ -99,8 +99,7 @@ function show(io::IO, p::PointXYZValOrRef)
     x = icxx"$p.x;"
     y = icxx"$p.y;"
     z = icxx"$p.z;"
-    print(io, string(typeof(p)));
-    print(io, "\n");
+    println(io, string(typeof(p)));
     print(io, "(x,y,z): ");
     print(io, (x,y,z))
 end
@@ -114,8 +113,16 @@ end
 eltype{T}(cloud::PointCloud{T}) = T
 eltype{T}(cloud::PointCloudVal{T}) = T
 
-function show(io::IO, cloud::Union{PointCloudPtr,PointCloudVal})
-    print(io, "$(length(cloud))-element " * string(typeof(cloud)))
+function show(io::IO, cloud::PointCloudPtr)
+    println(io, "$(length(cloud))-element ", string(typeof(cloud)))
+    println(io, "C++ representation:")
+    print(io, icxx"*$(handle(cloud));")
+end
+
+function show(io::IO, cloud::PointCloudVal)
+    println(io, "$(length(cloud))-element ", string(typeof(cloud)))
+    println(io, "C++ representation:")
+    print(io, icxx"$(handle(cloud));")
 end
 
 import Base: similar
