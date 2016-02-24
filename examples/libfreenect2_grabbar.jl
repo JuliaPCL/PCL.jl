@@ -51,7 +51,7 @@ color_handler = pcl.PointCloudColorHandlerRGBField(cloud)
 pcl.addPointCloud(viewer, cloud, color_handler, id="libfreenect2")
 
 global should_save = false
-if !isdefined(:viewer_cb_defined) && VERSION < v"0.5.0-dev+2396"
+if !isdefined(:viewer_cb_defined)
 cxx"""
 void viewer_cb(const pcl::visualization::KeyboardEvent &event) {
     std::cout << "key event:" << event.getKeyCode() << std::endl;
@@ -62,9 +62,8 @@ void viewer_cb(const pcl::visualization::KeyboardEvent &event) {
 """
 const viewer_cb_defined = true
 end
-if VERSION < v"0.5.0-dev+2396"
-    icxx"$(pcl.handle(viewer))->registerKeyboardCallback(viewer_cb);"
-end
+
+icxx"$(pcl.handle(viewer))->registerKeyboardCallback(viewer_cb);"
 
 while !pcl.wasStopped(viewer)
     frames = waitForNewFrame(listener)
