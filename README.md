@@ -51,8 +51,6 @@ Pkg.clone("https://github.com/r9y9/PCL.jl.git")
 Pkg.build("PCL")
 ```
 
-**NOTE** 2016/02/02: at the moment, I recommend you to use [r9y9/Cxx.jl](https://github.com/r9y9/Cxx.jl) instead of [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl). This is required to pass all unittests in PCL.jl for now.
-
 This should install PCL.jl and resolve its binary dependency property. Note that building PCL library (C++) is relatively complex (needs boost, flann, vtk, etc.), so you are recommended to check if PCL is able to build successfully first, and then build PCL.jl.
 
 By default, `Pkg.build("PCL")` will try to find system-installed PCL libraries. If you have already PCL libraries installed, you don't have to re-build PCL for PCL.jl, however, this might cause incompatibility to PCL.jl depends on your PCL version. If you have any problem with system-installed ones, please try to ignore them and rebuild PCL.jl as follows:
