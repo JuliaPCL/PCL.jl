@@ -64,7 +64,7 @@ info("Prepare PCL visualizer...")
 global viewer = pcl.PCLVisualizer("pcl visualizer")
 
 while true
-    ni2.waitForAnyStream([depth])
+    @assert ni2.waitForAnyStream([depth]) == 0
     ni2.readFrame(depth, frame)
     arr = convert(Array{Cushort,2}, frame)
     @assert size(arr) == (w, h)
@@ -79,6 +79,7 @@ while true
 end
 
 ni2.stop(depth)
+ni2.destroy(depth)
 ni2.close(device)
 ni2.shutdown()
 
