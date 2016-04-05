@@ -159,7 +159,7 @@ genfilename(ext=".pcd") =
     joinpath(dirname(@__FILE__), string(now(), "_", time_ns(), ext))
 
 """Get point cloud from undistored depth and reigstered color"""
-function getPointCloudXYZRGB(registration, undistorted, registered)
+function getPointCloudXYZRGB(registration::Registration, undistorted, registered)
     w = width(undistorted)
     h = height(undistorted)
     cloud = pcl.PointCloud{RT}(w, h)
@@ -169,7 +169,7 @@ function getPointCloudXYZRGB(registration, undistorted, registered)
     for (size_t ri = 0; ri < $h; ++ri) {
         for (size_t ci = 0; ci < $w; ++ci) {
             auto p = $(pointsptr) + $w * ri + ci;
-            $(registration)->getPointXYZRGB($(undistorted.handle),
+            $(registration.handle)->getPointXYZRGB($(undistorted.handle),
                 $(registered.handle), ri, ci, p->x, p->y, p->z, p->rgb);
         }
     }
@@ -246,7 +246,7 @@ while !pcl.wasStopped(viewer)
     end
     pcl.spinOnce(viewer, 1)
 
-    release(frames)
+    release(listener, frames)
 
     rand() > 0.95 && gc(false)
     global counter += 1
@@ -254,8 +254,4 @@ end
 
 stop(device)
 close(device)
-
-release(listener)
-foreach(release, [undistorted, registered])
-
 close(viewer)
