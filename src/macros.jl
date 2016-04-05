@@ -42,11 +42,10 @@ e.g. `@defpcltype PointCloud{T}` defines:
 - pclPointCloudVal: pcl::PointCloud
 """
 macro defpcltype(expr, cxxname)
-    if isa(expr, Expr) && expr.head == :comparison
+    if isa(expr, Expr) && (expr.head == :comparison || expr.head == :<:)
         has_supertype = true
         jlname = expr.args[1]
-        @assert expr.args[2] == :(<:)
-        super_name = expr.args[3]
+        super_name = (expr.args[2] == :(<:)) ? expr.args[3] : expr.args[2]
     else
         has_supertype = false
         jlname = expr
@@ -131,7 +130,8 @@ macro defpcltype(expr, cxxname)
         use_count(x::$jlname_noparams_ptr) = icxx"$(x.handle).use_count();"
     end)
 
-    # @show def
+    #@show def
+    #return nothing
     return def
 end
 
