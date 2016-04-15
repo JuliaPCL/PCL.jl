@@ -1,7 +1,7 @@
 # might get removed
 # this is almost dup of CxxStd.StdVector
 
-typealias StdVector{T,A} cxxt"std::vector<$T,$A>"
+typealias StdVector{T,A} Union{cxxt"std::vector<$T,$A>", cxxt"std::vector<$T,$A>&"}
 
 Base.start(it::StdVector) = 0
 Base.next(it::StdVector,i) = (it[i], i+1)
