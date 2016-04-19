@@ -1,6 +1,11 @@
 # PCL
 
-The package is re-organized into https://github.com/JuliaPCL to simplify development and minimize dependencies. See [README.org.md](README.org.md) for previous README.
+The package is re-organized into https://github.com/JuliaPCL to simplify development and minimize dependencies. Note that PCL packages are **much work in progress** and there's almost no docs. Please file an issue if you have any trouble or request for docs, etc. Currently only tested on OSX.
+
+## Requirement
+
+- Julia (master) with [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl)
+- PCL 1.8 (built as shared libraries)
 
 ## Installation
 
@@ -26,3 +31,7 @@ Pkg.clone("https://github.com/JuliaPCL/PCL.jl")
 ```jl
 Pkg.build("LibPCL")
 ```
+
+## Why
+
+[README.org.md](README.org.md)
