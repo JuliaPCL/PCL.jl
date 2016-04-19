@@ -4,24 +4,25 @@ The package is re-organized into https://github.com/JuliaPCL to simplify develop
 
 ## Installation
 
-```
-Pkg.clone("https://github.com/JuliaPCL/PCLCommon")
-Pkg.clone("https://github.com/JuliaPCL/PCLIO")
-Pkg.clone("https://github.com/JuliaPCL/PCLFeatures")
-Pkg.clone("https://github.com/JuliaPCL/PCLFilters")
-Pkg.clone("https://github.com/JuliaPCL/PCLVisualization")
-Pkg.clone("https://github.com/JuliaPCL/LibPCL")
-Pkg.clone("https://github.com/JuliaPCL/PCLKDTree")
-Pkg.clone("https://github.com/JuliaPCL/PCLOctree")
-Pkg.clone("https://github.com/JuliaPCL/PCLRecognition")
-Pkg.clone("https://github.com/JuliaPCL/PCLSampleConsensus")
-Pkg.clone("https://github.com/JuliaPCL/PCLSearch")
-Pkg.clone("https://github.com/JuliaPCL/PCLSegmentation")
-Pkg.clone("https://github.com/JuliaPCL/PCLTracking")
-Pkg.clone("https://github.com/JuliaPCL/PCLRegistration")
-Pkg.clone("https://github.com/JuliaPCL/PCLKeyPoints")
+```jl
+Pkg.clone("https://github.com/JuliaPCL/PCLCommon.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLIO.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLFeatures.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLFilters.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLVisualization.jl")
+Pkg.clone("https://github.com/JuliaPCL/LibPCL.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLKDTree.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLOctree.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLRecognition.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLSampleConsensus.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLSearch.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLSegmentation.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLTracking.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLRegistration.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCLKeyPoints.jl")
+Pkg.clone("https://github.com/JuliaPCL/PCL.jl")
 ```
 
-```
+```jl
 Pkg.build("LibPCL")
 ```
