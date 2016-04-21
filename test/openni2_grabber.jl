@@ -77,7 +77,7 @@ while true
     end
     spinOnce(viewer, 1)
 
-    rand() > 0.95 && gc(false)
+    rand() > 0.98 && gc(false)
 end
 
 ni2.stop(depth)
