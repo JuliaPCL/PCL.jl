@@ -2,6 +2,12 @@
 
 The package is re-organized into https://github.com/JuliaPCL to simplify development and minimize dependencies. Note that PCL packages are **much work in progress** and there's almost no docs. Please file an issue if you have any trouble or request for docs, etc. Currently only tested on OSX.
 
+## Package organization
+
+- JuliaPCL Package organization follows PCL module organization (see http://docs.pointclouds.org/trunk/modules.html). You can use any of them: e.g. `using PCLCommon, PCLIO, PCLVisualization` instead of `using PCL` (this is quite slow since it compiles all the PCL packages).
+- A special package [LibPCL.jl](https://github.com/JuliaPCL/LibPCL.jl) handles binary dependency management and used by *every* PCL packages.
+
+
 ## Requirement
 
 - Julia (master) with [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl)

@@ -6,7 +6,7 @@ Note that PCL.jl was started as an experimental project and is very much work in
 
 ## Why?
 
-PCL.jl was stated to give us **fast prototyping** using PCL in interactive environment, without much loss of computational efficiency and flexibility. 
+PCL.jl was stated to give us **fast prototyping** using PCL in interactive environment, without much loss of computational efficiency and flexibility.
 
 You might find that there is already a python binding ([strawlab/python-pcl](https://github.com/strawlab/python-pcl)) for the purpose, however, it lacks flexibility in particular; it only supports `PointXYZ` for point clouds at the moment. I guess the reason why it doesn't support arbitary point types for point clouds is that there is not elegant and simple way to expose C++ templated classes in python ([actually I tried](https://github.com/r9y9/pypcl), but couldn't figure it out). Since I wanted to use arbiraty point types for point clouds, I decided to create a new one.
 
@@ -16,7 +16,7 @@ The reasons why I started writing the [Julia](http://julialang.org/) (not python
  - It enables us to call C++ functions/methods directly from Julia *without any glue code* (unlike cython and swig), embed C++ into Julia and vise versa.
 - Julia's types can be parameterized and exposing C++ templated classes is quite straightfood.
  - e.g. C++ `pcl::PointCloud<T>` can be represented as `PointCloud{T}` in Julia
- - I thought it's suitable to wrap PCL's heavily templated APIs. 
+ - I thought it's suitable to wrap PCL's heavily templated APIs.
 
 I couldn't imagine that I'd create a binding with another language. There is a blog post that explains why I created PCL.jl (in Japanese): [Trying-to-use-pcl-in-dynamic-language | LESS IS MORE](http://r9y9.github.io/blog/2016/01/18/trying-to-use-pcl-in-dynamic-language/).
 
@@ -35,7 +35,7 @@ Cons:
 - Only works on osx for now
 - Hard to build entire dependencies
 - Sometime segfaults in Cxx.jl and Julia...
- 
+
 ## Dependencies
 
 - [Julia](https://github.com/JuliaLang/julia) (master)
@@ -81,7 +81,7 @@ julia> PCL.pcl.libpcl_common
 brew install cmake openni openni2 qhull boost glew flann eigen libusb vtk
 ```
 
-and 
+and
 
 ```
 export OPENNI2_INCLUDE=/usr/local/include/ni2
@@ -140,29 +140,25 @@ pcl.filter(pass, cloud_filtered)
 
 ## How it works
 
-### PCLVisualizer [[code]](examples/pcl_visualizer.jl)
-
-<div align="center"><img src="examples/images/milk_cartoon_all_small_clorox.gif" /></div>
-
-### Real-time Kinect v2 grabber [[code]](examples/libfreenect2_grabbar.jl)
+### Real-time Kinect v2 grabber [[code]](test/libfreenect2_grabbar.jl)
 
 <div align="center"><img src="examples/images/libfreenect2_integration.gif" /></div>
 
 Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v2.
 
-### 3D Object Recognition based on Correspondence Grouping [[code]](examples/correspondence_grouping.jl)
+### 3D Object Recognition based on Correspondence Grouping [[code]](test/correspondence_grouping.jl)
 
 <div align="center"><img src="examples/images/correspondence_grouping.png" /></div>
 
-### Hypothesis Verification for 3D Object Recognition [[code]](examples/global_hypothesis_verification.jl)
+### Hypothesis Verification for 3D Object Recognition [[code]](test/global_hypothesis_verification.jl)
 
 <div align="center"><img src="examples/images/global_hypothesis_verification.png" /></div>
 
-### Extracting indices from a PointCloud [[code]](examples/extract_indices.jl)
+### Extracting indices from a PointCloud [[code]](test/extract_indices.jl)
 
 <div align="center"><img src="examples/images/extract_indices.png" /></div>
 
-### Color-based region growing segmentation [[code]](examples/region_growing_rgb_segmentation.jl)
+### Color-based region growing segmentation [[code]](test/region_growing_rgb_segmentation.jl)
 
 <div align="center"><img src="examples/images/region_growing_rgb_segmentation.png" /></div>
 
@@ -171,7 +167,7 @@ Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v
 http://nbviewer.jupyter.org/gist/r9y9/6ed9a1d0b46993d374f5
 
 
-You can find more examples in [examples directory](examples/).
+You can find more examples in [test directory](test/).
 
 ## Something missing?
 
