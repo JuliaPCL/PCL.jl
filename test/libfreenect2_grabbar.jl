@@ -13,8 +13,8 @@ genfilename(ext=".pcd") =
 
 """Get point cloud from undistored depth and reigstered color"""
 function getPointCloudXYZRGB(registration::Registration, undistorted, registered)
-    w = width(undistorted)
-    h = height(undistorted)
+    w = Libfreenect2.width(undistorted)
+    h = Libfreenect2.height(undistorted)
     cloud = PointCloud{PointXYZRGB}(w, h)
     icxx"$(cloud.handle)->is_dense = false;"
     pointsptr = icxx"&$(cloud.handle)->points[0];"
@@ -65,7 +65,7 @@ void viewer_cb(const pcl::visualization::KeyboardEvent &event) {
 const viewer_cb_defined = true
 end
 
-icxx"$(handle(viewer))->registerKeyboardCallback(viewer_cb);"
+icxx"$(viewer.handle)->registerKeyboardCallback(viewer_cb);"
 
 while !wasStopped(viewer)
     frames = waitForNewFrame(listener)
