@@ -20,7 +20,7 @@ let
     pcd_file = args["<pcd_file>"]
 
     # e.g. pcl.PointXYZ
-    T = eval(Expr(:., :pcl, QuoteNode(symbol(args["--point_type"]))))
+    T = eval(Expr(:., :pcl, QuoteNode(Symbol(args["--point_type"]))))
 
     cloud = pcl.PointCloud{T}(pcd_file)
 
