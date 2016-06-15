@@ -27,7 +27,7 @@ Pros:
 - Support *arbitaty* point types for point clouds, whereas python-pcl only supports `PointXYZ`
 - Support PCL trunk
 - More consistent APIs
-- Can write mixed C++/Julia (see [examples/libfreenect2_grabbar.jl](https://github.com/r9y9/PCL.jl/blob/master/examples/libfreenect2_grabbar.jl) for example)
+- Can write mixed C++/Julia (see [test/libfreenect2_grabbar.jl](https://github.com/r9y9/PCL.jl/blob/master/test/libfreenect2_grabbar.jl) for example)
 - PCLVisuzlier: Jupyter integration using off-screen rendering
 
 Cons:
@@ -142,25 +142,25 @@ pcl.filter(pass, cloud_filtered)
 
 ### Real-time Kinect v2 grabber [[code]](test/libfreenect2_grabbar.jl)
 
-<div align="center"><img src="examples/images/libfreenect2_integration.gif" /></div>
+<div align="center"><img src="test/images/libfreenect2_integration.gif" /></div>
 
 Requires [Libfreenect2.jl](https://github.com/r9y9/Libfreenect2.jl) and Kinect v2.
 
 ### 3D Object Recognition based on Correspondence Grouping [[code]](test/correspondence_grouping.jl)
 
-<div align="center"><img src="examples/images/correspondence_grouping.png" /></div>
+<div align="center"><img src="test/images/correspondence_grouping.png" /></div>
 
 ### Hypothesis Verification for 3D Object Recognition [[code]](test/global_hypothesis_verification.jl)
 
-<div align="center"><img src="examples/images/global_hypothesis_verification.png" /></div>
+<div align="center"><img src="test/images/global_hypothesis_verification.png" /></div>
 
 ### Extracting indices from a PointCloud [[code]](test/extract_indices.jl)
 
-<div align="center"><img src="examples/images/extract_indices.png" /></div>
+<div align="center"><img src="test/images/extract_indices.png" /></div>
 
 ### Color-based region growing segmentation [[code]](test/region_growing_rgb_segmentation.jl)
 
-<div align="center"><img src="examples/images/region_growing_rgb_segmentation.png" /></div>
+<div align="center"><img src="test/images/region_growing_rgb_segmentation.png" /></div>
 
 ### Jupyter integration
 
