@@ -30,6 +30,17 @@ function getPointCloudXYZRGB(registration::Registration, undistorted, registered
     cloud
 end
 
+function ppcallback(event::cxxt"pcl::visualization::PointPickingEvent&",
+        args::Ptr{Void})
+    if Int(icxx"$(event).getPointIndex();") == -1
+        return
+    end
+    p = PointXYZ()
+    icxx"$(event).getPoint($p.x, $p.y, $p.z);"
+    @show p
+    return nothing::Void
+end
+
 f = Freenect2()
 device = openDefaultDevice(f, OpenGLPacketPipeline())
 listener = SyncMultiFrameListenerPtr()
@@ -46,6 +57,8 @@ registered = FramePtr(w, h, 4, key=Libfreenect2.FRAME_COLOR)
 
 info("Prepare PCL visualizer...")
 global viewer = PCLVisualizer("pcl visualizer")
+
+registerPointPickingCallback(viewer, ppcallback)
 
 # Add empty poind
 cloud = PointCloud{PointXYZRGB}(w, h)

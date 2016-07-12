@@ -38,12 +38,15 @@ ex = ExtractIndices{PT}()
 nr_points = length(cloud_filtered)
 
 planes = []
+coefs = []
 while length(cloud_filtered) > 0.3 * nr_points
     setInputCloud(seg, cloud_filtered)
     segment(seg, inliers, coefficients)
 
     coefvalues = icxx"$(coefficients.handle)->values;"
     indices = icxx"$(inliers.handle)->indices;"
+
+    push!(coefs, coefvalues)
 
     if length(indices) == 0
         error("Could not estimate a planar model for the given dataset.")
@@ -70,10 +73,10 @@ neg_plane = cloud_filtered
 
 if isdefined(:vis) && vis
     viewer = PCLVisualizer("pcl visualizer")
+    addCoordinateSystem(viewer, 1.2, 0,0,0)
     @show length(planes)
     for i in 1:length(planes)
         color = i == 1 ? (255,0,0) : i == 2 ? (0,255,0) : tuple(rand(UInt, 3)...)
-        @show color
         handler = PointCloudColorHandlerCustom(planes[i], color...)
         addPointCloud(viewer, planes[i], handler, id="plane $i")
     end
@@ -81,4 +84,5 @@ if isdefined(:vis) && vis
     addPointCloud(viewer, neg_plane, white_hanlder, id="neg plane")
     spin(viewer)
     close(viewer)
+    viewer = 0; gc(); gc();
 end
