@@ -57,13 +57,9 @@ registered = FramePtr(w, h, 4, key=Libfreenect2.FRAME_COLOR)
 
 info("Prepare PCL visualizer...")
 global viewer = PCLVisualizer("pcl visualizer")
+addCoordinateSystem(viewer, 1.2, 0,0,0)
 
 registerPointPickingCallback(viewer, ppcallback)
-
-# Add empty poind
-cloud = PointCloud{PointXYZRGB}(w, h)
-color_handler = PointCloudColorHandlerRGBField(cloud)
-addPointCloud(viewer, cloud, color_handler, id="libfreenect2")
 
 global should_save = false
 if !isdefined(:viewer_cb_defined)
@@ -80,34 +76,43 @@ end
 
 icxx"$(viewer.handle)->registerKeyboardCallback(viewer_cb);"
 
-while !wasStopped(viewer)
-    frames = waitForNewFrame(listener)
-    color = frames[FrameType.COLOR]
-    ir = frames[FrameType.IR]
-    depth = frames[FrameType.DEPTH]
+try
+    while !wasStopped(viewer)
+        frames = waitForNewFrame(listener)
+        color = frames[FrameType.COLOR]
+        ir = frames[FrameType.IR]
+        depth = frames[FrameType.DEPTH]
 
-    # Depth and color registration
-    t = @elapsed begin
-        apply(registration, color, depth, undistorted, registered)
-        cloud = getPointCloudXYZRGB(registration, undistorted, registered)
+        # Depth and color registration
+        t = @elapsed begin
+            apply(registration, color, depth, undistorted, registered)
+            cloud = getPointCloudXYZRGB(registration, undistorted, registered)
+        end
+        println("Registration and getPointCloudXYZRGB: $(1/t) Hz")
+
+        if should_save
+            info("save pcd file...")
+            savePCDFile(genfilename(), cloud; binary_mode=true)
+            should_save = false
+        end
+
+        color_handler = PointCloudColorHandlerRGBField(cloud)
+        if !updatePointCloud(viewer, cloud, color_handler, id="libfreenect2")
+            addPointCloud(viewer, cloud, color_handler, id="libfreenect2")
+        end
+        try
+            spinOnce(viewer, 1)
+        catch e
+            @show e
+        end
+
+        Libfreenect2.release(listener, frames)
+
+        rand() > 0.95 && gc(false)
     end
-    println("Registration and getPointCloudXYZRGB: $(1/t) Hz")
-
-    if should_save
-        info("save pcd file...")
-        savePCDFile(genfilename(), cloud; binary_mode=true)
-        should_save = false
-    end
-
-    color_handler = PointCloudColorHandlerRGBField(cloud)
-    updatePointCloud(viewer, cloud, color_handler, id="libfreenect2")
-    spinOnce(viewer, 1)
-
-    release(listener, frames)
-
-    rand() > 0.95 && gc(false)
+finally
+    stop(device)
+    close(device)
+    close(viewer)
+    device=0;viewer=0;gc()
 end
-
-stop(device)
-close(device)
-close(viewer)
