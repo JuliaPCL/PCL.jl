@@ -19,7 +19,7 @@ makedocs(
             "Recognition" => "recognition.md"
             "Registration" => "registration.md"
             "SampleConsensus" => "sampleconsensus.md"
-            "Search" => "search.md"
+            "Search" => "seearch.md"
             "Segmentation" => "segmentation.md"
             "Surface" => "surface.md"
             "Tracking" => "tracking.md"
