@@ -88,9 +88,9 @@ spin(viewer) # you will see the PCLVisualizer
 
 needs [PCLVisualization.jl](@ref).
 
-## More examples / tutorials
+## Examples and tutorials
 
 See [JuliaPCL/PCL/test](https://github.com/JuliaPCL/PCL.jl/tree/master/test)
 directory for more examples. It includes more complex filtering, feature extraction,
-recognition, tracking and visualization examples. It also includes some PCL
+recognition, tracking and visualization examples and also some PCL
 tutorial translations as well.
