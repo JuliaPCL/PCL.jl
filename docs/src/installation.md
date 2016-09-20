@@ -54,7 +54,7 @@ Pkg.build("Cxx")
 
 ## Install PCL Julia packages
 
-### Set environmental property
+### Set environmental variables property
 
 There are a few environmental variables to be set property before installing
 Julia packages, otherwise throws errors during package compilation time. You must
