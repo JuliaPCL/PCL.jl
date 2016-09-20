@@ -1,5 +1,13 @@
+debug = false
+
 using Documenter
-using PCL
+
+@static if debug
+    using WORLD
+    const PCL = WORLD
+else
+    using PCL
+end
 
 makedocs(
     modules = [PCL],
@@ -7,23 +15,25 @@ makedocs(
     format   = Documenter.Formats.HTML,
     sitename = "PCL.jl",
     pages = Any[
-        "Home" => "index.md"
+        "Home" => "index.md",
+        "Installation" => "installation.md",
+        "Getting started" => "getting-started.md",
         "API" => Any[
-            "Common" => "common.md"
-            "Features" => "features.md"
-            "Filters" => "filters.md"
-            "IO" => "io.md"
-            "KDTree" => "kdtree.md"
-            "KeyPoints" => "keypoints.md"
-            "Octree" => "octree.md"
-            "Recognition" => "recognition.md"
-            "Registration" => "registration.md"
-            "SampleConsensus" => "sampleconsensus.md"
-            "Search" => "seearch.md"
-            "Segmentation" => "segmentation.md"
-            "Surface" => "surface.md"
-            "Tracking" => "tracking.md"
-            "Visualization" => "visualization.md"
+            "Common" => "api/common.md"
+            "Features" => "api/features.md"
+            "Filters" => "api/filters.md"
+            "IO" => "api/io.md"
+            "KDTree" => "api/kdtree.md"
+            "KeyPoints" => "api/keypoints.md"
+            "Octree" => "api/octree.md"
+            "Recognition" => "api/recognition.md"
+            "Registration" => "api/registration.md"
+            "SampleConsensus" => "api/sampleconsensus.md"
+            "Search" => "api/search.md"
+            "Segmentation" => "api/segmentation.md"
+            "Surface" => "api/surface.md"
+            "Tracking" => "api/tracking.md"
+            "Visualization" => "api/visualization.md"
             ]
         ],
 )
