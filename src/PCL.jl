@@ -63,7 +63,7 @@ Cons:
 - [Julia](https://github.com/JuliaLang/julia)
 - [Cxx.jl](https://github.com/Keno/Cxx.jl)
 
-## API
+## API guidelines
 
 - Function names should be exactly same between Julia and C++.
 - C++ template classes are available in Julia as templated types
