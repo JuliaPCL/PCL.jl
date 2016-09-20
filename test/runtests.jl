@@ -11,6 +11,7 @@ for f in [
         "region_growing_rgb_segmentation",
         "extract_indices",
         "offscreen_rendering",
+        "tilt_compensation",
         ]
     @testset "$f" begin
         include(joinpath(string(f, ".jl")))
