@@ -17,12 +17,41 @@ function Base.convert{T}(Array, v::CxxStd.StdVector{T})
     r
 end
 
+function getDepthFromPointCloud!(depth, cloud)
+    # @assert size(depth) == (512,424)
+    fill!(depth, 0.0)
+    w, h = size(depth)
+    depthp = pointer(depth)
+    icxx"""
+        const float fx = $fx;
+        const float fy = $fy;
+        const float cx = $cx;
+        const float cy = $cy;
+        for (size_t i = 0; i < $(cloud.handle)->points.size(); ++i) {
+            const auto p = $(cloud.handle)->points[i];
+            if (std::isnan(p.z) || p.z <= 0) {
+                continue;
+            }
+            int r, c;
+            float depth;
+            c = fx * p.x / p.z + cx;
+            r = fy * p.y / p.z + cy;
+            depth = p.z * 1000.0;
+            if (r >= 0 && r < $h && c >= 0 && c < $w) {
+                $(depthp)[$w * r + c] = depth;
+            }
+        }
+    """
+    depth
+end
+
 PT = PointXYZRGB
 
 fname = joinpath(dirname(@__FILE__), "pcd",
     "2016-09-07T19:51:46.802_41015197239218.pcd")
 cloud = PointCloud{PT}(joinpath(dirname(@__FILE__), fname))
 rotated_model = PointCloud{PT}();
+rotated_plane = PointCloud{PT}();
 
 ### Extract ground plane
 cloud_filtered = deepcopy(cloud)
@@ -98,6 +127,14 @@ transform = icxx"""
 icxx"std::cout << $(transform).matrix() << std::endl;"
 
 transformPointCloud(cloud, rotated_model, transform)
+transformPointCloud(first(planes), rotated_plane, transform)
+
+# Estimate distance
+tilt_compensatated_plane_depth = zeros(
+    Float64, PCLCommon.height(cloud), trunc(Int,PCLCommon.width(cloud)*1.2))
+getDepthFromPointCloud!(tilt_compensatated_plane_depth, rotated_plane)
+estimated_distance = mean(tilt_compensatated_plane_depth[tilt_compensatated_plane_depth .> 0])
+@show estimated_distance
 
 if isdefined(:vis) && vis
     viewer = PCLVisualizer("test");
