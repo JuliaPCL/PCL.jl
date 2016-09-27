@@ -1,6 +1,6 @@
 # Installation
 
-PCL Julia packages have fair complex dependencies, so please take a careful
+PCL Julia packages have fairly complex dependencies, so please take a careful
 look at the installation guide for each dependency.
 
 ## Requirements
@@ -50,14 +50,14 @@ Pkg.clone("https://github.com/r9y9/Cxx.jl")
 Pkg.build("Cxx")
 ```
 
-[^1]: Forked from [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl) for For RTTI support. [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl) doesn't provides a way to enable RTTI without code modification for now.
+[^1]: Forked from [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl) for RTTI support. [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl) doesn't provides a way to enable RTTI without code modification for now.
 
 ## Install PCL Julia packages
 
 ### Set environmental variables property
 
 There are a few environmental variables to be set property before installing
-Julia packages, otherwise throws errors during package compilation time. You must
+Julia packages, otherwise it throws errors during package compilation time. You must
 tell locations of PCL dependencies (`boost`, `FLANN`, `Eigen` and `VTK`) to Julia via
 the following environmental variables:
 

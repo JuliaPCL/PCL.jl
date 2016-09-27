@@ -6,8 +6,7 @@ If you need a particular module (e.g. [PCLCommon.jl](@ref)), then you can use th
 specific module(s) as follows:
 
 ```julia
-using PCLCommon, PCLIO;
-cloud = PointCloud{PointXYZ}("your_pcd_data.pcd")
+using PCLCommon
 ```
 
 If you want to import all the PCL packages, then:
@@ -30,20 +29,21 @@ In this section we will show the basic usage of PointCloud type quickly.
 
 ```julia
 using PCLCommon
+```
+
+```julia
 cloud_xyz = PointCloud{PointXYZ}()
 ```
 
 For different point types, just change the type parameter as follows:
 
 ```julia
-using PCLCommon
 cloud_rgba = PointCloud{PointXYZRGBA}()
 ```
 
 ### Create a point cloud with specified size
 
 ```julia
-using PCLCommon
 cloud_xyz = PointCloud{PointXYZ}(100, 200) # width=100, height=200
 ```
 
@@ -52,7 +52,11 @@ cloud_xyz = PointCloud{PointXYZ}(100, 200) # width=100, height=200
 ### Load a PCD file
 
 ```julia
-using PCLCommon, PCLIO
+using PCLCommon
+using PCLIO
+```
+
+```julia
 cloud_xyz = PointCloud{PointXYZ}("your_pcd_data.pcd")
 ```
 
@@ -63,7 +67,12 @@ needs [PCLIO.jl](@ref) in addition to [PCLCommon.jl](@ref).
 ### PassThrough filter
 
 ```julia
-using PCLCommon, PCLIO, PCLFilters;
+using PCLCommon
+using PCLIO
+using PCLFilters
+```
+
+```julia
 cloud = PointCloud{PointXYZRGB}("your_pcd_file.pcd")
 cloud_filtered = PointCloud{PointXYZRGB}()
 
@@ -79,7 +88,12 @@ needs [PCLFilters.jl](@ref).
 ## Visualization
 
 ```julia
-using PCLCommon, PCLIO, PCLVisualization;
+using PCLCommon
+using PCLIO
+using PCLVisualization
+```
+
+```julia
 cloud = PointCloud{PointXYZRGB}("your_pcd_file.pcd")
 viewer = PCLVisualizer("pcl visualizer")
 addPointCloud(viewer, cloud, id="input")

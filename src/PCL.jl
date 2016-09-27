@@ -5,15 +5,17 @@ __precompile__(false)
 """
 The Julia wrapper for Point Cloud Library (PCL)
 
-You can write:
+With the packages, e.g., you can visualize a point cloud in 5 lines:
 
 ```julia
-using PCLCommon, PCLIO, PCLVisualization;
+using PCLCommon, PCLIO, PCLVisualization
 cloud = PointCloud{PointXYZRGB}("your_pcd_file.pcd")
 viewer = PCLVisualizer("pcl visualizer")
 addPointCloud(viewer, cloud, id="input")
 spin(viewer) # you will see the PCLVisualizer
 ```
+
+![](assets/pcl_visualizer_5lines.png)
 
 ## Why?
 
