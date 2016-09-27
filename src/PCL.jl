@@ -35,13 +35,8 @@ a new one.
 The reasons why I started writing the [Julia](http://julialang.org/) (not python)
 binding are:
 
-- The Julia C++ interface [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl) is quite powerful.
- - It enables us to call C++ functions/methods directly from Julia
-    *without any glue code* (unlike cython and swig), embed C++ into Julia and
-    vise versa.
-- Julia's types can be parameterized and exposing C++ templated classes is quite straightfood.
- - e.g. C++ `pcl::PointCloud<PointT>` can be represented as `PointCloud{PointT}` in Julia
- - I thought it's suitable to wrap PCL's heavily templated APIs.
+- **The Julia C++ interface [Keno/Cxx.jl](https://github.com/Keno/Cxx.jl) is quite powerful**: It enables us to call C++ functions/methods directly from Julia *without any glue code* (unlike cython and swig), embed C++ into Julia and vise versa.
+- **Julia's types can be parameterized and exposing C++ templated classes is quite straightfood**: e.g. C++ `pcl::PointCloud<PointT>` can be represented as `PointCloud{PointT}` in Julia.
 
 ### Comparison to python-pcl
 
