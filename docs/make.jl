@@ -1,13 +1,5 @@
-debug = false
-
 using Documenter
-
-@static if debug
-    using WORLD
-    const PCL = WORLD
-else
-    using PCL
-end
+using PCL
 
 makedocs(
     modules = [PCL],
@@ -18,22 +10,23 @@ makedocs(
         "Home" => "index.md",
         "Installation" => "installation.md",
         "Getting started" => "getting-started.md",
-        "API" => Any[
-            "Common" => "api/common.md"
-            "Features" => "api/features.md"
-            "Filters" => "api/filters.md"
-            "IO" => "api/io.md"
-            "KDTree" => "api/kdtree.md"
-            "KeyPoints" => "api/keypoints.md"
-            "Octree" => "api/octree.md"
-            "Recognition" => "api/recognition.md"
-            "Registration" => "api/registration.md"
-            "SampleConsensus" => "api/sampleconsensus.md"
-            "Search" => "api/search.md"
-            "Segmentation" => "api/segmentation.md"
-            "Surface" => "api/surface.md"
-            "Tracking" => "api/tracking.md"
-            "Visualization" => "api/visualization.md"
+        "Modules" => Any[
+            "Common" => "modules/common.md"
+            "Features" => "modules/features.md"
+            "Filters" => "modules/filters.md"
+            "IO" => "modules/io.md"
+            "KDTree" => "modules/kdtree.md"
+            "KeyPoints" => "modules/keypoints.md"
+            "Octree" => "modules/octree.md"
+            "Recognition" => "modules/recognition.md"
+            "Registration" => "modules/registration.md"
+            "SampleConsensus" => "modules/sampleconsensus.md"
+            "Search" => "modules/search.md"
+            "Segmentation" => "modules/segmentation.md"
+            "Surface" => "modules/surface.md"
+            "Tracking" => "modules/tracking.md"
+            "Visualization" => "modules/visualization.md"
+            "LibPCL" => "modules/libpcl.md"
             ]
         ],
 )

@@ -134,5 +134,6 @@ using DocStringExtensions
 @reexport using PCLRegistration
 @reexport using PCLKeyPoints
 @reexport using PCLSurface
+@reexport using LibPCL
 
 end # module PCL
