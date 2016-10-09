@@ -9,6 +9,12 @@ using PCLSampleConsensus
 using PCLVisualization
 using Cxx
 
+# IR camera parameters of Kinect v2
+fx = 365.1177
+fy = 365.1177
+cx = 256.0793
+cy = 204.4635
+
 function Base.convert{T}(Array, v::CxxStd.StdVector{T})
     r = T[]
     for e in v
