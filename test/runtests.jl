@@ -17,7 +17,7 @@ for f in [
     end
 end
 
-if get(ENV, "PCLJL_RUN_VISUALIZATION_TESTS", true)
+if parse(Int, get(ENV, "PCLJL_RUN_VISUALIZATION_TESTS", "1")) != 0
     @testset "offscreen_rendering" begin
         include("offscreen_rendering.jl")
     end
