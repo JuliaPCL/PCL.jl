@@ -10,10 +10,15 @@ for f in [
         "statistical_removal",
         "region_growing_rgb_segmentation",
         "extract_indices",
-        "offscreen_rendering",
         "tilt_compensation",
         ]
     @testset "$f" begin
         include(joinpath(string(f, ".jl")))
+    end
+end
+
+if get(ENV, "PCLJL_RUN_VISUALIZATION_TESTS", true)
+    @testset "offscreen_rendering" begin
+        include("offscreen_rendering.jl")
     end
 end
