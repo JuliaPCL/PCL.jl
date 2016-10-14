@@ -3,24 +3,53 @@
 PCL Julia packages have fairly complex dependencies, so please take a careful
 look at the installation guide for each dependency.
 
-## Requirements
+
+## Docker
+
+If you don't want to build entire complex dependencies, you can use our
+docker image, [PCL.jl](@ref) and all dependencies installed. First install
+[Docker](https://www.docker.com/), and then run:
+
+```
+docker pull r9y9/julia-cxx
+docker run -it -rm r9y9/julia-cxx:PCL
+```
+
+Docker files are available at [r9y9/julia-cxx](https://github.com/r9y9/julia-cxx).
+
+If you want to build PCL.jl for yourself, read the following guides.
+
+## Requiements
 
 ### Platform
 
-Currently only tested on OSX.
+The packages are tested on the following platforms:
+
+- macOS 10.10 (clang)
+- Ubuntu 14.04 (gcc-6/g++-6)
 
 ### PCL
 
 You need to install [PCL](https://github.com/PointCloudLibrary/pcl) 1.8 or later
 with shared library option ON. Since PCL have a fair amount of dependencies,
-you might suffer from build issues. For macOSX, the following command will help
-to install PCL dependencies:
+be carefull of its dependencies, otherwise you might suffer from build issues.
+
+#### macOS
+
+On macOS, the following command will help to install PCL dependencies:
 
 ```
 brew install cmake openni openni2 qhull boost glew flann eigen libusb vtk
 export OPENNI2_INCLUDE=/usr/local/include/ni2
 export OPENNI2_REDIST=/usr/local/lib/ni2
 ```
+
+#### Ubuntu 14.04
+
+For Ubuntu, there is a docker image that is confirmed to work with PCL as well as
+[PCL.jl](@ref). Check out for the required apt packages from the docker files in [r9y9/julia-cxx](https://github.com/r9y9/julia-cxx).
+
+#### Compile and install PCL from source
 
 If you have PCL dependencies installed, then recommended installation steps are as
 follows:
@@ -69,9 +98,17 @@ the following environmental variables:
 |`VTK_INCLUDE_DIR_PARENT`| `/usr/local/include` (`/usr/include/` for linux)|Parent directory for VTK includes|
 |`VTK_INCLUDE_DIR`| `${VTK_INCLUDE_DIR_PARENT}/vtk-${major}.${minor}`|VTK include directory (`${major}` and `${minor}` will be automatically detected)|
 
+If you have installed all PCL dependencies into its default install path, you
+might not need to change the default values by setting environmental variables.
+
 ### Clone and build
 
-You are almost there! Clone the packages:
+You are almost there! Add and clone the packages:
+
+```julia
+Pkg.add("BinDeps")
+Pkg.add("DocStringExtensions")
+```
 
 ```julia
 Pkg.clone("https://github.com/JuliaPCL/PCLCommon.jl")
