@@ -25,7 +25,7 @@ If you want to build PCL.jl for yourself, read the following guides.
 
 The packages are tested on the following platforms:
 
-- macOS 10.10 (clang)
+- macOS 10.11 (clang)
 - Ubuntu 14.04 (gcc-6/g++-6)
 
 ### PCL
