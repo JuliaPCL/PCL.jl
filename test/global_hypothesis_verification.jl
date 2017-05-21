@@ -107,8 +107,12 @@ end
 @show length(model_scene_corrs)
 
 info("Clustering")
+# TODO: this is apperently cheating.. Re-allocations causes segfault, so reserve enough
+# memory in advance
 rototranslations = icxx"""
-    std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>();
+    auto v = std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>();
+    v.reserve(10);
+    return v;
 """
 clustered_corrs = icxx"std::vector<pcl::Correspondences>();"
 
@@ -150,11 +154,15 @@ recognize(clusterer, rototranslations, clustered_corrs)
 
 @show length(rototranslations)
 
+# error("")
 # instances = CxxStd.StdVector{cxxt"pcl::PointCloud<$T>::ConstPtr"}()
 instances = icxx"std::vector<pcl::PointCloud<$T>::ConstPtr>();"
 for i in 0:length(rototranslations)-1
     rotated_model = PointCloud{T}()
-    transformPointCloud(model, rotated_model, rototranslations[i])
+    # transformPointCloud(model, rotated_model, rototranslations[i])
+    @show i
+    hoge = icxx"$(rototranslations)[$i];"
+    transformPointCloud(model, rotated_model, hoge)
     push!(instances, rotated_model.handle)
 end
 

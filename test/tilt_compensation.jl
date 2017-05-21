@@ -124,16 +124,20 @@ theta = -atan2(norm(rotation), dot(xy_plane_normal, ground_normal))
 # Make rotation a unit vector
 rotation = normalize(rotation)
 
-transform = icxx"""
-             Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
-               transform_2.translation() << 0, 0, 0;
-               transform_2.rotate (Eigen::AngleAxisf ($theta, Eigen::Vector3f($(rotation[1]),$(rotation[2]),$(rotation[3]))));
-          return transform_2;
-      """
-icxx"std::cout << $(transform).matrix() << std::endl;"
+# Apply transform
+icxx"""
+    Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
+    transform_2.translation() << 0, 0, 0;
+    transform_2.rotate (Eigen::AngleAxisf ($theta, Eigen::Vector3f($(rotation[1]),$(rotation[2]),$(rotation[3]))));
 
-transformPointCloud(cloud, rotated_model, transform)
-transformPointCloud(first(planes), rotated_plane, transform)
+    std::cout << transform_2.matrix() << std::endl;
+    pcl::transformPointCloud(*$(cloud.handle), *$(rotated_model.handle), transform_2);
+    pcl::transformPointCloud(*$(planes[1].handle), *$(rotated_plane.handle), transform_2);
+"""
+# icxx"std::cout << $(transform).matrix() << std::endl;"
+
+# transformPointCloud(cloud, rotated_model, transform)
+# transformPointCloud(first(planes), rotated_plane, transform)
 
 # Estimate distance
 tilt_compensatated_plane_depth = zeros(
